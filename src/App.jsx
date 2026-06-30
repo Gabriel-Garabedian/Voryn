@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import LoadingScreen from '@/components/ui/LoadingScreen'
+import IOSInstallBanner from '@/components/ui/IOSInstallBanner'
 
 const LandingPage   = lazy(() => import('@/pages/LandingPage'))
 const LoginPage     = lazy(() => import('@/pages/LoginPage'))
@@ -36,20 +37,26 @@ export default function App() {
   if (loading) return <LoadingScreen />
 
   return (
-    <Suspense fallback={<LoadingScreen />}>
-      <Routes>
-        <Route path="/"                 element={<LandingPage />} />
-        <Route path="/pricing"          element={<PricingPage />} />
-        <Route path="/checkout/:planId" element={<CheckoutPage />} />
-        <Route path="/reset-password"   element={<ResetPassword />} />
-        <Route path="/privacy"          element={<PrivacyPolicy />} />
-        <Route path="/terms"            element={<TermsOfUse />} />
-        <Route path="/login"    element={<PublicRoute><LoginPage /></PublicRoute>} />
-        <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
-        <Route path="/app/*"    element={<ProtectedRoute><AppShell /></ProtectedRoute>} />
-        <Route path="/admin/*"  element={<ProtectedRoute adminOnly><AdminShell /></ProtectedRoute>} />
-        <Route path="*"           element={<NotFoundPage />} />
-      </Routes>
-    </Suspense>
+    <>
+      <Suspense fallback={<LoadingScreen />}>
+        <Routes>
+          <Route path="/"                 element={<LandingPage />} />
+          <Route path="/pricing"          element={<PricingPage />} />
+          <Route path="/checkout/:planId" element={<CheckoutPage />} />
+          <Route path="/reset-password"   element={<ResetPassword />} />
+          <Route path="/privacy"          element={<PrivacyPolicy />} />
+          <Route path="/terms"            element={<TermsOfUse />} />
+          <Route path="/login"    element={<PublicRoute><LoginPage /></PublicRoute>} />
+          <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+          <Route path="/app/*"    element={<ProtectedRoute><AppShell /></ProtectedRoute>} />
+          <Route path="/admin/*"  element={<ProtectedRoute adminOnly><AdminShell /></ProtectedRoute>} />
+          <Route path="*"           element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
+      {/* Aparece só no iOS Safari antes da instalação — instrui o usuário
+          a usar Compartilhar → Adicionar à Tela de Início, já que o iOS
+          nunca mostra prompt automático de instalação como o Android. */}
+      <IOSInstallBanner />
+    </>
   )
 }

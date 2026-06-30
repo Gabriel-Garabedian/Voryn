@@ -63,9 +63,16 @@ export default defineConfig({
         dir: 'ltr',
         categories: ['health', 'fitness', 'sports'],
         icons: [
-          { src: '/voryn-icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
-          { src: '/voryn-icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
-          { src: '/voryn-badge-96.png',  sizes: '96x96',  type: 'image/png' },
+          // 'any' e 'maskable' DEVEM ser objetos separados — um mesmo objeto
+          // com os dois valores é inválido pela spec e rejeitado pelo iOS
+          // e pelo Lighthouse. Antes era { purpose: 'any maskable' } num único
+          // objeto, o que fazia o iOS ignorar o ícone do manifest por completo
+          // (não que o iOS use o manifest, mas o erro invalidava o PWA inteiro
+          // no audit do Lighthouse, afetando o prompt de instalação no Android).
+          { src: '/voryn-icon-192.png',         sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: '/voryn-icon-512.png',         sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: '/voryn-icon-512-maskable.png',sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: '/voryn-badge-96.png',         sizes: '96x96',   type: 'image/png' },
         ],
       },
     }),
