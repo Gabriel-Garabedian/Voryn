@@ -1,0 +1,72 @@
+-- ============================================================
+-- VORYN — Corrigir RLS para leitura do próprio perfil
+-- Cole e rode no SQL Editor do Supabase
+-- ============================================================
+
+-- 1. Dropar políticas antigas que podem conflitar
+DROP POLICY IF EXISTS "users_select_own"  ON public.users;
+DROP POLICY IF EXISTS "users_update_own"  ON public.users;
+DROP POLICY IF EXISTS "users_admin_all"   ON public.users;
+
+-- 2. Recriar políticas corretas
+
+-- Qualquer usuário logado pode ler sua própria linha
+CREATE POLICY "users_select_own"
+  ON public.users FOR SELECT
+  USING (auth.uid() = id);
+
+-- Usuário pode atualizar sua própria linha
+CREATE POLICY "users_update_own"
+  ON public.users FOR UPDATE
+  USING (auth.uid() = id);
+
+-- Admin pode ver e editar todos
+CREATE POLICY "users_admin_select_all"
+  ON public.users FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.users u
+      WHERE u.id = auth.uid() AND u.role = 'admin'
+    )
+  );
+
+CREATE POLICY "users_admin_update_all"
+  ON public.users FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.users u
+      WHERE u.id = auth.uid() AND u.role = 'admin'
+    )
+  );
+
+-- 3. Garantir que subscriptions também tem policy correta
+DROP POLICY IF EXISTS "subs_own"   ON public.subscriptions;
+DROP POLICY IF EXISTS "subs_admin" ON public.subscriptions;
+
+CREATE POLICY "subs_select_own"
+  ON public.subscriptions FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "subs_insert_own"
+  ON public.subscriptions FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "subs_update_own"
+  ON public.subscriptions FOR UPDATE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "subs_admin_all"
+  ON public.subscriptions FOR ALL
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.users u
+      WHERE u.id = auth.uid() AND u.role = 'admin'
+    )
+  );
+
+-- 4. Confirmar que RLS está ativa
+ALTER TABLE public.users         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.subscriptions ENABLE ROW LEVEL SECURITY;
+
+-- 5. Verificar seu usuário (troque pelo seu email)
+-- SELECT id, email, role FROM public.users WHERE email = 'gabriel@gmail.com';

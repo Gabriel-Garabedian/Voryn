@@ -1,0 +1,295 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Dark Theme (default) ─────────────────────────────── */
+:root {
+  --bg:          #080808;
+  --surface:     #111115;
+  --card:        #18181f;
+  --border:      #252530;
+  --accent:      #820AD1;
+  --accent-dim:  #5A0896;
+  --accent-2:    #A855F7;
+  --muted:       #636366;
+  --text-1:      #F2F2F7;
+  --text-2:      #AEAEB2;
+  --text-3:      #636366;
+  --accent-rgb:  130,10,209;
+}
+
+/* ── Light Theme ──────────────────────────────────────── */
+.theme-light {
+  --bg:          #F2F2F7;
+  --surface:     #FFFFFF;
+  --card:        #FFFFFF;
+  --border:      #D1D1D6;
+  --accent:      #820AD1;
+  --accent-dim:  #6209A0;
+  --accent-2:    #9B59D3;
+  --muted:       #8E8E93;
+  --text-1:      #1C1C1E;
+  --text-2:      #3A3A3C;
+  --text-3:      #8E8E93;
+  --accent-rgb:  130,10,209;
+}
+
+/* ── Cores de destaque alternativas (recurso pago) ───────
+   O roxo acima continua sendo o padrão e o único disponível no plano
+   grátis/trial. As 7 paletas abaixo só ficam disponíveis quando o aluno
+   ou personal tem assinatura paga ativa — ver useAccentColor e
+   AccentColorPicker (ProfileView.jsx). Cada uma sobrescreve só as 4
+   variáveis de cor de marca, nunca --bg/--surface/--card/--border/--text-*,
+   então continuam funcionando corretamente nos dois temas (dark/light)
+   sem precisar duplicar paletas inteiras. */
+[data-accent="blue"]   { --accent: #2563EB; --accent-dim: #1D4ED8; --accent-2: #60A5FA; --accent-rgb: 37,99,235; }
+[data-accent="green"]  { --accent: #16A34A; --accent-dim: #15803D; --accent-2: #4ADE80; --accent-rgb: 22,163,74; }
+[data-accent="orange"] { --accent: #EA580C; --accent-dim: #C2410C; --accent-2: #FB923C; --accent-rgb: 234,88,12; }
+[data-accent="red"]    { --accent: #DC2626; --accent-dim: #B91C1C; --accent-2: #F87171; --accent-rgb: 220,38,38; }
+[data-accent="pink"]   { --accent: #DB2777; --accent-dim: #BE185D; --accent-2: #F472B6; --accent-rgb: 219,39,119; }
+[data-accent="cyan"]   { --accent: #0891B2; --accent-dim: #0E7490; --accent-2: #22D3EE; --accent-rgb: 8,145,178; }
+[data-accent="amber"]  { --accent: #D97706; --accent-dim: #B45309; --accent-2: #FBBF24; --accent-rgb: 217,119,6; }
+
+@layer base {
+  *, *::before, *::after {
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+  }
+  html, body { height: 100%; overflow-x: hidden; }
+  body {
+    background: var(--bg);
+    color: var(--text-1);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    transition: background .3s, color .3s;
+  }
+  #root { height: 100%; }
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  input, textarea, select { background: transparent; outline: none; }
+  input[type='number']::-webkit-inner-spin-button { -webkit-appearance: none; }
+}
+
+@layer components {
+  .f-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    transition: background .25s, border-color .25s;
+  }
+  .f-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--text-1);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .f-input::placeholder { color: var(--muted); }
+  .f-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), .15);
+  }
+  .f-input:disabled { opacity: .5; cursor: not-allowed; }
+
+  .f-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    transition: all .15s ease;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 14px;
+    text-decoration: none;
+  }
+  .f-btn:active { transform: scale(.97); }
+  .f-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+  .f-btn-accent {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(var(--accent-rgb), .3);
+  }
+  .f-btn-accent:hover:not(:disabled) {
+    background: var(--accent-dim);
+    box-shadow: 0 0 28px rgba(var(--accent-rgb), .45);
+  }
+  .f-btn-ghost {
+    background: transparent;
+    color: var(--text-2);
+    border: 1px solid var(--border);
+  }
+  .f-btn-ghost:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .f-btn-danger {
+    background: rgba(248,113,113,.12);
+    color: #f87171;
+    border: 1px solid rgba(248,113,113,.25);
+  }
+  .f-btn-danger:hover:not(:disabled) { background: rgba(248,113,113,.22); }
+
+  .f-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .f-badge-accent {
+    background: rgba(var(--accent-rgb), .12);
+    color: var(--accent-2);
+    border: 1px solid rgba(var(--accent-rgb), .2);
+  }
+  .f-badge-green  { background: rgba(74,222,128,.12);  color: #4ade80; border: 1px solid rgba(74,222,128,.2); }
+  .f-badge-yellow { background: rgba(250,204,21,.12);  color: #facc15; border: 1px solid rgba(250,204,21,.2); }
+  .f-badge-red    { background: rgba(248,113,113,.12); color: #f87171; border: 1px solid rgba(248,113,113,.2); }
+
+  .f-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 6px;
+  }
+
+  .font-display {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: .04em;
+  }
+}
+
+/* ── Noise overlay ──────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  opacity: .3;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+}
+
+/* ── Animations ─────────────────────────────────────────── */
+@keyframes fadeIn      { from { opacity:0 } to { opacity:1 } }
+@keyframes slideUp     { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
+@keyframes slideInBot  { from { transform:translateY(100%); opacity:0 } to { transform:translateY(0); opacity:1 } }
+@keyframes scaleIn     { from { transform:scale(.85); opacity:0 } to { transform:scale(1); opacity:1 } }
+@keyframes pulseGlow   {
+  0%,100% { box-shadow:0 0 10px rgba(var(--accent-rgb),.2) }
+  50%     { box-shadow:0 0 28px rgba(var(--accent-rgb),.55) }
+}
+@keyframes spin { to { transform:rotate(360deg) } }
+
+.animate-fade-in   { animation: fadeIn .25s ease-out; }
+.animate-slide-up  { animation: slideUp .3s ease-out; }
+.slide-in-bottom   { animation: slideInBot .35s cubic-bezier(.34,1.56,.64,1); }
+.scale-in          { animation: scaleIn .22s cubic-bezier(.34,1.56,.64,1); }
+.animate-spin      { animation: spin 1s linear infinite; }
+.animate-pulse-neon { animation: pulseGlow 1.8s ease-in-out infinite; }
+
+/* ── Scrollbar hide util ─────────────────────────────────── */
+.scrollbar-none::-webkit-scrollbar { display:none; }
+.scrollbar-none { scrollbar-width:none; }
+
+/* ── Skeleton pulse ─────────────────────────────────────── */
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 1 }
+  50%       { opacity: .4 }
+}
+.skeleton-pulse { animation: skeletonPulse 1.5s ease-in-out infinite; }
+
+/* ── Achievement unlock ─────────────────────────────────── */
+@keyframes unlockPop {
+  0%   { transform: scale(0.5); opacity: 0 }
+  60%  { transform: scale(1.15); opacity: 1 }
+  100% { transform: scale(1); opacity: 1 }
+}
+@keyframes glowPulse {
+  0%,100% { box-shadow: 0 0 10px rgba(var(--accent-rgb),.3) }
+  50%      { box-shadow: 0 0 40px rgba(var(--accent-rgb),.8), 0 0 80px rgba(var(--accent-rgb),.3) }
+}
+.achievement-unlock {
+  animation: unlockPop .5s cubic-bezier(.34,1.56,.64,1) forwards,
+             glowPulse 1.5s ease-in-out 0.5s 2;
+}
+
+/* ── Progress vs last week chip ─────────────────────────── */
+.progress-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 99px;
+  font-size: 11px; font-weight: 600;
+}
+.progress-chip.up   { background: rgba(74,222,128,.12); color: #4ade80; border: 1px solid rgba(74,222,128,.25); }
+.progress-chip.down { background: rgba(248,113,113,.12); color: #f87171; border: 1px solid rgba(248,113,113,.25); }
+.progress-chip.same { background: rgba(var(--accent-rgb),.12); color: var(--accent-2); border: 1px solid rgba(var(--accent-rgb),.25); }
+
+/* ── Streak milestone flash ─────────────────────────────── */
+@keyframes streakFlash {
+  0%   { transform: scale(1) }
+  25%  { transform: scale(1.25) rotate(-5deg) }
+  50%  { transform: scale(1.2) rotate(5deg) }
+  75%  { transform: scale(1.1) rotate(-3deg) }
+  100% { transform: scale(1) }
+}
+.streak-milestone { animation: streakFlash .6s cubic-bezier(.34,1.56,.64,1); }
+
+/* ── Invite card highlight ──────────────────────────────── */
+.invite-step {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.invite-step:last-child { border-bottom: none; }
+
+/* ── Mobile table scroll ────────────────────────────────── */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* ── Typography Scale (enforce 12/14/16/18/24/32px only) ── */
+.text-9px, .text-10px, .text-11px { font-size: 12px !important; }
+
+/* ── Tablet responsive fix (768px) ───────────────────────── */
+@media (min-width: 640px) and (max-width: 900px) {
+  .lp-features-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .lp-hero-grid     { grid-template-columns: 1fr !important; }
+  .lp-pricing-grid  { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* ── iPhone SE (375px) workout table fix ─────────────────── */
+@media (max-width: 390px) {
+  .workout-set-row { grid-template-columns: 24px 1fr 1fr 34px !important; gap: 4px !important; }
+  .workout-set-row input { font-size: 12px !important; padding: 6px 4px !important; }
+}
+
+/* ── Landscape mobile onboarding fix ─────────────────────── */
+@media (max-height: 500px) and (orientation: landscape) {
+  .onboarding-container { min-height: unset !important; overflow-y: auto !important; }
+  .onboarding-container .progress-dots { margin-bottom: 12px !important; }
+}
+
+/* ── Admin table mobile ──────────────────────────────────── */
+.admin-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* ── Consistent card spacing ─────────────────────────────── */
+.card-list > * + * { margin-top: 12px; }
+
+/* ── Border radius token ─────────────────────────────────── */
+:root {
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  14px;
+  --radius-xl:  20px;
+  --radius-pill: 999px;
+}

@@ -1,0 +1,221 @@
+-- ============================================================
+-- VORYN SAAS — Migration: Add columns for new features
+-- Run this in Supabase SQL Editor AFTER the main schema.sql
+-- ============================================================
+
+-- Add onboarding + goal + weekly_goal to users
+ALTER TABLE public.users
+  ADD COLUMN IF NOT EXISTS onboarding_done boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS goal            text,
+  ADD COLUMN IF NOT EXISTS weekly_goal     int DEFAULT 3;
+
+-- Add avatar_url if not exists
+ALTER TABLE public.users
+  ADD COLUMN IF NOT EXISTS avatar_url text;
+
+-- Extend workout_logs with extra metrics
+ALTER TABLE public.workout_logs
+  ADD COLUMN IF NOT EXISTS total_sets  int DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS total_reps  int DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS total_volume numeric DEFAULT 0;
+
+-- Add rest_seconds to routines exercises (stored in JSON already, just doc)
+-- Nothing needed - exercises is jsonb
+
+-- Add indexes for performance
+CREATE INDEX IF NOT EXISTS idx_workout_logs_user_date
+  ON public.workout_logs(user_id, date DESC);
+
+CREATE INDEX IF NOT EXISTS idx_prs_user
+  ON public.prs(user_id);
+
+CREATE INDEX IF NOT EXISTS idx_messages_thread
+  ON public.messages(sender_id, receiver_id, created_at DESC);
+
+-- ============================================================
+-- FIX RLS — Drop and recreate all policies cleanly
+-- ============================================================
+
+-- Drop all existing policies
+DO $$ DECLARE r RECORD;
+BEGIN
+  FOR r IN SELECT schemaname, tablename, policyname
+           FROM pg_policies WHERE schemaname = 'public'
+  LOOP
+    EXECUTE format('DROP POLICY IF EXISTS %I ON %I.%I',
+                   r.policyname, r.schemaname, r.tablename);
+  END LOOP;
+END $$;
+
+-- ── users ────────────────────────────────────────────────
+CREATE POLICY "users_select_own" ON public.users
+  FOR SELECT USING (auth.uid() = id);
+
+CREATE POLICY "users_update_own" ON public.users
+  FOR UPDATE USING (auth.uid() = id);
+
+CREATE POLICY "users_insert_own" ON public.users
+  FOR INSERT WITH CHECK (auth.uid() = id);
+
+-- Admin: full access (non-recursive to avoid infinite loop)
+CREATE POLICY "users_admin" ON public.users
+  FOR ALL USING (
+    auth.uid() IN (
+      SELECT id FROM public.users WHERE role = 'admin'
+    )
+  );
+
+-- Trainers can see their students' basic info
+CREATE POLICY "users_trainer_see_students" ON public.users
+  FOR SELECT USING (
+    id IN (
+      SELECT ts.student_id
+      FROM public.trainer_students ts
+      JOIN public.trainers t ON t.id = ts.trainer_id
+      WHERE t.user_id = auth.uid()
+    )
+  );
+
+-- ── subscriptions ────────────────────────────────────────
+CREATE POLICY "subs_own" ON public.subscriptions
+  FOR ALL USING (auth.uid() = user_id);
+
+CREATE POLICY "subs_admin" ON public.subscriptions
+  FOR ALL USING (
+    auth.uid() IN (SELECT id FROM public.users WHERE role = 'admin')
+  );
+
+-- ── trainers ─────────────────────────────────────────────
+CREATE POLICY "trainers_own" ON public.trainers
+  FOR ALL USING (auth.uid() = user_id);
+
+CREATE POLICY "trainers_public_read" ON public.trainers
+  FOR SELECT USING (true);
+
+-- ── trainer_students ─────────────────────────────────────
+CREATE POLICY "ts_trainer" ON public.trainer_students
+  FOR ALL USING (
+    EXISTS (SELECT 1 FROM public.trainers t WHERE t.id = trainer_id AND t.user_id = auth.uid())
+  );
+
+CREATE POLICY "ts_student_read" ON public.trainer_students
+  FOR SELECT USING (auth.uid() = student_id);
+
+-- ── routines ─────────────────────────────────────────────
+CREATE POLICY "routines_own" ON public.routines
+  FOR ALL USING (auth.uid() = user_id);
+
+CREATE POLICY "routines_trainer_write" ON public.routines
+  FOR ALL USING (auth.uid() = created_by);
+
+-- Trainer can read student routines
+CREATE POLICY "routines_trainer_read" ON public.routines
+  FOR SELECT USING (
+    user_id IN (
+      SELECT ts.student_id FROM public.trainer_students ts
+      JOIN public.trainers t ON t.id = ts.trainer_id
+      WHERE t.user_id = auth.uid()
+    )
+  );
+
+-- ── workouts ──────────────────────────────────────────────
+CREATE POLICY "workouts_own" ON public.workouts
+  FOR ALL USING (auth.uid() = user_id);
+
+-- ── workout_logs ─────────────────────────────────────────
+CREATE POLICY "logs_own" ON public.workout_logs
+  FOR ALL USING (auth.uid() = user_id);
+
+CREATE POLICY "logs_trainer_read" ON public.workout_logs
+  FOR SELECT USING (
+    user_id IN (
+      SELECT ts.student_id FROM public.trainer_students ts
+      JOIN public.trainers t ON t.id = ts.trainer_id
+      WHERE t.user_id = auth.uid()
+    )
+  );
+
+-- ── prs ───────────────────────────────────────────────────
+CREATE POLICY "prs_own" ON public.prs
+  FOR ALL USING (auth.uid() = user_id);
+
+CREATE POLICY "prs_trainer_read" ON public.prs
+  FOR SELECT USING (
+    user_id IN (
+      SELECT ts.student_id FROM public.trainer_students ts
+      JOIN public.trainers t ON t.id = ts.trainer_id
+      WHERE t.user_id = auth.uid()
+    )
+  );
+
+-- ── assessments ──────────────────────────────────────────
+CREATE POLICY "assess_student" ON public.assessments
+  FOR SELECT USING (auth.uid() = student_id);
+
+CREATE POLICY "assess_trainer" ON public.assessments
+  FOR ALL USING (
+    trainer_id IN (SELECT id FROM public.trainers WHERE user_id = auth.uid())
+  );
+
+CREATE POLICY "assess_student_insert" ON public.assessments
+  FOR INSERT WITH CHECK (auth.uid() = student_id);
+
+-- ── messages ─────────────────────────────────────────────
+CREATE POLICY "msg_own" ON public.messages
+  FOR ALL USING (auth.uid() = sender_id OR auth.uid() = receiver_id);
+
+-- ── programs ─────────────────────────────────────────────
+CREATE POLICY "prog_student_read" ON public.programs
+  FOR SELECT USING (auth.uid() = student_id);
+
+CREATE POLICY "prog_trainer" ON public.programs
+  FOR ALL USING (
+    trainer_id IN (SELECT id FROM public.trainers WHERE user_id = auth.uid())
+  );
+
+-- ── payment_events ───────────────────────────────────────
+CREATE POLICY "payments_admin" ON public.payment_events
+  FOR ALL USING (
+    auth.uid() IN (SELECT id FROM public.users WHERE role = 'admin')
+  );
+
+-- ============================================================
+-- Trigger: auto-create profile on signup
+-- ============================================================
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER AS $$
+BEGIN
+  INSERT INTO public.users (id, email, name, role, onboarding_done)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'name', SPLIT_PART(NEW.email,'@',1)),
+    COALESCE(NEW.raw_user_meta_data->>'role', 'student'),
+    false
+  )
+  ON CONFLICT (id) DO NOTHING;
+
+  INSERT INTO public.subscriptions (user_id, plan, status, trial_ends_at)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'plan', 'student'),
+    'trialing',
+    NOW() + INTERVAL '7 days'
+  )
+  ON CONFLICT DO NOTHING;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
+-- ============================================================
+-- Realtime: enable for messages (live chat)
+-- ============================================================
+ALTER PUBLICATION supabase_realtime ADD TABLE public.messages;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.workout_logs;
+
