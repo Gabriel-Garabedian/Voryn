@@ -16,7 +16,9 @@ import AchievementsView      from '@/views/AchievementsView'
 import ProgressPhotosView    from '@/views/ProgressPhotosView'
 import OnboardingView        from '@/views/OnboardingView'
 import PaywallGate           from '@/components/PaywallGate'
+import EmailConfirmGate      from '@/components/EmailConfirmGate'
 import NotificationPrompt    from '@/components/ui/NotificationPrompt'
+import TrialEndingBanner     from '@/components/ui/TrialEndingBanner'
 import { pushService }       from '@/services/pushNotifications'
 
 const STUDENT_NAV = [
@@ -85,7 +87,7 @@ function MoreSheet({ open, onClose, navigate, base }) {
 }
 
 export default function AppShell() {
-  const { isPersonal, isAdmin, profile, user, subStatus, isActive: subIsActive, signOut } = useAuth()
+  const { isPersonal, isAdmin, profile, user, subStatus, isActive: subIsActive, emailConfirmed, signOut } = useAuth()
   const navigate  = useNavigate()
   const location  = useLocation()
   const [moreOpen,    setMoreOpen]    = useState(false)
@@ -128,6 +130,16 @@ export default function AppShell() {
     return () => clearTimeout(t)
   }, [user])
 
+  // Confirmação de email: bloqueia tudo (inclusive onboarding) até o
+  // usuário clicar no link enviado no cadastro. Precisa vir ANTES do
+  // check de onboarding_done — não faz sentido mandar alguém escolher
+  // objetivo de treino antes de sequer confirmar que o email é real.
+  // Admin nunca é bloqueado (contas de admin são criadas manualmente,
+  // não passam pelo fluxo de signup público).
+  if (profile && !isAdmin && !emailConfirmed) {
+    return <EmailConfirmGate onSignOut={signOut} />
+  }
+
   if (profile && profile.onboarding_done === false) {
     return <OnboardingView />
   }
@@ -168,6 +180,7 @@ export default function AppShell() {
       {/* Main content */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden">
         <div className="max-w-2xl mx-auto">
+          <TrialEndingBanner hidden={onSubscriptionPage} />
           <Routes>
             <Route index              element={isPersonal ? <PersonalDashboardView /> : <HomeView />} />
             <Route path="routine/*"      element={<RoutineView />} />

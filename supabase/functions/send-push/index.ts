@@ -125,6 +125,15 @@ function buildPayload(type: string, data: Record<string, unknown> = {}): object 
       tag:   'payment',
       url:   '/app',
     },
+    trial_ending: {
+      title: `⏳ Seu trial acaba em ${data.daysLeft} dia${Number(data.daysLeft) !== 1 ? 's' : ''}`,
+      body:  'Assine agora para não perder seu histórico e evolução.',
+      icon:  '/voryn-icon-192.png',
+      badge: '/voryn-badge-96.png',
+      tag:   'trial-ending',
+      url:   '/app/subscription',
+      actions: [{ action: 'open', title: 'Assinar agora' }],
+    },
     // Antes chamado 'trainer_message' e fixo em "mensagem de [trainerName]"
     // com url sempre '/app/personal' — funcionava só quando o personal
     // enviava para o aluno. Como o chat é bidirecional, generalizado para

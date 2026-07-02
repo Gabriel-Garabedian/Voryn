@@ -124,7 +124,7 @@ function AccentColorPicker() {
 }
 
 export default function ProfileView() {
-  const { profile, user, plan, subStatus, signOut, updateProfile } = useAuth()
+  const { profile, user, plan, subStatus, signOut, updateProfile, deleteAccount, isPersonal } = useAuth()
   const navigate = useNavigate()
   const toast = useToast()
 
@@ -139,6 +139,8 @@ export default function ProfileView() {
   const [editName,    setEditName]    = useState(false)
   const [nameInput,   setNameInput]   = useState(profile?.name || '')
   const [showDelete,  setShowDelete]  = useState(false)
+  const [deleting,    setDeleting]    = useState(false)
+  const [deleteError, setDeleteError] = useState('')
   const [pushPerm,    setPushPerm]    = useState(() => pushService.isSupported() ? Notification.permission : 'unsupported')
 
   useEffect(() => {
@@ -192,6 +194,21 @@ export default function ProfileView() {
     await updateProfile({ name: nameInput.trim() })
     setEditName(false)
     toast.success('Nome atualizado!')
+  }
+
+  async function handleDeleteAccount() {
+    setDeleting(true)
+    setDeleteError('')
+    const { error } = await deleteAccount()
+    if (error) {
+      setDeleting(false)
+      setDeleteError(error.message || 'Não foi possível excluir agora. Tente novamente ou envie um email para privacidade@vorynapp.com.br')
+      return
+    }
+    // deleteAccount() já limpa a sessão local — navega para a landing.
+    // Não precisa setDeleting(false) aqui: o componente desmonta junto
+    // com a navegação.
+    navigate('/')
   }
 
   const statusMap = {
@@ -579,9 +596,18 @@ export default function ProfileView() {
                 ⚠️ Isso excluirá todos os seus dados permanentemente.
               </p>
               <p className="text-xs text-center" style={{ color: 'var(--text-3)' }}>
-                Para excluir sua conta envie um email para <strong>privacidade@vorynapp.com.br</strong> com o assunto "Excluir conta"
+                Treinos, histórico, fotos de progresso e conquistas — tudo é apagado
+                e não pode ser recuperado.
+                {isPersonal && ' Seus alunos perdem o vínculo com você, mas as contas deles continuam intactas.'}
               </p>
-              <button onClick={() => setShowDelete(false)}
+              {deleteError && (
+                <p className="text-xs text-center" style={{ color: '#f87171' }}>{deleteError}</p>
+              )}
+              <Button variant="danger" size="lg" className="w-full"
+                onClick={handleDeleteAccount} loading={deleting}>
+                Sim, excluir minha conta
+              </Button>
+              <button onClick={() => { setShowDelete(false); setDeleteError('') }} disabled={deleting}
                 className="w-full text-center text-sm" style={{ color: 'var(--text-3)' }}>
                 Cancelar
               </button>
@@ -591,7 +617,7 @@ export default function ProfileView() {
 
       <p className="text-center text-xs font-body tracking-widest"
         style={{ color: 'rgba(var(--accent-rgb),.2)' }}>
-        VORYN v2.0 · Premium Gym SaaS
+        VORYN v2.0
       </p>
     </div>
   )

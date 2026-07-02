@@ -92,6 +92,12 @@ function LogCard({ log }) {
                   </div>
                 ))}
               </div>
+              {ex.notes && (
+                <p className="text-xs italic px-2 py-1.5 rounded-lg mt-1"
+                  style={{ background: 'var(--surface)', color: 'var(--text-3)' }}>
+                  💬 {ex.notes}
+                </p>
+              )}
             </div>
           ))}
         </div>

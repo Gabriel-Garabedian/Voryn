@@ -276,17 +276,19 @@ export default function RegisterPage() {
         }
 
         if (session?.user) {
-          const { data: trainer } = await supabase
-            .from('trainers')
-            .select('id')
-            .eq('user_id', trainerInfo.id)
-            .single()
+          // Usa a RPC get_trainer_id_by_user em vez de select direto na
+          // tabela trainers — não existe mais policy pública que permita
+          // ler a linha (removida por expor phone/instagram publicamente,
+          // ver schema.sql). A RPC devolve só o id, o suficiente para
+          // criar o vínculo abaixo.
+          const { data: trainerId } = await supabase
+            .rpc('get_trainer_id_by_user', { p_user_id: trainerInfo.id })
 
-          if (trainer) {
+          if (trainerId) {
             const { error: linkErr } = await supabase
               .from('trainer_students')
               .upsert(
-                { trainer_id: trainer.id, student_id: session.user.id, status: 'active' },
+                { trainer_id: trainerId, student_id: session.user.id, status: 'active' },
                 { onConflict: 'trainer_id,student_id', ignoreDuplicates: true }
               )
             if (!linkErr) {

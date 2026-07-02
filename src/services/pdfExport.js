@@ -56,11 +56,7 @@ function header(doc, title, subtitle) {
   doc.setTextColor(...WHITE)
   doc.setFontSize(18)
   doc.setFont('helvetica', 'bold')
-  doc.text('VORYN', 12, 11)
-  doc.setFontSize(10)
-  doc.setFont('helvetica', 'normal')
-  doc.setTextColor(...[180, 180, 190])
-  doc.text('Premium Gym Tracker', 12, 17)
+  doc.text('VORYN', 12, 14)
   // Title right
   doc.setFontSize(14)
   doc.setFont('helvetica', 'bold')

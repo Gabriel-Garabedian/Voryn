@@ -198,6 +198,7 @@ export default function WorkoutView() {
   const [lastSeriesDone, setLastSeriesDone] = useState(0)
   const [showExPicker,  setShowExPicker]  = useState(false)
   const [detailExercise, setDetailExercise] = useState(null) // instruções durante o treino
+  const [openNotes,     setOpenNotes]     = useState({}) // { [exerciseIndex]: boolean } — bloco de anotação expandido ou não
   const toast = useToast()
   const timerRef = useRef(null)
 
@@ -271,6 +272,23 @@ export default function WorkoutView() {
           sets: [...ex.sets, { id: genId(), reps: '', weight: '', done: false }]
         }
       )
+    }
+    activeWorkoutService.save(updated)
+    setWorkout(updated)
+  }
+
+  // Anotação livre por exercício (ex: "peguei mais leve, ombro incomodando"
+  // ou "consegui aumentar a carga, próxima semana subir mais"). Fica salva
+  // dentro do próprio objeto do exercício no exercises[], então é
+  // persistida em workout_logs.exercises (jsonb) junto com o resto do
+  // treino ao finalizar — sem precisar de coluna nova no banco. Isso é o
+  // que faz a nota aparecer depois no Histórico, tanto para o aluno quanto
+  // para o personal olhando a evolução dele (ver EvolutionView/HistoryView
+  // e o card do personal em PersonalDashboardView).
+  function updateNote(ei, val) {
+    const updated = {
+      ...workout,
+      exercises: workout.exercises.map((ex, eii) => eii !== ei ? ex : { ...ex, notes: val })
     }
     activeWorkoutService.save(updated)
     setWorkout(updated)
@@ -549,6 +567,31 @@ export default function WorkoutView() {
                   </svg>
                   adicionar série
                 </button>
+
+                {/* Anotação do exercício — fica salva junto com o treino e
+                    aparece depois no Histórico, para o aluno e o personal. */}
+                {openNotes[ei] || ex.notes ? (
+                  <div className="mt-2">
+                    <textarea
+                      className="f-input text-xs py-2 resize-none"
+                      rows={2}
+                      placeholder="Como foi esse exercício? Ex: reduzi a carga, ombro incomodou, consegui subir peso..."
+                      value={ex.notes || ''}
+                      onChange={e => updateNote(ei, e.target.value)}
+                      onBlur={() => { if (!ex.notes) setOpenNotes(o => ({ ...o, [ei]: false })) }}
+                    />
+                  </div>
+                ) : (
+                  <button onClick={() => setOpenNotes(o => ({ ...o, [ei]: true }))}
+                    className="w-full mt-2 py-1.5 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all"
+                    style={{ color: 'var(--text-3)' }}>
+                    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    adicionar anotação
+                  </button>
+                )}
               </div>
             </div>
           )

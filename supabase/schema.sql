@@ -69,10 +69,29 @@ create index if not exists idx_users_email_normalized on public.users(email_norm
 -- ── SUBSCRIPTIONS ─────────────────────────────────────────
 create table if not exists public.subscriptions (
   id                    uuid primary key default uuid_generate_v4(),
-  user_id               uuid not null references public.users(id) on delete cascade,
+  -- unique aqui é obrigatório: tanto este trigger (handle_new_user, no
+  -- ON CONFLICT (user_id) do update abaixo) quanto a Edge Function
+  -- create-preference (upsert com onConflict: 'user_id') dependem de um
+  -- constraint único nesta coluna para funcionar. Sem ele, o Postgres
+  -- rejeita a operação com "there is no unique or exclusion constraint
+  -- matching the ON CONFLICT specification" — um erro que só aparece na
+  -- prática quando o conflito de fato acontece (ex: segunda tentativa de
+  -- assinatura, ou email confirmado depois do cadastro), não no primeiro
+  -- insert de cada usuário, o que o torna fácil de não notar em teste
+  -- manual rápido.
+  user_id               uuid not null unique references public.users(id) on delete cascade,
   plan                  text not null default 'free' check (plan in ('free','student','personal','personal_pro')),
   status                text not null default 'trialing' check (status in ('active','trialing','canceled','past_due','inactive','pending')),
   trial_ends_at         timestamptz default (now() + interval '14 days'),
+  -- Marca quando o email/push de "seu trial acaba em breve" foi enviado.
+  -- Null = ainda não enviado. Sem isso, a Edge Function de lembrete
+  -- (trial-reminder-email) precisaria confiar em "trial_ends_at está
+  -- entre hoje e daqui 3 dias" sozinho — mas como o cron pode rodar mais
+  -- de uma vez dentro dessa janela de 3 dias (ex: todo dia), a mesma
+  -- pessoa receberia o aviso repetidas vezes. Este campo torna o envio
+  -- idempotente: uma vez marcado, nunca mais reenviado, não importa
+  -- quantas vezes o cron rodar.
+  trial_reminder_sent_at timestamptz,
   current_period_start  timestamptz default now(),
   current_period_end    timestamptz default (now() + interval '30 days'),
   cancel_at_period_end  boolean default false,
@@ -266,6 +285,41 @@ create table if not exists public.student_goals (
 create index if not exists idx_workout_logs_user_date     on public.workout_logs(user_id, date desc);
 create index if not exists idx_routines_user               on public.routines(user_id);
 create index if not exists idx_subscriptions_user          on public.subscriptions(user_id);
+
+-- MIGRATION para bancos que já rodaram este schema antes desta correção:
+-- "create table if not exists" acima não altera uma tabela já existente,
+-- então o "unique" adicionado na definição de subscriptions.user_id não
+-- tem efeito nenhum em quem já tinha rodado o schema. Este bloco aplica
+-- o mesmo constraint de forma idempotente (seguro rodar de novo).
+--
+-- ATENÇÃO ao rodar em banco de produção já em uso: se existir mais de uma
+-- linha de subscriptions para o mesmo user_id (podia acontecer antes desta
+-- correção, já que nada impedia isso), o ALTER TABLE abaixo falha com erro
+-- de duplicidade. Rode a query de diagnóstico comentada logo abaixo ANTES
+-- de aplicar este schema, e resolva manualmente qualquer duplicata
+-- encontrada (decida qual das linhas manter) antes de prosseguir:
+--
+--   select user_id, count(*) from public.subscriptions
+--   group by user_id having count(*) > 1;
+--
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'subscriptions_user_id_key'
+      and conrelid = 'public.subscriptions'::regclass
+  ) then
+    alter table public.subscriptions add constraint subscriptions_user_id_key unique (user_id);
+  end if;
+end $$;
+
+-- MIGRATION: mesmo caso do bloco acima — "create table if not exists" não
+-- adiciona coluna nova a uma tabela já existente. Sem isso, quem já tinha
+-- rodado o schema antes desta correção não teria a coluna
+-- trial_reminder_sent_at, e a Edge Function trial-reminder-email falharia
+-- ao tentar gravar nela.
+alter table public.subscriptions add column if not exists trial_reminder_sent_at timestamptz;
+
 create index if not exists idx_trainer_students_trainer    on public.trainer_students(trainer_id);
 create index if not exists idx_trainer_students_student    on public.trainer_students(student_id);
 create index if not exists idx_messages_trainer_student    on public.messages(trainer_id, student_id, created_at desc);
@@ -284,6 +338,10 @@ create index if not exists idx_photos_student              on public.progress_ph
 -- isso piora progressivamente conforme a base de assinaturas cresce.
 create index if not exists idx_programs_student             on public.programs(student_id);
 create index if not exists idx_subscriptions_external_id     on public.subscriptions(external_id);
+-- Acelera a query da Edge Function trial-reminder-email (roda diariamente
+-- via cron, varre subscriptions à procura de trial acabando em breve).
+create index if not exists idx_subscriptions_trial_ends_at   on public.subscriptions(trial_ends_at)
+  where status = 'trialing' and trial_reminder_sent_at is null;
 
 -- ============================================================
 --  ROW LEVEL SECURITY
@@ -350,6 +408,37 @@ end;
 $$;
 
 grant execute on function public.get_trainer_public_name(uuid) to anon, authenticated;
+
+-- Resolve o id da linha em trainers a partir do user_id do personal —
+-- necessário para o fluxo de auto-vínculo por convite (RegisterPage.jsx):
+-- o aluno recém-cadastrado (autenticado, mas ainda sem vínculo em
+-- trainer_students) precisa descobrir o trainers.id do personal que o
+-- convidou, para então criar o próprio vínculo. Antes disso era resolvido
+-- com um select direto na tabela trainers, coberto pela antiga policy
+-- pública "using (true)" — mas essa policy também expunha phone e
+-- instagram de todos os personais para qualquer visitante não autenticado,
+-- então foi removida (ver comentário acima de "trainers_own"). Esta
+-- função devolve só o id (uuid), o mínimo necessário para este fluxo
+-- específico, sem reabrir a exposição de dados sensíveis.
+create or replace function public.get_trainer_id_by_user(p_user_id uuid)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+stable
+as $$
+declare
+  v_trainer_id uuid;
+begin
+  select id into v_trainer_id from public.trainers where user_id = p_user_id;
+  return v_trainer_id;
+end;
+$$;
+
+grant execute on function public.get_trainer_id_by_user(uuid) to authenticated;
+-- Não libera para anon: diferente de get_trainer_public_name (usada antes
+-- do login, na tela de convite), esta função só é chamada DEPOIS do
+-- cadastro, com o usuário já autenticado.
 
 -- ── Helper: checa se o usuário logado é o trainer responsável por um aluno ──
 create or replace function public.is_trainer_of(p_student_id uuid)
@@ -453,8 +542,38 @@ create policy "subs_admin_all" on public.subscriptions
 create policy "trainers_own" on public.trainers
   for all using (auth.uid() = user_id);
 
-create policy "trainers_read" on public.trainers
-  for select using (true);  -- perfis de trainer são públicos (descoberta/convite)
+-- Alunos vinculados a um personal podem ver os dados completos dele
+-- (bio, phone, instagram) dentro do app — necessário para a tela do
+-- personal no app do aluno mostrar as informações de contato.
+create policy "trainers_read_linked_student" on public.trainers
+  for select
+  using (
+    auth.role() = 'authenticated' and
+    exists (
+      select 1 from public.trainer_students ts
+      where ts.trainer_id = trainers.id
+        and ts.student_id = auth.uid()
+        and ts.status = 'active'
+    )
+  );
+
+-- IMPORTANTE: não existe mais uma policy pública "using (true)" nesta
+-- tabela. Havia uma antes ("perfis de trainer são públicos") pensada para
+-- o fluxo de convite (resolver o nome do personal a partir do link, antes
+-- do aluno logar) — mas RLS filtra LINHAS, não COLUNAS: "using (true)"
+-- libera a linha inteira, incluindo phone e instagram, para qualquer
+-- pessoa com a anon_key (que é pública, está no JS do site). Ou seja,
+-- qualquer visitante conseguia listar telefone e instagram de todos os
+-- personais cadastrados rodando
+--   supabase.from('trainers').select('phone, instagram')
+-- direto no console do navegador, sem nunca fazer login.
+--
+-- O fluxo de convite não precisa dessa policy: ele já usa a função
+-- get_trainer_public_name (acima), que é security definer e retorna
+-- só o nome (text), nunca a linha inteira — é o jeito correto de expor
+-- um campo específico sem abrir a tabela toda. Confirme, antes de reativar
+-- qualquer policy pública aqui, que o fluxo de convite (RegisterPage.jsx)
+-- realmente só usa essa RPC e não faz select direto na tabela.
 
 -- ── trainer_students ──────────────────────────────────────
 create policy "ts_trainer" on public.trainer_students
@@ -606,6 +725,7 @@ declare
   v_email_normalized text;
   v_already_used     boolean;
   v_trial_interval    interval;
+  v_email_confirmed  boolean;
 begin
   insert into public.users (id, email, name, role)
   values (
@@ -636,7 +756,25 @@ begin
     where email_normalized = v_email_normalized and id <> new.id
   ) into v_already_used;
 
-  v_trial_interval := case when v_already_used then interval '1 day' else interval '14 days' end;
+  -- Verificação de email obrigatória: o trial só começa quando o usuário
+  -- confirma o email. Antes, o trial de 14 dias iniciava imediatamente no
+  -- cadastro — qualquer email descartável (Temp Mail, Guerrilla Mail etc.)
+  -- dava acesso instantâneo sem nunca verificar nada, tornando o bloqueio
+  -- de alias "+" acima parcialmente ineficaz (podiam usar emails de outros
+  -- domínios descartáveis).
+  --
+  -- Com email confirmado como requisito: emails descartáveis que não
+  -- entregam a confirmação ficam com status 'inactive' até confirmar;
+  -- emails reais levam segundos. O custo de criar uma conta abusiva sobe
+  -- de "30 segundos + novo alias" para "precisar de uma caixa real que
+  -- receba email" — elimina a grande maioria dos abusos automatizados.
+  --
+  -- new.email_confirmed_at é null no INSERT inicial (cadastro) e
+  -- populated no UPDATE seguinte (quando o usuário clica no link).
+  -- Este trigger roda em ambos os eventos (after insert e after update
+  -- em auth.users), mas o on conflict do nothing garante que a linha em
+  -- public.users não é duplicada — só a assinatura é afetada.
+  v_email_confirmed := (new.email_confirmed_at is not null);
 
   insert into public.subscriptions (user_id, plan, status, trial_ends_at)
   values (
@@ -645,10 +783,29 @@ begin
       when coalesce(new.raw_user_meta_data->>'role', 'student') = 'personal' then 'personal'
       else 'student'
     end,
-    'trialing',
-    now() + v_trial_interval
+    case when v_email_confirmed then 'trialing' else 'inactive' end,
+    case
+      when v_email_confirmed then
+        now() + (case when v_already_used then interval '1 day' else interval '14 days' end)
+      else null
+    end
   )
-  on conflict do nothing;
+  on conflict (user_id) do update
+    set
+      status       = case when excluded.status = 'trialing' then 'trialing' else subscriptions.status end,
+      trial_ends_at = case
+        when subscriptions.status = 'inactive' and excluded.status = 'trialing'
+        then excluded.trial_ends_at
+        else subscriptions.trial_ends_at
+      end,
+      updated_at   = now()
+    where subscriptions.status = 'inactive';
+  -- O ON CONFLICT aqui resolve o caso onde:
+  -- 1. Usuário se cadastra → insere com status='inactive' (email não confirmado)
+  -- 2. Usuário confirma email → trigger roda de novo no UPDATE de auth.users
+  --    → atualiza para status='trialing' com trial_ends_at calculado
+  -- Sem isso, o segundo disparo do trigger faria on conflict do nothing e
+  -- o usuário ficaria preso em 'inactive' para sempre mesmo após confirmar.
 
   return new;
 end;
@@ -656,7 +813,7 @@ $$;
 
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
-  after insert on auth.users
+  after insert or update of email_confirmed_at on auth.users
   for each row execute function public.handle_new_user();
 
 -- ── updated_at automático ──

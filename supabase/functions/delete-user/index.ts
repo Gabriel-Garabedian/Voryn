@@ -10,10 +10,18 @@
 //  que nunca deve existir no client. O usuário "excluído" pelo
 //  admin continuava conseguindo fazer login normalmente.
 //
-//  SEGURANÇA: exige que quem está chamando seja um admin (checado
-//  via JWT validado, nunca confiado a partir do corpo da requisição).
-//  O alvo da exclusão (targetUserId) vem do corpo da requisição,
-//  mas só é executado depois de confirmar que o chamador é admin.
+//  SEGURANÇA: dois caminhos de autorização distintos:
+//  1. Autoexclusão (body.selfDelete === true): qualquer usuário
+//     autenticado pode excluir a PRÓPRIA conta — não exige ser admin,
+//     porque isso não é uma ação administrativa, é um direito básico de
+//     exclusão de dados (LGPD). O alvo é sempre o próprio callerData.user.id,
+//     nunca um id vindo do corpo da requisição — não tem como alguém
+//     pedir a exclusão de outra pessoa por essa via.
+//  2. Exclusão administrativa (body.userId): exige que quem chama seja
+//     admin (checado via JWT validado, nunca confiado a partir do corpo
+//     da requisição). Continua bloqueando autoexclusão por esta via
+//     especificamente (evita lockout acidental de admin sem a confirmação
+//     extra que o fluxo de autoexclusão normal já tem no app).
 // ──────────────────────────────────────────────────────────
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
@@ -48,28 +56,40 @@ serve(async (req) => {
 
   const db = createClient(SUPA_URL, SUPA_KEY)
 
-  // Confirma que quem está chamando é de fato admin — nunca confiamos em
-  // nenhum campo "isAdmin" vindo do corpo da requisição.
-  const { data: callerProfile } = await db
-    .from('users').select('role').eq('id', callerData.user.id).single()
-  if (callerProfile?.role !== 'admin') {
-    return new Response(JSON.stringify({ error: 'Apenas administradores podem excluir usuários' }),
-      { status: 403, headers: { ...CORS, 'Content-Type': 'application/json' } })
-  }
-
-  let body: { userId?: string }
+  let body: { userId?: string; selfDelete?: boolean }
   try { body = await req.json() } catch { body = {} }
-  const targetUserId = body.userId
-  if (!targetUserId) {
-    return new Response(JSON.stringify({ error: 'userId é obrigatório' }),
-      { status: 400, headers: { ...CORS, 'Content-Type': 'application/json' } })
-  }
 
-  // Um admin não pode auto-excluir por essa rota (evita lockout acidental
-  // sem confirmação adicional) — use o fluxo normal de conta para isso.
-  if (targetUserId === callerData.user.id) {
-    return new Response(JSON.stringify({ error: 'Não é possível excluir a própria conta por aqui' }),
-      { status: 400, headers: { ...CORS, 'Content-Type': 'application/json' } })
+  let targetUserId: string
+
+  if (body.selfDelete === true) {
+    // Autoexclusão: o alvo é sempre quem está fazendo a chamada, extraído
+    // do JWT validado — nunca de um campo do body. Não checa role, porque
+    // qualquer pessoa (aluno, personal, admin) tem o direito de excluir a
+    // própria conta.
+    targetUserId = callerData.user.id
+  } else {
+    // Exclusão administrativa de outra conta — exige role admin.
+    const { data: callerProfile } = await db
+      .from('users').select('role').eq('id', callerData.user.id).single()
+    if (callerProfile?.role !== 'admin') {
+      return new Response(JSON.stringify({ error: 'Apenas administradores podem excluir usuários' }),
+        { status: 403, headers: { ...CORS, 'Content-Type': 'application/json' } })
+    }
+
+    if (!body.userId) {
+      return new Response(JSON.stringify({ error: 'userId é obrigatório' }),
+        { status: 400, headers: { ...CORS, 'Content-Type': 'application/json' } })
+    }
+    targetUserId = body.userId
+
+    // Um admin não pode auto-excluir por essa rota (evita lockout acidental
+    // sem a confirmação extra que o fluxo normal de conta tem) — use
+    // selfDelete: true (o fluxo normal de "excluir minha conta" no perfil)
+    // para isso.
+    if (targetUserId === callerData.user.id) {
+      return new Response(JSON.stringify({ error: 'Não é possível excluir a própria conta por aqui' }),
+        { status: 400, headers: { ...CORS, 'Content-Type': 'application/json' } })
+    }
   }
 
   // 1. Remove os arquivos do usuário no Storage (bucket progress-photos),

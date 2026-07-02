@@ -137,6 +137,19 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
     }))
   })()
 
+  // Anotações por exercício, mais recentes primeiro — mesma lista de logs
+  // já carregada para os gráficos, sem query extra. É o que faz a
+  // anotação feita durante o treino (WorkoutView) aparecer aqui depois,
+  // tanto para o aluno quanto para o personal (esta view é reaproveitada
+  // nos dois contextos via embeddedUserId — ver PersonalDashboardView).
+  const recentNotes = logs
+    .flatMap(log => (log.exercises || [])
+      .filter(ex => ex.notes?.trim())
+      .map(ex => ({ date: log.date, exercise: ex.name, note: ex.notes }))
+    )
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 8)
+
   return (
     <div className="pb-6">
       <div className="px-4 pt-6 pb-4">
@@ -280,6 +293,29 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
               <div key={s.label} className="f-card p-3 text-center">
                 <div className="font-display text-2xl" style={{ color: 'var(--accent)' }}>{s.value}</div>
                 <div className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Anotações recentes — visível independente da sub-aba (carga/volume/
+          frequência) selecionada acima. É aqui que o personal vê o que o
+          aluno escreveu durante o treino (ex: "reduzi a carga, ombro
+          incomodando"), sem precisar abrir o Histórico separadamente. */}
+      {recentNotes.length > 0 && (
+        <div className="px-4 mt-2">
+          <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-3)' }}>
+            Anotações recentes
+          </p>
+          <div className="space-y-2">
+            {recentNotes.map((n, i) => (
+              <div key={i} className="f-card p-3">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>{n.exercise}</span>
+                  <span className="text-xs" style={{ color: 'var(--text-3)' }}>{formatDateShort(n.date)}</span>
+                </div>
+                <p className="text-xs italic" style={{ color: 'var(--text-3)' }}>💬 {n.note}</p>
               </div>
             ))}
           </div>

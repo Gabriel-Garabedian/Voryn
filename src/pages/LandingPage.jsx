@@ -341,15 +341,6 @@ function CTA() {
           <Link to="/register" style={{ background: '#820AD1', color: '#fff', fontWeight: 600, fontSize: 17, padding: '18px 48px', borderRadius: 14, textDecoration: 'none', boxShadow: '0 0 40px rgba(130,10,209,.5)', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
             Começar 14 dias grátis →
           </Link>
-          <a href="/login" style={{
-            color: 'rgba(255,255,255,.5)', fontWeight: 600, fontSize: 14,
-            padding: '12px 24px', borderRadius: 12,
-            textDecoration: 'none',
-            border: '1px solid rgba(255,255,255,.1)',
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-          }}>
-            🎮 Ver demo
-          </a>
           <Link to="/pricing" style={{ color: 'rgba(255,255,255,.5)', fontSize: 15, fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '18px 20px' }}>
             Ver todos os planos
           </Link>
