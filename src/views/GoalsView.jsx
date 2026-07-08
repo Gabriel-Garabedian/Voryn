@@ -4,6 +4,7 @@ import { workoutLogService } from '@/services'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/components/ui/Toast'
 import { SkeletonList } from '@/components/ui/Skeleton'
+import { localDateKey } from '@/utils/helpers'
 
 const sb = supabase  // alias usado internamente para chamadas diretas ao DB
 
@@ -72,7 +73,7 @@ export default function GoalsView() {
   const [goalForm,    setGoalForm]    = useState({ target_weight: '', target_body_fat: '', weekly_sessions: 3, target_date: '', notes: '' })
   const [showGoalEdit,setShowGoalEdit]= useState(false)
   const [showAddBody, setShowAddBody] = useState(false)
-  const [bodyForm,    setBodyForm]    = useState({ date: new Date().toISOString().slice(0,10), weight: '', body_fat: '', notes: '' })
+  const [bodyForm,    setBodyForm]    = useState({ date: localDateKey(), weight: '', body_fat: '', notes: '' })
   const [saving,      setSaving]      = useState(false)
   const [loading,     setLoading]     = useState(true)
 
@@ -123,7 +124,7 @@ export default function GoalsView() {
     const { data } = await saveBodyLog(user.id, bodyForm)
     if (data) { setBodyLogs(l => [data, ...l]); toast.success('Registro salvo!') }
     setShowAddBody(false)
-    setBodyForm({ date: new Date().toISOString().slice(0,10), weight: '', body_fat: '', notes: '' })
+    setBodyForm({ date: localDateKey(), weight: '', body_fat: '', notes: '' })
     setSaving(false)
   }
 

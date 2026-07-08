@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 import { trainerService, assessmentService, messageService, programService,
          routineService, workoutLogService, prService, trainerDashboardService } from '@/services'
 import { PLANS } from '@/services/payment'
+import { localDateKey } from '@/utils/helpers'
 import { Button, Badge } from '@/components/ui'
 import PersonalInviteGuide from '@/components/PersonalInviteGuide'
 import ProgressPhotosView from '@/views/ProgressPhotosView'
@@ -365,7 +366,7 @@ function GoalsTrainer({ studentId }) {
 
 function AssessmentsTrainer({ studentId, trainerId }) {
   const [items, setItems] = useState([])
-  const [form, setForm] = useState({ date:new Date().toISOString().slice(0,10), weight:'', body_fat:'', notes:'' })
+  const [form, setForm] = useState({ date: localDateKey(), weight:'', body_fat:'', notes:'' })
   const [showAdd, setShowAdd] = useState(false)
   useEffect(() => { assessmentService.getAll(studentId).then(({ data }) => setItems(data)).catch(err => console.error('[Voryn] AssessmentsTrainer falhou:', err)) }, [studentId])
   async function save() {

@@ -1,3 +1,21 @@
+// ── Data local (YYYY-MM-DD) — NUNCA usar toISOString() para isso ──────────
+// new Date().toISOString().split('T')[0] parece inofensivo mas converte
+// para UTC antes de formatar. Como o Brasil é UTC-3, qualquer treino,
+// medida corporal, PR ou foto registrados entre 21h e 23h59 (horário local)
+// cai no dia seguinte em UTC — a data salva vem um dia à frente da real.
+// Isso causava o calendário do Home mostrar o treino de um dia no quadrado
+// errado (ex: treino feito às 22h de dia 6 aparecia marcado no dia 7), e o
+// mesmo problema existia (silenciosamente) em qualquer outro lugar que
+// registra "hoje" à noite: PRs, avaliações físicas, fotos de progresso e
+// o cálculo de streak. Esta função extrai ano/mês/dia diretamente do
+// horário LOCAL do dispositivo, sem passar por UTC em nenhum momento.
+export function localDateKey(date = new Date()) {
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
+
 // ── Tradução de erros do Supabase para português ──────────
 const ERROR_MAP = {
   'Invalid login credentials':           'Email ou senha incorretos.',
@@ -101,7 +119,7 @@ export function formatVolume(kg) {
 export function calcStreak(dates) {
   if (!dates?.length) return 0
   const sorted = [...new Set(dates)].sort().reverse()
-  const today  = new Date().toISOString().split('T')[0]
+  const today  = localDateKey()
   let streak = 0
   let prev   = today
   for (const d of sorted) {

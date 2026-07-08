@@ -3,6 +3,7 @@ import { useAuth } from '@/context/AuthContext'
 import { trainerService, assessmentService, messageService, programService } from '@/services'
 import { Button, Badge, Card, Modal, EmptyState } from '@/components/ui'
 import { useToast } from '@/components/ui/Toast'
+import { localDateKey } from '@/utils/helpers'
 
 const SUBTABS = [
   { id:'overview',    label:'Perfil' },
@@ -167,7 +168,7 @@ function Chat({ trainerId, studentId, userId }) {
 function Assessments({ studentId, trainerId }) {
   const [items,   setItems]   = useState([])
   const [showAdd, setShowAdd] = useState(false)
-  const [form,    setForm]    = useState({ date: new Date().toISOString().slice(0,10), weight:'', body_fat:'', notes:'' })
+  const [form,    setForm]    = useState({ date: localDateKey(), weight:'', body_fat:'', notes:'' })
 
   useEffect(() => { assessmentService.getAll(studentId).then(({ data }) => setItems(data)).catch(err => console.error('[Voryn] Assessments (aluno) falhou:', err)) }, [studentId])
 

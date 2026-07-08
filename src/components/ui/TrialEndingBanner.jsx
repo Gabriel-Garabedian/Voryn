@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
+import { localDateKey } from '@/utils/helpers'
 
 // Antes, não existia NENHUM aviso de "seu trial está acabando" em lugar
 // nenhum do produto — nem email, nem push, nem banner no app. O trial
@@ -19,10 +20,6 @@ import { useAuth } from '@/context/AuthContext'
 
 const TRIAL_WARNING_DAYS = 3
 
-function todayKey() {
-  return new Date().toISOString().slice(0, 10) // YYYY-MM-DD
-}
-
 export default function TrialEndingBanner({ hidden = false }) {
   const { subStatus, daysUntilTrialEnd } = useAuth()
   const navigate = useNavigate()
@@ -37,14 +34,14 @@ export default function TrialEndingBanner({ hidden = false }) {
 
   useEffect(() => {
     if (!shouldShow) return
-    const key = `voryn_trial_banner_dismissed_${todayKey()}`
+    const key = `voryn_trial_banner_dismissed_${localDateKey()}`
     setDismissed(localStorage.getItem(key) === '1')
   }, [shouldShow])
 
   if (!shouldShow || dismissed) return null
 
   function handleDismiss() {
-    localStorage.setItem(`voryn_trial_banner_dismissed_${todayKey()}`, '1')
+    localStorage.setItem(`voryn_trial_banner_dismissed_${localDateKey()}`, '1')
     setDismissed(true)
   }
 

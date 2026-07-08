@@ -3,6 +3,7 @@ import { useAuth } from '@/context/AuthContext'
 import { progressPhotoService } from '@/services/progressPhotos'
 import { useToast } from '@/components/ui/Toast'
 import { SkeletonList } from '@/components/ui/Skeleton'
+import { localDateKey } from '@/utils/helpers'
 
 const CATEGORIES = [
   { key: 'front', label: 'Frente',    emoji: '⬆️' },
@@ -18,7 +19,7 @@ function UploadCard({ studentId, onUploaded }) {
   const inputRef  = useRef()
   const [preview, setPreview]  = useState(null)
   const [file,    setFile]     = useState(null)
-  const [form,    setForm]     = useState({ caption: '', category: 'front', taken_at: new Date().toISOString().slice(0,10) })
+  const [form,    setForm]     = useState({ caption: '', category: 'front', taken_at: localDateKey() })
   const [uploading, setUploading] = useState(false)
 
   function handleFile(f) {

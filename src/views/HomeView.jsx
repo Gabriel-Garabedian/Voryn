@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { workoutLogService, routineService } from '@/services'
-import { calcStreak, calcBestStreak } from '@/utils/helpers'
+import { calcStreak, calcBestStreak, localDateKey } from '@/utils/helpers'
 import { SkeletonHome } from '@/components/ui/Skeleton'
 
 const MONTHS    = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
@@ -145,7 +145,7 @@ export default function HomeView() {
   const [loading,      setLoading]      = useState(true)
   const [streakFlash,  setStreakFlash]  = useState(false)
 
-  const todayKey = today.toISOString().split('T')[0]
+  const todayKey = localDateKey(today)
 
   useEffect(() => {
     if (!user) return
@@ -183,7 +183,7 @@ export default function HomeView() {
   const weekDays = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(weekStart)
     d.setDate(weekStart.getDate() + i)
-    const k = d.toISOString().split('T')[0]
+    const k = localDateKey(d)
     return { date: d, dayIndex: i, key: k, plan: routines[i], isToday: k === todayKey, trained: trainedDates.includes(k) }
   })
 

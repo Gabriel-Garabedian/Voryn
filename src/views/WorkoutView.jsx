@@ -8,6 +8,7 @@ import ExercisePicker from '@/components/ExercisePicker'
 import ExerciseDetail from '@/components/ExerciseDetail'
 import { EXERCISE_LIBRARY } from '@/data/exercises'
 import { useToast } from '@/components/ui/Toast'
+import { localDateKey } from '@/utils/helpers'
 import { captureError } from '@/lib/sentry'
 
 const DAYS_FULL = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
@@ -21,6 +22,10 @@ function RestTimer({ seconds, onSkip, seriesDone }) {
   const circ = 2 * Math.PI * 44
   const prog = (rem / seconds) * circ
   const warn = rem <= 10
+  // Timestamp-alvo, não um contador que vai descendo. Guardado em ref
+  // para não ser recalculado a cada render.
+  const endsAtRef = useRef(Date.now() + seconds * 1000)
+  const firedRef  = useRef(false)
 
   // Smooth entrance after 300ms
   useEffect(() => {
@@ -28,15 +33,79 @@ function RestTimer({ seconds, onSkip, seriesDone }) {
     return () => clearTimeout(t)
   }, [])
 
+  // BUG REPORTADO: o timer antigo fazia setTimeout(() => setRem(r => r-1),
+  // 1000) — ou seja, "conta -1 daqui a 1 segundo", encadeado. Quando o
+  // navegador coloca a aba em segundo plano (usuário vai pra tela inicial
+  // do celular), ele atrasa ou pausa esses timers pra economizar bateria.
+  // Cada "tique" atrasado significa que o número mostrado passa a ficar
+  // pra trás do tempo real — os 60s viram visualmente mais que 60s reais.
+  //
+  // A correção: em vez de contar "-1 a cada tique", guardamos o horário
+  // exato em que o descanso termina (endsAtRef) e, a cada tique, CALCULAMOS
+  // quanto falta a partir da hora atual. Mesmo que o navegador atrase ou
+  // pule vários tiques enquanto a aba está em segundo plano, assim que um
+  // tique roda de novo (ou a pessoa volta pro app) o número mostrado já
+  // vem certo — não fica arrastando o atraso acumulado.
   useEffect(() => {
-    if (rem <= 0) { onSkip(); return }
-    const t = setTimeout(() => setRem(r => r - 1), 1000)
-    return () => clearTimeout(t)
-  }, [rem, onSkip])
+    function tick() {
+      const remaining = Math.max(0, Math.ceil((endsAtRef.current - Date.now()) / 1000))
+      setRem(remaining)
+      if (remaining <= 0 && !firedRef.current) {
+        firedRef.current = true
+        onSkip()
+      }
+    }
+    const interval = setInterval(tick, 1000)
+    // Recalcula na hora em que a aba volta a ficar visível — sem isso, se
+    // o setInterval ficou pausado em segundo plano, o número só corrigiria
+    // no próximo tique (que por sua vez também pode demorar a disparar).
+    function onVisibility() { if (!document.hidden) tick() }
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => {
+      clearInterval(interval)
+      document.removeEventListener('visibilitychange', onVisibility)
+    }
+  }, [onSkip])
 
   useEffect(() => {
     if (rem === 0 && navigator.vibrate) navigator.vibrate([200, 100, 200])
   }, [rem])
+
+  // Notificação local best-effort para quando a pessoa sai do app durante
+  // o descanso (tela inicial do celular, outro app) — pedido explícito:
+  // "quando ele clicar iniciar o cronômetro do próprio celular". Não existe
+  // API web para de fato abrir o app de Cronômetro nativo do celular, mas
+  // o equivalente funcional é agendar uma notificação local que dispara no
+  // fim do descanso, com vibração — a pessoa é avisada mesmo fora do app.
+  // Só dispara se a permissão de notificação já foi concedida antes (não
+  // pede permissão aqui, no meio do treino); se não tiver sido concedida,
+  // este efeito não faz nada e o resto do timer funciona normalmente.
+  //
+  // Limitação honesta: em iOS, um PWA em segundo plano pode ser suspenso
+  // pelo sistema operacional antes desse setTimeout disparar — a Apple
+  // restringe bem mais execução em segundo plano do que o Android. No
+  // Android costuma funcionar de forma consistente.
+  useEffect(() => {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return
+    if (!('serviceWorker' in navigator)) return
+    const ms = Math.max(0, endsAtRef.current - Date.now())
+    const notifId = setTimeout(() => {
+      navigator.serviceWorker.ready.then(reg => {
+        reg.showNotification('⏱️ Descanso acabou!', {
+          body:    'Hora da próxima série.',
+          icon:    '/voryn-icon-192.png',
+          badge:   '/voryn-badge-96.png',
+          tag:     'rest-timer',
+          vibrate: [200, 100, 200],
+          data:    { url: '/app' },
+        })
+      }).catch(() => {})
+    }, ms)
+    // Limpo ao desmontar (descanso pulado manualmente ou já terminou) —
+    // sem isso, uma notificação "descanso acabou" poderia disparar depois
+    // que a pessoa já pulou o descanso e seguiu pra próxima série.
+    return () => clearTimeout(notifId)
+  }, [])
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center"
@@ -277,6 +346,23 @@ export default function WorkoutView() {
     setWorkout(updated)
   }
 
+  // Antes só existia "+ adicionar série" — quem clicava sem querer (fácil
+  // de acontecer, o botão fica logo abaixo da última série) não tinha como
+  // desfazer. Mantém no mínimo 1 série por exercício: zero séries deixaria
+  // o card num estado estranho, sem nenhuma linha para preencher.
+  function removeSet(ei, si) {
+    const exercise = workout.exercises[ei]
+    if (exercise.sets.length <= 1) return
+    const updated = {
+      ...workout,
+      exercises: workout.exercises.map((ex, eii) =>
+        eii !== ei ? ex : { ...ex, sets: ex.sets.filter((_, sii) => sii !== si) }
+      )
+    }
+    activeWorkoutService.save(updated)
+    setWorkout(updated)
+  }
+
   // Anotação livre por exercício (ex: "peguei mais leve, ombro incomodando"
   // ou "consegui aumentar a carga, próxima semana subir mais"). Fica salva
   // dentro do próprio objeto do exercício no exercises[], então é
@@ -301,7 +387,13 @@ export default function WorkoutView() {
     setSaving(true)
     const duration = Math.floor((Date.now() - workout.startTime) / 1000)
     const now = new Date()
-    const dateKey = now.toISOString().split('T')[0]
+    // BUG REPORTADO: toISOString() converte para UTC antes de formatar.
+    // Brasil é UTC-3, então um treino finalizado às 22h de um dia (horário
+    // local) virava 01h do dia SEGUINTE em UTC — a data salva ficava um
+    // dia à frente da real, fazendo o treino aparecer marcado no quadrado
+    // errado do calendário do Home. localDateKey() usa ano/mês/dia locais
+    // do dispositivo, sem passar por UTC.
+    const dateKey = localDateKey(now)
 
     const { error } = await workoutLogService.create(user.id, {
       name: workout.name,
@@ -511,8 +603,8 @@ export default function WorkoutView() {
               {/* Sets */}
               <div className="px-4 pt-2 pb-3">
                 {/* Header row */}
-                <div className="grid grid-cols-[28px_1fr_1fr_36px] gap-2 mb-2">
-                  {['S', 'Reps', 'kg', '✓'].map((h, i) => (
+                <div className="grid grid-cols-[28px_1fr_1fr_36px_24px] gap-2 mb-2">
+                  {['S', 'Reps', 'kg', '✓', ''].map((h, i) => (
                     <div key={i} className="text-xs font-semibold uppercase tracking-wider text-center"
                       style={{ color: 'var(--text-3)' }}>{h}</div>
                   ))}
@@ -522,7 +614,7 @@ export default function WorkoutView() {
                 <div className="space-y-2">
                   {ex.sets.map((set, si) => (
                     <div key={set.id}
-                      className="workout-set-row grid grid-cols-[28px_1fr_1fr_36px] gap-2 items-center"
+                      className="workout-set-row grid grid-cols-[28px_1fr_1fr_36px_24px] gap-2 items-center"
                       style={{ opacity: set.done ? .55 : 1 }}>
                       <div className="w-7 h-7 rounded-lg flex items-center justify-center mx-auto font-display text-xs"
                         style={{
@@ -552,6 +644,19 @@ export default function WorkoutView() {
                           </svg>
                         )}
                       </button>
+                      {/* Remover série — antes só existia "+ adicionar série",
+                          sem forma de desfazer um clique acidental. Escondido
+                          quando só resta 1 série (ver guard em removeSet). */}
+                      {ex.sets.length > 1 ? (
+                        <button onClick={() => removeSet(ei, si)} aria-label="Remover série"
+                          className="w-6 h-6 rounded-md flex items-center justify-center mx-auto"
+                          style={{ color: 'var(--text-3)' }}>
+                          <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                          </svg>
+                        </button>
+                      ) : <div/>}
                     </div>
                   ))}
                 </div>

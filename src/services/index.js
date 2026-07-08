@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { PLANS } from '@/services/payment'
-import { parseWeight } from '@/utils/helpers'
+import { parseWeight, localDateKey } from '@/utils/helpers'
 
 // ── WORKOUT LOGS ───────────────────────────────────────────
 export const workoutLogService = {
@@ -100,7 +100,7 @@ export const workoutLogService = {
       // Streak calculation
       const uniqueDates = [...new Set(dates)].sort().reverse()
       let streak = 0, bestStreak = 0, cur = 0
-      let prev = now.toISOString().split('T')[0]
+      let prev = localDateKey(now)
       for (const d of uniqueDates) {
         const diff = Math.round((new Date(prev) - new Date(d)) / 86400000)
         if (diff <= 1) { cur++; if (cur > bestStreak) bestStreak = cur }
@@ -202,7 +202,7 @@ export const prService = {
     const { data, error } = await supabase
       .from('prs')
       .upsert(
-        { user_id: userId, exercise, weight, reps, date: new Date().toISOString().split('T')[0] },
+        { user_id: userId, exercise, weight, reps, date: localDateKey() },
         { onConflict: 'user_id,exercise' }
       )
       .select().single()
@@ -578,7 +578,7 @@ export const adminService = {
       workoutsByDate[log.date] = (workoutsByDate[log.date] || 0) + 1
     }
     const chartData = last7Days.map(d => {
-      const dateKey = d.toISOString().split('T')[0]
+      const dateKey = localDateKey(d)
       const dayStart = new Date(d)
       const dayEnd   = new Date(d); dayEnd.setDate(dayEnd.getDate() + 1)
       const novos = users.filter(u => {
