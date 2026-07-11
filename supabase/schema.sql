@@ -1333,5 +1333,42 @@ create policy "progress_photos_trainer_all" on storage.objects
   );
 
 -- ============================================================
+--  STORAGE — Mídia de exercícios (fotos/vídeos de demonstração)
+--  Bucket PÚBLICO — diferente de progress-photos (privado): esse
+--  conteúdo (fotos/gifs/vídeos mostrando como executar cada exercício)
+--  precisa aparecer pro aluno sem exigir URL assinada, então a leitura é
+--  aberta pra qualquer um, sem autenticação.
+-- ============================================================
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'exercise-media', 'exercise-media', true, 52428800,
+  array['image/jpeg','image/png','image/webp','image/gif','video/mp4','video/webm']
+)
+on conflict (id) do update set
+  public              = true,
+  file_size_limit     = 52428800, -- 50MB (vídeos curtos de demonstração são maiores que fotos)
+  allowed_mime_types  = array['image/jpeg','image/png','image/webp','image/gif','video/mp4','video/webm'];
+
+-- Leitura pública explícita via SDK (list/download), além do bucket já
+-- ser público — o flag "public" no bucket libera a URL direta
+-- (.../object/public/exercise-media/...), mas uma policy de select aqui
+-- cobre também qualquer chamada que passe pela API normal do Storage.
+drop policy if exists "exercise_media_public_read" on storage.objects;
+create policy "exercise_media_public_read" on storage.objects
+  for select using (bucket_id = 'exercise-media');
+
+-- Upload/edição/remoção só por admin — o caminho pensado pra popular
+-- este bucket é direto pelo painel do Supabase (Storage → exercise-media
+-- → arrastar arquivos), que usa a sessão da sua própria conta Supabase,
+-- não a anon_key do app — então essa restrição não te impede de fazer
+-- upload por lá. Ela impede é alguém de fora, usando só a anon_key
+-- pública do app (visível no JS do site), de subir ou apagar arquivos
+-- nesse bucket.
+drop policy if exists "exercise_media_admin_write" on storage.objects;
+create policy "exercise_media_admin_write" on storage.objects
+  for all using (bucket_id = 'exercise-media' and public.is_admin())
+  with check (bucket_id = 'exercise-media' and public.is_admin());
+
+-- ============================================================
 --  FIM DO SCHEMA
 -- ============================================================
