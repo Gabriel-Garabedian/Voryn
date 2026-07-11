@@ -1,5 +1,6 @@
 import React from 'react'
 import { getExerciseInstructions, getExerciseVideoSearchUrl } from '@/data/exerciseInstructions'
+import ExerciseMediaCarousel from '@/components/ExerciseMediaCarousel'
 
 const AC = 'var(--accent)'
 
@@ -58,6 +59,12 @@ export default function ExerciseDetail({ exercise, onAdd, onClose, buttonLabel =
 
         {/* Scrollable body */}
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+
+          {/* Fotos/vídeos do exercício — carrossel pronto pra receber
+              conteúdo real (ver src/data/exercises.js pra saber como
+              popular). Mostra estado vazio elegante enquanto não houver
+              media cadastrada, sem quebrar o layout. */}
+          <ExerciseMediaCarousel media={exercise.media || []} title={exercise.name} subtitle={exercise.equipment} />
 
           {/* Vídeo — link de busca no YouTube (sempre atualizado) */}
           <a href={videoUrl} target="_blank" rel="noopener noreferrer"

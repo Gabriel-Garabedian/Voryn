@@ -268,6 +268,19 @@ export default function WorkoutView() {
   const [showExPicker,  setShowExPicker]  = useState(false)
   const [detailExercise, setDetailExercise] = useState(null) // instruções durante o treino
   const [openNotes,     setOpenNotes]     = useState({}) // { [exerciseIndex]: boolean } — bloco de anotação expandido ou não
+  // Índice do exercício atualmente expandido (mostrando as séries pra
+  // preencher). Os demais ficam recolhidos numa linha-resumo — antes,
+  // TODOS os exercícios apareciam sempre abertos ao mesmo tempo, o que
+  // deixava a tela de treino muito longa pra rolar, especialmente em
+  // treinos com 8-10 exercícios. Inicializa no primeiro exercício que
+  // ainda não foi totalmente concluído (ou 0 se não achar nenhum, ex:
+  // treino já 100% feito e reaberto só pra conferir).
+  const [expandedEx, setExpandedEx] = useState(() => {
+    const w = activeWorkoutService.get()
+    if (!w) return 0
+    const idx = w.exercises.findIndex(ex => !ex.sets.every(s => s.done))
+    return idx === -1 ? 0 : idx
+  })
   const toast = useToast()
   const timerRef = useRef(null)
 
@@ -330,6 +343,18 @@ export default function WorkoutView() {
     setWorkout(updated)
     if (!wasDone) setLastSeriesDone((prev) => prev + 1)
     setShowRest(true)
+
+    // Avança pro próximo exercício não concluído automaticamente — só
+    // quando é o exercício que estava expandido que acabou de ser
+    // concluído (evita pular a tela se a pessoa estiver revisando/editando
+    // um exercício antigo já feito, reaberto manualmente).
+    if (ei === expandedEx) {
+      const justCompleted = updated.exercises[ei].sets.every(s => s.done)
+      if (justCompleted) {
+        const nextIdx = updated.exercises.findIndex((ex, i) => i > ei && !ex.sets.every(s => s.done))
+        if (nextIdx !== -1) setExpandedEx(nextIdx)
+      }
+    }
   }
 
   function addSet(ei) {
@@ -453,6 +478,7 @@ export default function WorkoutView() {
           setWorkout(w => {
             const updated = { ...w, exercises: [...w.exercises, newEx] }
             activeWorkoutService.save(updated)
+            setExpandedEx(w.exercises.length) // abre o recém-adicionado, não nasce escondido no resumo
             return updated
           })
           setShowExPicker(false)
@@ -468,6 +494,7 @@ export default function WorkoutView() {
           setWorkout(w => {
             const updated = { ...w, exercises: [...w.exercises, newEx] }
             activeWorkoutService.save(updated)
+            setExpandedEx(w.exercises.length)
             return updated
           })
           setShowExPicker(false)
@@ -562,6 +589,43 @@ export default function WorkoutView() {
         {workout.exercises.map((ex, ei) => {
           const exDone = ex.sets.every(s => s.done)
           const doneCount = ex.sets.filter(s => s.done).length
+          const isExpanded = ei === expandedEx
+
+          // ── Recolhido: resumo compacto de uma linha ──────────────────
+          // Antes, TODOS os exercícios ficavam sempre abertos ao mesmo
+          // tempo — numa ficha com 8-10 exercícios a tela virava uma rolagem
+          // enorme. Só o exercício ativo mostra as séries pra preencher;
+          // os outros viram uma linha-resumo tocável (nome + progresso),
+          // que expande ao tocar.
+          if (!isExpanded) {
+            return (
+              <button key={ex.id} onClick={() => setExpandedEx(ei)}
+                className="f-card w-full overflow-hidden flex items-center gap-3 px-4 py-3 text-left transition-all"
+                style={exDone ? { borderColor: 'rgba(var(--accent-rgb),.4)', background: 'rgba(var(--accent-rgb),.05)' } : {}}>
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style={{
+                    background: exDone ? AC : 'var(--card)',
+                    border: `1px solid ${exDone ? AC : 'var(--border)'}`,
+                  }}>
+                  {exDone
+                    ? <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="3">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    : <span className="font-display text-xs" style={{ color: AC }}>{ei + 1}</span>
+                  }
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-sm truncate" style={{ color: exDone ? AC : 'var(--text-1)' }}>{ex.name}</p>
+                  <p className="text-xs" style={{ color: 'var(--text-3)' }}>{doneCount} de {ex.sets.length} séries concluídas</p>
+                </div>
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-3)" strokeWidth="2" style={{ flexShrink: 0 }}>
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </button>
+            )
+          }
+
+          // ── Expandido: card completo (comportamento de sempre) ───────
           return (
             <div key={ex.id} className="f-card overflow-hidden"
               style={exDone ? { borderColor: 'rgba(var(--accent-rgb),.4)' } : {}}>
@@ -598,6 +662,16 @@ export default function WorkoutView() {
                 <span className="text-xs font-semibold" style={{ color: exDone ? AC : 'var(--text-3)' }}>
                   {exDone ? 'Concluído ✓' : `${doneCount}/${ex.sets.length}`}
                 </span>
+                {/* Recolher de volta pra linha-resumo — escondido quando é
+                    o único exercício do treino (não teria pra onde ir). */}
+                {workout.exercises.length > 1 && (
+                  <button onClick={() => setExpandedEx(-1)} aria-label="Recolher exercício"
+                    className="flex-shrink-0 p-1" style={{ color: 'var(--text-3)' }}>
+                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <polyline points="18 15 12 9 6 15"/>
+                    </svg>
+                  </button>
+                )}
               </div>
 
               {/* Sets */}
