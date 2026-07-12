@@ -911,7 +911,19 @@ begin
   -- bypass explícito, esta trigger bloquearia também as próprias Edge
   -- Functions legítimas de pagamento, que precisam mudar plan/status/
   -- external_id de propósito.
-  if current_setting('role', true) = 'service_role' then
+  --
+  -- supabase_auth_admin: role interno que o próprio Supabase Auth (GoTrue)
+  -- usa para gravar em auth.users quando alguém confirma o email de
+  -- verdade clicando no link — diferente de service_role, é um role
+  -- totalmente separado, nunca exposto a nenhum client (não dá pra alguém
+  -- "se passar" por ele de fora). Faltava aqui, e isso quebrava a trigger
+  -- handle_new_user (que libera o trial só após confirmar email): ela
+  -- tenta atualizar subscriptions.status de 'inactive' para 'trialing',
+  -- essa atualização em cascata roda como supabase_auth_admin, e sem essa
+  -- exceção era bloqueada pela mesma proteção que existe pra impedir um
+  -- usuário comum de mudar o próprio plano na unha — bloqueando TODO
+  -- usuário real confirmando email em produção, não só em teste manual.
+  if current_setting('role', true) in ('service_role', 'supabase_auth_admin') then
     return new;
   end if;
 
