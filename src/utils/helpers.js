@@ -1,3 +1,26 @@
+// ── Normaliza o embed de subscriptions vindo do Supabase ──────────────────
+// select('*, subscriptions(*)') podia devolver subscriptions como ARRAY
+// ([{...}]) ou como OBJETO ({...}), dependendo de detalhe interno do
+// PostgREST: a partir da v10, uma relação embutida é detectada como
+// "um-para-um" (e devolvida como objeto, não lista) sempre que a foreign
+// key tem um "unique" — https://postgrest.org/en/v11/releases/v10.0.0.html
+// ("A one-to-one relationship is now detected when a foreign key is
+// unique."). subscriptions.user_id ganhou esse unique numa correção
+// anterior (necessária para o upsert do Mercado Pago funcionar), o que
+// silenciosamente mudou o formato da resposta em QUALQUER lugar do app
+// que fizesse esse embed — todo código escrito como
+// profile.subscriptions?.[0]?.plan assumia lista, e [0] num objeto
+// sempre retorna undefined. O plano/status "sumiam" sem erro nenhum,
+// mesmo com o dado certinho no banco.
+// Esta função aceita os dois formatos (e null/undefined) e sempre devolve
+// a linha de assinatura (ou null) — é o único jeito correto de ler esse
+// campo daqui pra frente, em vez de acessar subscriptions?.[0] direto.
+export function getSubscription(row) {
+  const s = row?.subscriptions
+  if (!s) return null
+  return Array.isArray(s) ? (s[0] || null) : s
+}
+
 // ── Data local (YYYY-MM-DD) — NUNCA usar toISOString() para isso ──────────
 // new Date().toISOString().split('T')[0] parece inofensivo mas converte
 // para UTC antes de formatar. Como o Brasil é UTC-3, qualquer treino,

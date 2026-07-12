@@ -6,6 +6,7 @@ import { useToast } from '@/components/ui/Toast'
 import { captureError } from '@/lib/sentry'
 import { Button, Badge } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
+import { getSubscription } from '@/utils/helpers'
 
 export default function SubscriptionView() {
   const { profile, plan, subStatus, hasTrainerAccess, user, refreshProfile } = useAuth()
@@ -13,7 +14,7 @@ export default function SubscriptionView() {
   const [cancelling, setCancelling] = React.useState(false)
   const [cancelDone, setCancelDone] = React.useState(false)
   const navigate = useNavigate()
-  const sub      = profile?.subscriptions?.[0]
+  const sub      = getSubscription(profile)
   const current  = PLANS[plan]
 
   const trialEnds    = sub?.trial_ends_at

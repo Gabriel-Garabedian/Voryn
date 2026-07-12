@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { workoutLogService, routineService } from '@/services'
-import { calcStreak, calcBestStreak, localDateKey } from '@/utils/helpers'
+import { calcStreak, calcBestStreak, localDateKey, getSubscription } from '@/utils/helpers'
 import { SkeletonHome } from '@/components/ui/Skeleton'
 
 const MONTHS    = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
@@ -194,8 +194,9 @@ export default function HomeView() {
     setCalMonth(m); setCalYear(y)
   }
 
-  const isTrial     = profile?.subscriptions?.[0]?.status === 'trialing'
-  const trialEnds   = profile?.subscriptions?.[0]?.trial_ends_at
+  const homeSub     = getSubscription(profile)
+  const isTrial     = homeSub?.status === 'trialing'
+  const trialEnds   = homeSub?.trial_ends_at
   const trialDaysLeft = trialEnds
     ? Math.max(0, Math.ceil((new Date(trialEnds) - new Date()) / 86400000))
     : 0

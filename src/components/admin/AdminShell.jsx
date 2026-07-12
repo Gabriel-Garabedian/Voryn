@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { adminService } from '@/services'
 import { PLANS } from '@/services/payment'
+import { getSubscription } from '@/utils/helpers'
 import { Badge } from '@/components/ui'
 import {
   LineChart, Line, BarChart, Bar,
@@ -208,10 +209,10 @@ function AdminDashboard() {
               <div className="flex items-center gap-2 flex-shrink-0">
                 <Badge variant={u.role === 'personal' ? 'accent' : 'green'}>{u.role}</Badge>
                 <Badge variant={
-                  u.subscriptions?.[0]?.status === 'active'   ? 'green'  :
-                  u.subscriptions?.[0]?.status === 'trialing' ? 'yellow' : 'red'
+                  getSubscription(u)?.status === 'active'   ? 'green'  :
+                  getSubscription(u)?.status === 'trialing' ? 'yellow' : 'red'
                 }>
-                  {u.subscriptions?.[0]?.plan || 'free'}
+                  {getSubscription(u)?.plan || 'free'}
                 </Badge>
                 <span className="text-xs" style={{ color: 'var(--text-3)' }}>
                   {new Date(u.created_at).toLocaleDateString('pt-BR')}
@@ -243,7 +244,7 @@ function AdminUsers() {
   async function changePlan(userId, plan) {
     await adminService.updateSubscription(userId, { plan, status: 'active' })
     setUsers(u => u.map(x => x.id === userId
-      ? { ...x, subscriptions: [{ ...(x.subscriptions?.[0] || {}), plan, status: 'active' }] }
+      ? { ...x, subscriptions: { ...(getSubscription(x) || {}), plan, status: 'active' } }
       : x
     ))
   }
@@ -334,7 +335,7 @@ function AdminUsers() {
                     </select>
                   </td>
                   <td style={{ padding: '12px 16px' }}>
-                    <select value={u.subscriptions?.[0]?.plan || 'free'}
+                    <select value={getSubscription(u)?.plan || 'free'}
                       onChange={e => changePlan(u.id, e.target.value)}
                       style={{ fontSize: 12, padding: '4px 8px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-1)', cursor: 'pointer' }}>
                       {['free','student','personal','personal_pro'].map(p => (
@@ -344,10 +345,10 @@ function AdminUsers() {
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     <Badge variant={
-                      u.subscriptions?.[0]?.status === 'active'   ? 'green'  :
-                      u.subscriptions?.[0]?.status === 'trialing' ? 'yellow' : 'red'
+                      getSubscription(u)?.status === 'active'   ? 'green'  :
+                      getSubscription(u)?.status === 'trialing' ? 'yellow' : 'red'
                     }>
-                      {u.subscriptions?.[0]?.status || 'inactive'}
+                      {getSubscription(u)?.status || 'inactive'}
                     </Badge>
                   </td>
                   <td style={{ padding: '12px 16px', fontSize: 12, color: 'var(--text-3)', whiteSpace: 'nowrap' }}>
@@ -383,7 +384,7 @@ function AdminSubs() {
   const byPlan   = { free: 0, student: 0, personal: 0, personal_pro: 0 }
   const byStatus = { active: 0, trialing: 0, canceled: 0, inactive: 0, past_due: 0 }
   users.forEach(u => {
-    const sub = u.subscriptions?.[0]
+    const sub = getSubscription(u)
     if (sub?.plan)   byPlan[sub.plan]     = (byPlan[sub.plan] || 0) + 1
     if (sub?.status) byStatus[sub.status] = (byStatus[sub.status] || 0) + 1
   })
@@ -394,9 +395,17 @@ function AdminSubs() {
   // — essa duplicação foi exatamente o que causou, numa rodada anterior, o
   // MRR sendo calculado com valores desatualizados em alguns lugares e
   // corretos em outros, sem nenhum aviso de inconsistência.
+  //
+  // getSubscription(u) em vez de u.subscriptions?.[0]: essa era a causa
+  // raiz de um segundo bug, mais sério — desde que subscriptions.user_id
+  // ganhou "unique" (correção do Mercado Pago), o Supabase passou a
+  // devolver subscriptions como objeto, não lista, e u.subscriptions?.[0]
+  // sempre virava undefined. Na prática, esse filtro nunca encontrava
+  // ninguém com status 'active' de verdade, e o MRR mostrado aqui vinha
+  // artificialmente perto de zero, mesmo com assinantes pagantes reais.
   const mrr = users
-    .filter(u => u.subscriptions?.[0]?.status === 'active')
-    .reduce((a, u) => a + (PLANS[u.subscriptions[0].plan]?.price || 0), 0)
+    .filter(u => getSubscription(u)?.status === 'active')
+    .reduce((a, u) => a + (PLANS[getSubscription(u)?.plan]?.price || 0), 0)
 
   return (
     <div className="space-y-6 animate-fade-in">

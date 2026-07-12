@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import { getSubscription } from '@/utils/helpers'
 
 const AuthContext = createContext(null)
 
@@ -9,7 +10,7 @@ const AuthContext = createContext(null)
 // nunca mudavam de status sozinhos — o acesso continuava liberado para
 // sempre, mesmo com a data de expiração no passado.
 async function expireSubscriptionIfNeeded(profileData) {
-  const sub = profileData?.subscriptions?.[0]
+  const sub = getSubscription(profileData)
   if (!sub) return
 
   const now = new Date()
@@ -235,9 +236,16 @@ export function AuthProvider({ children }) {
   // clicado no link. Sem distinguir esse caso, PaywallGate mostraria
   // "assine um plano" para alguém que só precisa checar o email.
   const emailConfirmed = Boolean(user?.email_confirmed_at)
-  const plan       = profile?.subscriptions?.[0]?.plan || 'free'
-  const subStatus  = profile?.subscriptions?.[0]?.status || 'inactive'
-  const trialEndsAt = profile?.subscriptions?.[0]?.trial_ends_at || null
+  // getSubscription() em vez de subscriptions?.[0] direto — ver comentário
+  // na função em utils/helpers.js. Esse acesso direto era a causa raiz do
+  // bug onde a assinatura "sumia" mesmo com o dado certo no banco: desde
+  // que subscriptions.user_id ganhou um "unique" (correção anterior, para
+  // o upsert do Mercado Pago), o Supabase passou a devolver subscriptions
+  // como OBJETO, não lista — e [0] num objeto sempre é undefined.
+  const subRow    = getSubscription(profile)
+  const plan       = subRow?.plan || 'free'
+  const subStatus  = subRow?.status || 'inactive'
+  const trialEndsAt = subRow?.trial_ends_at || null
   // Usado pelo banner de "trial acabando" no AppShell. null quando não
   // está em trial ou não há data — o banner decide se mostra a partir
   // disso, junto com subStatus === 'trialing'.
