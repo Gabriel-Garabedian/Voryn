@@ -776,6 +776,20 @@ begin
   -- public.users não é duplicada — só a assinatura é afetada.
   v_email_confirmed := (new.email_confirmed_at is not null);
 
+  -- Sinaliza para prevent_self_subscription_upgrade que esta escrita em
+  -- subscriptions é legítima, vindo de dentro deste trigger de sistema —
+  -- em vez de tentar adivinhar/reconhecer qual role interno o Supabase
+  -- Auth usa para processar confirmação de email (tentativa anterior:
+  -- checar current_setting('role') = 'supabase_auth_admin' — continuou
+  -- falhando na prática, sinal de que essa não é a única ou a real
+  -- identificação de contexto aqui, e depender de acertar o nome exato de
+  -- um detalhe interno do Supabase é frágil por natureza, pode mudar sem
+  -- aviso). set_config com is_local=true fica visível só dentro desta
+  -- mesma transação, e nenhum client comum (anon/authenticated, via
+  -- PostgREST) tem como definir isso sozinho — só código rodando direto
+  -- no banco, como este trigger, consegue.
+  perform set_config('voryn.bypass_sub_trigger', 'on', true);
+
   insert into public.subscriptions (user_id, plan, status, trial_ends_at)
   values (
     new.id,
@@ -904,6 +918,19 @@ security definer
 set search_path = public
 as $$
 begin
+  -- Sinal explícito do próprio trigger handle_new_user (ver lá) — checado
+  -- primeiro porque é a forma mais confiável de reconhecer "isso é uma
+  -- operação legítima de sistema", sem depender de adivinhar corretamente
+  -- qual role interno o Supabase Auth usa por baixo (tentativa anterior,
+  -- abaixo, continuou bloqueando na prática mesmo depois de identificar
+  -- 'supabase_auth_admin' como suspeito — sinal de que esse nome de role
+  -- não é garantia suficiente, e pode até mudar sem aviso em atualizações
+  -- futuras do Supabase). Nenhum client comum tem como definir esse sinal
+  -- sozinho, só código rodando direto no banco.
+  if current_setting('voryn.bypass_sub_trigger', true) = 'on' then
+    return new;
+  end if;
+
   -- service_role (usado pelas Edge Functions de pagamento: create-preference,
   -- cancel-subscription, mercadopago-webhook) SEMPRE dispara triggers, mesmo
   -- que ele bypasse RLS — RLS e triggers são dois mecanismos independentes
@@ -912,17 +939,11 @@ begin
   -- Functions legítimas de pagamento, que precisam mudar plan/status/
   -- external_id de propósito.
   --
-  -- supabase_auth_admin: role interno que o próprio Supabase Auth (GoTrue)
-  -- usa para gravar em auth.users quando alguém confirma o email de
-  -- verdade clicando no link — diferente de service_role, é um role
-  -- totalmente separado, nunca exposto a nenhum client (não dá pra alguém
-  -- "se passar" por ele de fora). Faltava aqui, e isso quebrava a trigger
-  -- handle_new_user (que libera o trial só após confirmar email): ela
-  -- tenta atualizar subscriptions.status de 'inactive' para 'trialing',
-  -- essa atualização em cascata roda como supabase_auth_admin, e sem essa
-  -- exceção era bloqueada pela mesma proteção que existe pra impedir um
-  -- usuário comum de mudar o próprio plano na unha — bloqueando TODO
-  -- usuário real confirmando email em produção, não só em teste manual.
+  -- supabase_auth_admin: mantido como segunda camada, para o caso de
+  -- algum outro caminho interno do Supabase Auth passar por aqui usando
+  -- de fato este role — mas o sinal acima (voryn.bypass_sub_trigger) é
+  -- quem resolve o caso real de confirmação de email, não depender só
+  -- deste nome.
   if current_setting('role', true) in ('service_role', 'supabase_auth_admin') then
     return new;
   end if;
