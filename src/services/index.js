@@ -864,14 +864,25 @@ export const communityService = {
       .from('communities')
       .insert({ creator_id: userId, name, description })
       .select().single()
-    if (error) return { data: null, error }
+    if (error) {
+      // Antes, esse erro era engolido silenciosamente — a tela só mostrava
+      // "não foi possível criar agora", sem nenhum registro do motivo real
+      // (poderia ser a trigger de "só pagante cria", RLS, nome duplicado,
+      // rede...). Logar aqui é o que permite descobrir a causa de verdade
+      // pelo console do navegador, em vez de adivinhar.
+      console.error('[Voryn] communityService.create falhou:', error)
+      return { data: null, error }
+    }
     // Criador entra como membro automaticamente — sem isso, quem cria o
     // grupo não conseguiria nem ver o próprio feed (RLS de leitura exige
     // ser membro).
     const { error: joinErr } = await supabase
       .from('community_members')
       .insert({ community_id: data.id, user_id: userId, role: 'creator' })
-    if (joinErr) return { data: null, error: joinErr }
+    if (joinErr) {
+      console.error('[Voryn] communityService.create (auto-join) falhou:', joinErr)
+      return { data: null, error: joinErr }
+    }
     return { data, error: null }
   },
 

@@ -119,11 +119,22 @@ function CreateCommunityModal({ open, onClose, userId, onCreated }) {
   const [saving,       setSaving]      = useState(false)
 
   async function handleCreate() {
-    if (!name.trim()) return
+    if (!name.trim() || saving) return
     setSaving(true)
     const { data, error } = await communityService.create(userId, name.trim(), description.trim() || null)
     setSaving(false)
-    if (error) { toast.error('Não foi possível criar a comunidade agora.'); return }
+    if (error) {
+      // Mostra o motivo real quando é um caso conhecido — "não foi
+      // possível agora" genérico só deixava a pessoa sem saber se era pra
+      // tentar de novo, assinar um plano, ou avisar o suporte.
+      const msg = String(error.message || '')
+      if (msg.includes('assinatura ativa')) {
+        toast.error('Criar uma comunidade exige assinatura ativa.')
+      } else {
+        toast.error('Não foi possível criar a comunidade agora.')
+      }
+      return
+    }
     setName(''); setDescription('')
     onCreated(data)
   }
