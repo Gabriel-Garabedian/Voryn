@@ -14,6 +14,7 @@ import HistoryView           from '@/views/HistoryView'
 import GoalsView             from '@/views/GoalsView'
 import AchievementsView      from '@/views/AchievementsView'
 import ProgressPhotosView    from '@/views/ProgressPhotosView'
+import CommunityView         from '@/views/CommunityView'
 import OnboardingView        from '@/views/OnboardingView'
 import PaywallGate           from '@/components/PaywallGate'
 import EmailConfirmGate      from '@/components/EmailConfirmGate'
@@ -42,6 +43,7 @@ const MORE_EXTRAS = [
   { path: 'goals',        icon: '🎯', label: 'Metas'     },
   { path: 'achievements', icon: '🏆', label: 'Conquistas'},
   { path: 'photos',       icon: '📸', label: 'Progresso' },
+  { path: 'community',    icon: '👥', label: 'Comunidade'},
   { path: 'personal',     icon: '👤', label: 'Personal'  },
 ]
 
@@ -193,6 +195,7 @@ export default function AppShell() {
             <Route path="goals/*"        element={<GoalsView />} />
             <Route path="achievements/*" element={<AchievementsView />} />
             <Route path="photos/*"        element={<ProgressPhotosView />} />
+            <Route path="community/*"     element={<CommunityView />} />
             <Route path="onboarding"     element={<OnboardingView />} />
           </Routes>
         </div>

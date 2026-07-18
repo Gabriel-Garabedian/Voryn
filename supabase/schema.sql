@@ -59,12 +59,49 @@ create table if not exists public.users (
   avatar_url       text,
   goal             text,
   weekly_goal      int not null default 3,
+  -- Link da playlist de treino no Spotify — opcional, editável pelo
+  -- próprio usuário no Perfil. Ideia trazida direto de professores de
+  -- academia: colegas de treino conseguem ver e ouvir a mesma playlist.
+  -- Guardado como texto livre (não valida contra a API do Spotify) —
+  -- simples de propósito, sem precisar de OAuth ou credenciais de app
+  -- do Spotify só pra isso.
+  spotify_url      text,
+  -- Código pessoal fixo pra alguém te adicionar como amigo direto (não
+  -- é o mesmo mecanismo das comunidades — lá o código é do GRUPO, aqui é
+  -- da PESSOA). Mesmo princípio de sempre: nunca aparece em busca, só
+  -- funciona se você mandar seu link pra alguém.
+  friend_invite_code text unique default substr(md5(random()::text || clock_timestamp()::text), 1, 8),
   onboarding_done  boolean not null default false,
   created_at       timestamptz default now(),
   updated_at       timestamptz default now()
 );
 
 create index if not exists idx_users_email_normalized on public.users(email_normalized);
+
+-- MIGRATION: coluna nova em tabela já existente, mesmo caso de sempre —
+-- "create table if not exists" não altera quem já rodou o schema antes.
+alter table public.users add column if not exists spotify_url text;
+
+alter table public.users add column if not exists friend_invite_code text;
+-- Backfill: o "default" na definição da coluna só vale pra linhas NOVAS
+-- a partir de agora — usuários que já existiam antes desta migration
+-- ficariam com friend_invite_code NULL para sempre, sem conseguir usar
+-- a funcionalidade, até fazer login de novo (o que nunca dispara um
+-- update nessa coluna). Preenche todo mundo que ainda está null, uma
+-- vez só.
+update public.users set friend_invite_code = substr(md5(random()::text || clock_timestamp()::text || id::text), 1, 8)
+  where friend_invite_code is null;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'users_friend_invite_code_key'
+      and conrelid = 'public.users'::regclass
+  ) then
+    alter table public.users add constraint users_friend_invite_code_key unique (friend_invite_code);
+  end if;
+end $$;
 
 -- ── SUBSCRIPTIONS ─────────────────────────────────────────
 create table if not exists public.subscriptions (
@@ -1401,6 +1438,363 @@ drop policy if exists "exercise_media_admin_write" on storage.objects;
 create policy "exercise_media_admin_write" on storage.objects
   for all using (bucket_id = 'exercise-media' and public.is_admin())
   with check (bucket_id = 'exercise-media' and public.is_admin());
+
+-- ============================================================
+--  COMUNIDADES — grupos de treino entre amigos
+--  Modelo de privacidade: só por convite (link com código), nunca busca
+--  pública. Ninguém encontra ninguém procurando por nome — o único jeito
+--  de entrar num grupo é receber o link de quem já está nele. Mesmo
+--  princípio já usado no convite personal→aluno, aplicado aqui de novo.
+-- ============================================================
+
+create table if not exists public.communities (
+  id           uuid primary key default uuid_generate_v4(),
+  name         text not null,
+  description  text,
+  creator_id   uuid not null references public.users(id) on delete cascade,
+  -- Código curto e único do link de convite. O id (uuid) já serviria
+  -- sozinho como token — mas um código de 8 caracteres é mais fácil de
+  -- compartilhar por mensagem de texto do que um uuid inteiro.
+  invite_code  text not null unique default substr(md5(random()::text || clock_timestamp()::text), 1, 8),
+  created_at   timestamptz default now()
+);
+
+create table if not exists public.community_members (
+  id            uuid primary key default uuid_generate_v4(),
+  community_id  uuid not null references public.communities(id) on delete cascade,
+  user_id       uuid not null references public.users(id) on delete cascade,
+  role          text not null default 'member' check (role in ('creator','member')),
+  joined_at     timestamptz default now(),
+  unique(community_id, user_id)
+);
+
+create index if not exists idx_communities_creator          on public.communities(creator_id);
+create index if not exists idx_community_members_community  on public.community_members(community_id);
+create index if not exists idx_community_members_user       on public.community_members(user_id);
+
+alter table public.communities      enable row level security;
+alter table public.community_members enable row level security;
+
+-- ── communities ─────────────────────────────────────────────
+-- Sem policy de select pública — ver quais comunidades existem só é
+-- possível sendo membro (join com community_members abaixo) ou por
+-- get_community_by_invite_code (RPC, devolve só nome+criador, não a
+-- linha inteira, para a tela de "confirmar entrada" antes de aceitar).
+create policy "communities_member_read" on public.communities
+  for select using (
+    exists (select 1 from public.community_members cm where cm.community_id = communities.id and cm.user_id = auth.uid())
+  );
+
+create policy "communities_creator_write" on public.communities
+  for update using (creator_id = auth.uid());
+
+create policy "communities_creator_delete" on public.communities
+  for delete using (creator_id = auth.uid());
+
+create policy "communities_insert" on public.communities
+  for insert with check (creator_id = auth.uid());
+
+create policy "communities_admin_all" on public.communities
+  for all using (public.is_admin());
+
+-- ── community_members ───────────────────────────────────────
+create policy "community_members_read" on public.community_members
+  for select using (
+    exists (select 1 from public.community_members cm2 where cm2.community_id = community_members.community_id and cm2.user_id = auth.uid())
+  );
+
+-- Entrar num grupo: o community_id só chega até o client através de um
+-- link de convite válido (resolvido via get_community_by_invite_code) ou
+-- já sendo membro — o uuid funciona como token não adivinhável, mesmo
+-- princípio já usado no vínculo personal→aluno neste projeto.
+create policy "community_members_self_join" on public.community_members
+  for insert with check (auth.uid() = user_id);
+
+-- Sair do grupo (linha própria) ou o criador remover alguém.
+create policy "community_members_leave_or_remove" on public.community_members
+  for delete using (
+    auth.uid() = user_id
+    or exists (select 1 from public.communities c where c.id = community_members.community_id and c.creator_id = auth.uid())
+  );
+
+create policy "community_members_admin_all" on public.community_members
+  for all using (public.is_admin());
+
+-- ── Só quem paga pode criar comunidade ──────────────────────
+-- Pedido explícito: "aluno pagante poderá criar uma comunidade". Sem
+-- isso, bastaria criar uma conta free pra abrir grupos ilimitados.
+create or replace function public.enforce_paying_creates_community()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if public.is_admin() then
+    return new;
+  end if;
+  if not exists (
+    select 1 from public.subscriptions
+    where user_id = new.creator_id and status = 'active'
+  ) then
+    raise exception 'Criar uma comunidade exige assinatura ativa';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists trg_enforce_paying_creates_community on public.communities;
+create trigger trg_enforce_paying_creates_community
+  before insert on public.communities
+  for each row execute function public.enforce_paying_creates_community();
+
+-- ── Resolver convite pelo código (antes de entrar) ──────────
+-- Mesmo padrão de get_trainer_public_name: devolve só o mínimo (nome do
+-- grupo, quem criou, quantos membros) para mostrar uma tela de "aceitar
+-- entrar em X?" antes da pessoa estar de fato dentro — sem isso, o
+-- client precisaria de select público em communities, expondo todos os
+-- grupos existentes.
+create or replace function public.get_community_by_invite_code(p_code text)
+returns table (id uuid, name text, description text, creator_name text, member_count bigint)
+language plpgsql
+security definer
+set search_path = public
+stable
+as $$
+begin
+  return query
+  select c.id, c.name, c.description, u.name,
+    (select count(*) from public.community_members cm where cm.community_id = c.id)
+  from public.communities c
+  join public.users u on u.id = c.creator_id
+  where c.invite_code = p_code;
+end;
+$$;
+
+grant execute on function public.get_community_by_invite_code(text) to anon, authenticated;
+
+-- ── Feed de PRs recentes do grupo ────────────────────────────
+-- Só exercise/weight/reps/date — nunca a coluna "notes" de prs (pode
+-- conter contexto pessoal tipo "consegui pq tirei semana de folga por
+-- lesão", não é pra ser público pro grupo). Confere associação antes de
+-- devolver qualquer linha, senão bastaria adivinhar um community_id de
+-- um grupo que a pessoa não faz parte para ver PRs de gente que nunca
+-- autorizou isso.
+create or replace function public.get_community_pr_feed(p_community_id uuid)
+returns table (user_id uuid, user_name text, exercise text, weight numeric, reps int, pr_date date)
+language plpgsql
+security definer
+set search_path = public
+stable
+as $$
+begin
+  if not exists (
+    select 1 from public.community_members
+    where community_id = p_community_id and user_id = auth.uid()
+  ) then
+    raise exception 'Você não é membro desta comunidade';
+  end if;
+
+  return query
+  select p.user_id, u.name, p.exercise, p.weight, p.reps, p.date
+  from public.prs p
+  join public.users u on u.id = p.user_id
+  where p.user_id in (select cm.user_id from public.community_members cm where cm.community_id = p_community_id)
+    and p.date >= (current_date - interval '30 days')
+  order by p.date desc
+  limit 30;
+end;
+$$;
+
+grant execute on function public.get_community_pr_feed(uuid) to authenticated;
+
+-- ── Frequência de treino dos membros (últimos 7 dias) ───────
+-- Só a contagem — nunca o conteúdo de workout_logs.exercises (que tem
+-- anotações livres do próprio treino, não é pra ser público pro grupo).
+create or replace function public.get_community_activity(p_community_id uuid)
+returns table (user_id uuid, user_name text, workouts_7d bigint)
+language plpgsql
+security definer
+set search_path = public
+stable
+as $$
+begin
+  if not exists (
+    select 1 from public.community_members
+    where community_id = p_community_id and user_id = auth.uid()
+  ) then
+    raise exception 'Você não é membro desta comunidade';
+  end if;
+
+  return query
+  select cm.user_id, u.name,
+    (select count(*) from public.workout_logs w
+     where w.user_id = cm.user_id and w.date >= (current_date - interval '7 days'))
+  from public.community_members cm
+  join public.users u on u.id = cm.user_id
+  where cm.community_id = p_community_id
+  order by 3 desc;
+end;
+$$;
+
+grant execute on function public.get_community_activity(uuid) to authenticated;
+
+-- ============================================================
+--  AMIGOS — conexão direta entre duas pessoas (não é grupo)
+--  Mesmo modelo de privacidade das comunidades (só por link, nunca
+--  busca), mas 1-para-1 em vez de grupo com nome. Ao aceitar o link de
+--  alguém, a conexão é imediata e mútua nos dois sentidos — sem pedido
+--  de amizade pendente esperando aprovação, mesma simplicidade já usada
+--  no convite de comunidade.
+-- ============================================================
+
+create table if not exists public.friend_connections (
+  id           uuid primary key default uuid_generate_v4(),
+  -- user_id_a é sempre o menor uuid dos dois, user_id_b o maior — garante
+  -- uma única linha por par, não importa quem adicionou quem primeiro.
+  -- Sem essa normalização, "A adiciona B" e "B adiciona A" criariam duas
+  -- linhas diferentes representando a mesma conexão.
+  user_id_a    uuid not null references public.users(id) on delete cascade,
+  user_id_b    uuid not null references public.users(id) on delete cascade,
+  created_at   timestamptz default now(),
+  constraint friend_pair_ordered check (user_id_a < user_id_b),
+  unique(user_id_a, user_id_b)
+);
+
+create index if not exists idx_friend_connections_a on public.friend_connections(user_id_a);
+create index if not exists idx_friend_connections_b on public.friend_connections(user_id_b);
+
+alter table public.friend_connections enable row level security;
+
+create policy "friend_connections_read" on public.friend_connections
+  for select using (auth.uid() = user_id_a or auth.uid() = user_id_b);
+
+create policy "friend_connections_delete" on public.friend_connections
+  for delete using (auth.uid() = user_id_a or auth.uid() = user_id_b);
+
+create policy "friend_connections_admin_all" on public.friend_connections
+  for all using (public.is_admin());
+
+-- Sem policy de insert direta — a normalização de ordem (menor uuid
+-- primeiro) é fácil de fazer errado num insert vindo do client. Toda
+-- conexão nova passa pela RPC abaixo, que resolve isso de forma segura
+-- e garante que você só consegue conectar a si mesmo com QUEM TE DEU O
+-- CÓDIGO, nunca inserindo uma linha entre duas OUTRAS pessoas.
+
+-- ── Resolver nome pelo código, antes de conectar ─────────────
+-- Mesmo padrão de get_trainer_public_name/get_community_by_invite_code:
+-- devolve só o nome, pro FriendAddPage mostrar "Fulano quer se conectar
+-- com você" ANTES da pessoa logar — sem isso, o lookup direto na tabela
+-- users é bloqueado pela RLS (não existe policy pública de leitura ali
+-- de propósito), e a tela de prévia ficaria sempre vazia pra quem ainda
+-- não tem conta.
+create or replace function public.get_user_name_by_friend_code(p_code text)
+returns text
+language plpgsql
+security definer
+set search_path = public
+stable
+as $$
+declare
+  v_name text;
+begin
+  select name into v_name from public.users where friend_invite_code = p_code;
+  return v_name;
+end;
+$$;
+
+grant execute on function public.get_user_name_by_friend_code(text) to anon, authenticated;
+
+-- ── Conectar via código pessoal ──────────────────────────────
+create or replace function public.connect_via_friend_code(p_code text)
+returns table (friend_id uuid, friend_name text)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_target_id uuid;
+  v_target_name text;
+  v_a uuid;
+  v_b uuid;
+begin
+  select id, name into v_target_id, v_target_name
+  from public.users where friend_invite_code = p_code;
+
+  if v_target_id is null then
+    raise exception 'Código de convite inválido';
+  end if;
+
+  if v_target_id = auth.uid() then
+    raise exception 'Você não pode adicionar a si mesmo';
+  end if;
+
+  -- Normaliza a ordem antes de inserir — ver comentário na tabela.
+  if auth.uid() < v_target_id then
+    v_a := auth.uid(); v_b := v_target_id;
+  else
+    v_a := v_target_id; v_b := auth.uid();
+  end if;
+
+  insert into public.friend_connections (user_id_a, user_id_b)
+  values (v_a, v_b)
+  on conflict (user_id_a, user_id_b) do nothing;
+
+  return query select v_target_id, v_target_name;
+end;
+$$;
+
+grant execute on function public.connect_via_friend_code(text) to authenticated;
+
+-- ── Minha lista de amigos, com resumo de atividade ───────────
+create or replace function public.get_my_friends()
+returns table (friend_id uuid, friend_name text, workouts_7d bigint, current_streak_dates date[])
+language plpgsql
+security definer
+set search_path = public
+stable
+as $$
+begin
+  return query
+  select
+    u.id, u.name,
+    (select count(*) from public.workout_logs w where w.user_id = u.id and w.date >= (current_date - interval '7 days')),
+    (select array_agg(w.date order by w.date desc) from public.workout_logs w where w.user_id = u.id and w.date >= (current_date - interval '14 days'))
+  from public.friend_connections fc
+  join public.users u on u.id = (case when fc.user_id_a = auth.uid() then fc.user_id_b else fc.user_id_a end)
+  where fc.user_id_a = auth.uid() or fc.user_id_b = auth.uid();
+end;
+$$;
+
+grant execute on function public.get_my_friends() to authenticated;
+
+-- ── PRs de um amigo específico (confere conexão antes) ───────
+create or replace function public.get_friend_prs(p_friend_id uuid)
+returns table (exercise text, weight numeric, reps int, pr_date date)
+language plpgsql
+security definer
+set search_path = public
+stable
+as $$
+begin
+  if not exists (
+    select 1 from public.friend_connections
+    where (user_id_a = auth.uid() and user_id_b = p_friend_id)
+       or (user_id_b = auth.uid() and user_id_a = p_friend_id)
+  ) then
+    raise exception 'Vocês não estão conectados';
+  end if;
+
+  return query
+  select p.exercise, p.weight, p.reps, p.date
+  from public.prs p
+  where p.user_id = p_friend_id
+  order by p.date desc
+  limit 20;
+end;
+$$;
+
+grant execute on function public.get_friend_prs(uuid) to authenticated;
 
 -- ============================================================
 --  FIM DO SCHEMA

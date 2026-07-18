@@ -302,7 +302,7 @@ export const trainerService = {
         created_at,
         student_id,
         users!trainer_students_student_id_fkey (
-          id, name, email
+          id, name, email, spotify_url
         )
       `)
       .eq('trainer_id', trainerId)
@@ -838,5 +838,133 @@ export const trainerDashboardService = {
       growthChart,
       unreadByStudent,
     }
+  },
+}
+
+// ── Comunidades ─────────────────────────────────────────────
+// Só por convite (código de 8 caracteres) — nunca busca pública de
+// usuários. Ver comentário no schema.sql para o porquê desse modelo.
+export const communityService = {
+  async getMine(userId) {
+    try {
+      const { data, error } = await supabase
+        .from('community_members')
+        .select('community:communities(*), role')
+        .eq('user_id', userId)
+      if (error) throw error
+      return { data: (data || []).map(r => ({ ...r.community, myRole: r.role })), error: null }
+    } catch (err) {
+      console.error('[Voryn] communityService.getMine falhou:', err)
+      return { data: [], error: err }
+    }
+  },
+
+  async create(userId, name, description) {
+    const { data, error } = await supabase
+      .from('communities')
+      .insert({ creator_id: userId, name, description })
+      .select().single()
+    if (error) return { data: null, error }
+    // Criador entra como membro automaticamente — sem isso, quem cria o
+    // grupo não conseguiria nem ver o próprio feed (RLS de leitura exige
+    // ser membro).
+    const { error: joinErr } = await supabase
+      .from('community_members')
+      .insert({ community_id: data.id, user_id: userId, role: 'creator' })
+    if (joinErr) return { data: null, error: joinErr }
+    return { data, error: null }
+  },
+
+  async getByInviteCode(code) {
+    const { data, error } = await supabase
+      .rpc('get_community_by_invite_code', { p_code: code })
+    return { data: data?.[0] || null, error }
+  },
+
+  async join(communityId, userId) {
+    return supabase.from('community_members').insert({ community_id: communityId, user_id: userId })
+  },
+
+  async leave(communityId, userId) {
+    return supabase.from('community_members').delete().eq('community_id', communityId).eq('user_id', userId)
+  },
+
+  async removeMember(communityId, userId) {
+    return supabase.from('community_members').delete().eq('community_id', communityId).eq('user_id', userId)
+  },
+
+  async getMembers(communityId) {
+    try {
+      const { data, error } = await supabase
+        .from('community_members')
+        .select('user_id, role, joined_at, user:users(id, name)')
+        .eq('community_id', communityId)
+      if (error) throw error
+      return { data: data || [], error: null }
+    } catch (err) {
+      console.error('[Voryn] communityService.getMembers falhou:', err)
+      return { data: [], error: err }
+    }
+  },
+
+  async getPrFeed(communityId) {
+    try {
+      const { data, error } = await supabase.rpc('get_community_pr_feed', { p_community_id: communityId })
+      if (error) throw error
+      return { data: data || [], error: null }
+    } catch (err) {
+      console.error('[Voryn] communityService.getPrFeed falhou:', err)
+      return { data: [], error: err }
+    }
+  },
+
+  async getActivity(communityId) {
+    try {
+      const { data, error } = await supabase.rpc('get_community_activity', { p_community_id: communityId })
+      if (error) throw error
+      return { data: data || [], error: null }
+    } catch (err) {
+      console.error('[Voryn] communityService.getActivity falhou:', err)
+      return { data: [], error: err }
+    }
+  },
+}
+
+// ── Amigos ───────────────────────────────────────────────────
+// Conexão direta 1-para-1, mesmo modelo de privacidade das comunidades
+// (só por link pessoal, nunca busca).
+export const friendService = {
+  async connect(code) {
+    const { data, error } = await supabase.rpc('connect_via_friend_code', { p_code: code })
+    return { data: data?.[0] || null, error }
+  },
+
+  async getMyFriends() {
+    try {
+      const { data, error } = await supabase.rpc('get_my_friends')
+      if (error) throw error
+      return { data: data || [], error: null }
+    } catch (err) {
+      console.error('[Voryn] friendService.getMyFriends falhou:', err)
+      return { data: [], error: err }
+    }
+  },
+
+  async getFriendPrs(friendId) {
+    try {
+      const { data, error } = await supabase.rpc('get_friend_prs', { p_friend_id: friendId })
+      if (error) throw error
+      return { data: data || [], error: null }
+    } catch (err) {
+      console.error('[Voryn] friendService.getFriendPrs falhou:', err)
+      return { data: [], error: err }
+    }
+  },
+
+  async removeFriend(friendId, myId) {
+    // A linha pode estar em qualquer ordem (a menor uuid primeiro) — tenta
+    // remover nos dois sentidos possíveis, um deles vai bater.
+    return supabase.from('friend_connections').delete()
+      .or(`and(user_id_a.eq.${myId},user_id_b.eq.${friendId}),and(user_id_a.eq.${friendId},user_id_b.eq.${myId})`)
   },
 }

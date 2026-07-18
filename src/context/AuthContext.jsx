@@ -130,6 +130,56 @@ export function AuthProvider({ children }) {
         }
       }
 
+      // Retry de convite pendente de comunidade — mesmo padrão do bloco
+      // acima para personal, aqui para o link de convite de comunidade
+      // (CommunityJoinPage.jsx guarda o código quando a pessoa ainda não
+      // estava logada).
+      const pendingCommunityCode = localStorage.getItem('voryn_pending_community')
+      if (pendingCommunityCode) {
+        try {
+          const { data: communities } = await supabase
+            .rpc('get_community_by_invite_code', { p_code: pendingCommunityCode })
+          const community = communities?.[0]
+          if (community) {
+            const { error: joinErr } = await supabase
+              .from('community_members')
+              .insert({ community_id: community.id, user_id: userId })
+            // duplicate = já é membro, trata como sucesso silencioso
+            if (!joinErr || String(joinErr.message || '').includes('duplicate')) {
+              localStorage.removeItem('voryn_pending_community')
+              console.log('[Voryn] Convite de comunidade processado com sucesso')
+            }
+            // outros erros: mantém no localStorage, tenta de novo no próximo login
+          } else {
+            // Código inválido/expirado — não fica tentando pra sempre.
+            localStorage.removeItem('voryn_pending_community')
+          }
+        } catch (e) {
+          console.warn('[Voryn] Retry convite de comunidade falhou (não crítico):', e)
+        }
+      }
+
+      // Retry de conexão de amigo pendente — mesmo padrão dos dois blocos
+      // acima, aqui para FriendAddPage.jsx. connect_via_friend_code já
+      // resolve lookup + inserção normalizada numa RPC só, então este
+      // bloco fica mais simples que o de comunidade.
+      const pendingFriendCode = localStorage.getItem('voryn_pending_friend')
+      if (pendingFriendCode) {
+        try {
+          const { error: connErr } = await supabase.rpc('connect_via_friend_code', { p_code: pendingFriendCode })
+          if (!connErr) {
+            localStorage.removeItem('voryn_pending_friend')
+            console.log('[Voryn] Conexão de amigo processada com sucesso')
+          } else if (connErr.message?.includes('inválido') || connErr.message?.includes('a si mesmo')) {
+            // Erro permanente — não fica tentando pra sempre.
+            localStorage.removeItem('voryn_pending_friend')
+          }
+          // outros erros (rede etc.): mantém no localStorage, tenta de novo depois
+        } catch (e) {
+          console.warn('[Voryn] Retry conexão de amigo falhou (não crítico):', e)
+        }
+      }
+
     } catch (e) {
       console.error('fetchProfile:', e)
     } finally {
