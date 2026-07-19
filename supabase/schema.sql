@@ -1690,6 +1690,44 @@ $$;
 
 grant execute on function public.get_community_activity(uuid) to authenticated;
 
+-- ── Membros com nome (RPC, não join direto) ──────────────────
+-- ACHADO ao construir o chat de grupo: o serviço original buscava
+-- membros com select('user_id, role, joined_at, user:users(id, name)')
+-- — um embed direto de community_members pra users. Users não tem
+-- policy pública de leitura (de propósito, ver seção users no topo do
+-- schema), então esse embed sempre voltava null pro nome de QUALQUER
+-- membro que não fosse você mesmo. Isso nunca tinha aparecido como bug
+-- visível porque nada usava esse campo ainda (a lista de "Membros" usa
+-- get_community_activity, que já resolve nome certo via RPC) — o chat
+-- foi o primeiro consumidor real desse campo, e teria mostrado "Membro"
+-- genérico pra mensagem de qualquer pessoa que não fosse o próprio
+-- usuário. Mesma solução de sempre: RPC security definer, que bypassa
+-- RLS de forma controlada.
+create or replace function public.get_community_members(p_community_id uuid)
+returns table (user_id uuid, user_name text, role text, joined_at timestamptz)
+language plpgsql
+security definer
+set search_path = public
+stable
+as $$
+begin
+  if not exists (
+    select 1 from public.community_members
+    where community_id = p_community_id and user_id = auth.uid()
+  ) then
+    raise exception 'Você não é membro desta comunidade';
+  end if;
+
+  return query
+  select cm.user_id, u.name, cm.role, cm.joined_at
+  from public.community_members cm
+  join public.users u on u.id = cm.user_id
+  where cm.community_id = p_community_id;
+end;
+$$;
+
+grant execute on function public.get_community_members(uuid) to authenticated;
+
 -- ============================================================
 --  AMIGOS — conexão direta entre duas pessoas (não é grupo)
 --  Mesmo modelo de privacidade das comunidades (só por link, nunca
@@ -1849,6 +1887,68 @@ end;
 $$;
 
 grant execute on function public.get_friend_prs(uuid) to authenticated;
+
+-- ============================================================
+--  CHAT DE GRUPO — comunidades
+--  Mesma ideia do chat personal↔aluno já existente (messages), mas para
+--  vários membros ao mesmo tempo em vez de só duas pessoas. Tabela
+--  separada porque messages.trainer_id/student_id são colunas fixas
+--  pensadas especificamente para um par — não dá pra reaproveitar a
+--  mesma tabela para um grupo com N pessoas.
+-- ============================================================
+
+create table if not exists public.community_messages (
+  id            uuid primary key default uuid_generate_v4(),
+  community_id  uuid not null references public.communities(id) on delete cascade,
+  user_id       uuid not null references public.users(id) on delete cascade,
+  content       text not null,
+  created_at    timestamptz default now()
+);
+
+create index if not exists idx_community_messages_community on public.community_messages(community_id, created_at);
+
+-- Registro no Realtime — precisa vir DEPOIS da tabela existir de verdade.
+-- BUG CORRIGIDO: essa mesma linha estava antes no bloco de Realtime lá no
+-- início do arquivo (junto com messages/workout_logs), que roda muito
+-- antes desta tabela ser criada — o script tentava registrar uma tabela
+-- que ainda não existia naquele ponto da execução, e reaplicar o schema
+-- falhava com "relation does not exist". SQL roda de cima pra baixo, então
+-- o registro precisa estar fisicamente depois da criação, não antes.
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'community_messages'
+  ) then
+    alter publication supabase_realtime add table public.community_messages;
+  end if;
+end $$;
+
+alter table public.community_messages enable row level security;
+
+-- is_community_member() em vez de subquery direta em community_members —
+-- ver o comentário completo sobre o bug de recursão infinita logo acima,
+-- na seção de comunidades. Usar a função aqui de propósito, para nunca
+-- reintroduzir o mesmo tipo de problema numa tabela nova.
+drop policy if exists "community_messages_read" on public.community_messages;
+create policy "community_messages_read" on public.community_messages
+  for select using (public.is_community_member(community_id));
+
+drop policy if exists "community_messages_insert" on public.community_messages;
+create policy "community_messages_insert" on public.community_messages
+  for insert with check (user_id = auth.uid() and public.is_community_member(community_id));
+
+-- Apagar a própria mensagem (corrigir erro de digitação, etc.) — não dá
+-- pra apagar mensagem de outra pessoa, nem o criador do grupo.
+drop policy if exists "community_messages_delete_own" on public.community_messages;
+create policy "community_messages_delete_own" on public.community_messages
+  for delete using (user_id = auth.uid());
+
+drop policy if exists "community_messages_admin_all" on public.community_messages;
+create policy "community_messages_admin_all" on public.community_messages
+  for all using (public.is_admin());
 
 -- ============================================================
 --  FIM DO SCHEMA

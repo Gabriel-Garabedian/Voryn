@@ -905,11 +905,12 @@ export const communityService = {
   },
 
   async getMembers(communityId) {
+    // RPC em vez de select com embed direto — ver comentário completo em
+    // get_community_members no schema.sql. O embed (user:users(id,name))
+    // sempre voltava null pro nome de qualquer membro que não fosse você
+    // mesmo, porque users não tem policy pública de leitura.
     try {
-      const { data, error } = await supabase
-        .from('community_members')
-        .select('user_id, role, joined_at, user:users(id, name)')
-        .eq('community_id', communityId)
+      const { data, error } = await supabase.rpc('get_community_members', { p_community_id: communityId })
       if (error) throw error
       return { data: data || [], error: null }
     } catch (err) {
@@ -938,6 +939,46 @@ export const communityService = {
       console.error('[Voryn] communityService.getActivity falhou:', err)
       return { data: [], error: err }
     }
+  },
+
+  // ── Chat de grupo ──────────────────────────────────────────
+  // Mesmo padrão de messageService (chat personal↔aluno), adaptado para
+  // vários membros. Sem join com users aqui — RLS de users não libera ver
+  // o nome de outros membros direto, e o nome de quem enviou é resolvido
+  // no componente usando a lista de membros já carregada (evita precisar
+  // de outra RPC só para isso, e funciona igual tanto para mensagens
+  // carregadas quanto para as que chegam via Realtime).
+  async getMessages(communityId) {
+    try {
+      const { data, error } = await supabase
+        .from('community_messages')
+        .select('*')
+        .eq('community_id', communityId)
+        .order('created_at', { ascending: true })
+      if (error) throw error
+      return { data: data || [], error: null }
+    } catch (err) {
+      console.error('[Voryn] communityService.getMessages falhou:', err)
+      return { data: [], error: err }
+    }
+  },
+
+  async sendMessage(communityId, userId, content) {
+    return supabase
+      .from('community_messages')
+      .insert({ community_id: communityId, user_id: userId, content })
+      .select().single()
+  },
+
+  subscribeMessages(communityId, callback) {
+    return supabase
+      .channel(`community_chat_${communityId}`)
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'community_messages',
+          filter: `community_id=eq.${communityId}` },
+        payload => callback(payload.new)
+      )
+      .subscribe()
   },
 }
 

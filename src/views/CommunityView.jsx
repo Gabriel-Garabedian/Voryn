@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { communityService, friendService } from '@/services'
@@ -168,6 +168,7 @@ function CommunityDetail({ community, userId, onBack, onLeft }) {
   const [loading,  setLoading]  = useState(true)
   const [copied,   setCopied]   = useState(false)
   const [confirmLeave, setConfirmLeave] = useState(false)
+  const [detailTab, setDetailTab] = useState('chat') // 'chat' | 'sobre'
 
   const isCreator = community.myRole === 'creator' || community.creator_id === userId
   const inviteLink = `${window.location.origin}/community/join/${community.invite_code}`
@@ -231,21 +232,37 @@ function CommunityDetail({ community, userId, onBack, onLeft }) {
       <h1 className="font-display text-2xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>{community.name}</h1>
       {community.description && <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>{community.description}</p>}
 
-      {/* Invite link */}
-      <div className="f-card p-3.5 mt-4 flex items-center gap-3">
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--text-3)' }}>Link de convite</p>
-          <p className="text-xs truncate" style={{ color: 'var(--text-2)' }}>{inviteLink}</p>
-        </div>
-        <Button size="sm" onClick={copyInvite} className="flex-shrink-0">
-          {copied ? '✓ Copiado' : 'Copiar'}
-        </Button>
+      {/* Sub-tabs: Chat (padrão) | Sobre */}
+      <div className="flex gap-2 my-4 p-1 rounded-xl" style={{ background: 'var(--surface)' }}>
+        {[['chat', '💬 Chat'], ['sobre', 'ℹ️ Sobre']].map(([id, label]) => (
+          <button key={id} onClick={() => setDetailTab(id)}
+            className="flex-1 py-2 rounded-lg text-sm font-semibold transition-all"
+            style={{
+              background: detailTab === id ? 'var(--accent)' : 'transparent',
+              color: detailTab === id ? '#fff' : 'var(--text-3)',
+            }}>
+            {label}
+          </button>
+        ))}
       </div>
 
-      {loading ? (
+      {detailTab === 'chat' ? (
+        <ChatCommunity communityId={community.id} userId={userId} members={members}/>
+      ) : loading ? (
         <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>Carregando...</p>
       ) : (
         <>
+          {/* Invite link */}
+          <div className="f-card p-3.5 mb-4 flex items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--text-3)' }}>Link de convite</p>
+              <p className="text-xs truncate" style={{ color: 'var(--text-2)' }}>{inviteLink}</p>
+            </div>
+            <Button size="sm" onClick={copyInvite} className="flex-shrink-0">
+              {copied ? '✓ Copiado' : 'Copiar'}
+            </Button>
+          </div>
+
           {/* Membros + atividade da semana */}
           <div className="mt-6">
             <p className="f-label mb-2">Membros · {members.length}</p>
@@ -308,6 +325,99 @@ function CommunityDetail({ community, userId, onBack, onLeft }) {
           </div>
         </>
       )}
+    </div>
+  )
+}
+
+function ChatCommunity({ communityId, userId, members }) {
+  const [msgs,    setMsgs]    = useState([])
+  const [input,   setInput]   = useState('')
+  const [loading, setLoading] = useState(true)
+  const bottomRef = useRef(null)
+
+  // Nome de quem mandou, resolvido pela lista de membros já carregada —
+  // ver comentário em get_community_members (schema.sql) sobre por que
+  // isso vem de uma RPC com campo plano (user_name), não de um join
+  // aninhado.
+  const nameById = {}
+  members.forEach(m => { nameById[m.user_id] = m.user_name || '?' })
+
+  // Mesmo bug já corrigido no chat personal↔aluno (ChatTrainer, mais
+  // acima neste arquivo... na verdade em PersonalDashboardView.jsx): ao
+  // enviar, a mensagem sendo adicionada manualmente E chegando de volta
+  // via Realtime duplicava na tela de quem enviou. addMsg ignora se o id
+  // já existir no estado local.
+  function addMsg(msg) {
+    setMsgs(m => m.some(x => x.id === msg.id) ? m : [...m, msg])
+  }
+
+  useEffect(() => {
+    if (!communityId) return
+    communityService.getMessages(communityId).then(({ data }) => {
+      setMsgs(data || [])
+      setLoading(false)
+    })
+    const sub = communityService.subscribeMessages(communityId, msg => addMsg(msg))
+    return () => sub?.unsubscribe?.()
+  }, [communityId])
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [msgs])
+
+  async function send() {
+    const text = input.trim(); if (!text) return
+    setInput('')
+    const { data, error } = await communityService.sendMessage(communityId, userId, text)
+    if (data) addMsg(data)
+    if (error) console.error('[Voryn] ChatCommunity send error:', error)
+  }
+
+  return (
+    <div className="flex flex-col" style={{ height: 'calc(100vh - 320px)' }}>
+      <div className="flex-1 overflow-y-auto space-y-3 py-2">
+        {loading ? (
+          <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>Carregando...</p>
+        ) : msgs.length === 0 ? (
+          <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>
+            Nenhuma mensagem ainda. Manda um "oi" pro grupo 👋
+          </p>
+        ) : (
+          msgs.map(m => {
+            const isMe = m.user_id === userId
+            return (
+              <div key={m.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                <div className="max-w-xs">
+                  {!isMe && (
+                    <p className="text-xs mb-0.5 ml-1" style={{ color: 'var(--text-3)' }}>
+                      {nameById[m.user_id] || 'Membro'}
+                    </p>
+                  )}
+                  <div className="px-4 py-2.5 rounded-2xl text-sm"
+                    style={{
+                      background: isMe ? 'var(--accent)' : 'var(--card)',
+                      color: isMe ? '#fff' : 'var(--text-1)',
+                      border: isMe ? 'none' : '1px solid var(--border)',
+                    }}>
+                    {m.content}
+                  </div>
+                </div>
+              </div>
+            )
+          })
+        )}
+        <div ref={bottomRef}/>
+      </div>
+      <div className="flex gap-2 pt-2" style={{ borderTop: '1px solid var(--border)' }}>
+        <input className="f-input flex-1" placeholder="Mensagem para o grupo..." value={input}
+          onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()}/>
+        <button onClick={send} className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+          style={{ background: 'var(--accent)' }}>
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
     </div>
   )
 }
