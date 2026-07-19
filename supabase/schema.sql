@@ -1475,48 +1475,99 @@ create index if not exists idx_community_members_user       on public.community_
 alter table public.communities      enable row level security;
 alter table public.community_members enable row level security;
 
+-- ── Helpers de RLS (evitam recursão infinita) ────────────────
+-- BUG REAL encontrado em teste: a policy de leitura de community_members
+-- fazia "select 1 from community_members where ..." dentro da PRÓPRIA
+-- policy de community_members — cada vez que o Postgres tentava aplicar
+-- a policy, a subquery disparava a mesma policy de novo, infinitamente,
+-- até estourar com o erro 42P17 "infinite recursion detected". Qualquer
+-- leitura ou escrita em community_members falhava, inclusive criar
+-- comunidade (que insere na tabela logo em seguida).
+--
+-- A correção é o mesmo padrão já usado em is_admin()/is_trainer_of()
+-- neste schema: uma função security definer, dona do schema (role com
+-- BYPASSRLS), consultando a tabela por dentro. Uma função nessas
+-- condições NÃO reaplica RLS na consulta interna — ela roda com o
+-- privilégio de quem é DONA da função, não de quem chamou, então a
+-- policy nunca é reavaliada recursivamente. A mesma lógica dentro de uma
+-- policy comum (subquery direta) continua sujeita a RLS normalmente, e é
+-- isso que causava o loop.
+create or replace function public.is_community_member(p_community_id uuid, p_user_id uuid default auth.uid())
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+stable
+as $$
+begin
+  return exists (
+    select 1 from public.community_members
+    where community_id = p_community_id and user_id = p_user_id
+  );
+end;
+$$;
+
+create or replace function public.owns_community(p_community_id uuid, p_user_id uuid default auth.uid())
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+stable
+as $$
+begin
+  return exists (
+    select 1 from public.communities
+    where id = p_community_id and creator_id = p_user_id
+  );
+end;
+$$;
+
 -- ── communities ─────────────────────────────────────────────
 -- Sem policy de select pública — ver quais comunidades existem só é
--- possível sendo membro (join com community_members abaixo) ou por
+-- possível sendo membro (via is_community_member abaixo) ou por
 -- get_community_by_invite_code (RPC, devolve só nome+criador, não a
 -- linha inteira, para a tela de "confirmar entrada" antes de aceitar).
+drop policy if exists "communities_member_read" on public.communities;
 create policy "communities_member_read" on public.communities
-  for select using (
-    exists (select 1 from public.community_members cm where cm.community_id = communities.id and cm.user_id = auth.uid())
-  );
+  for select using (public.is_community_member(id));
 
+drop policy if exists "communities_creator_write" on public.communities;
 create policy "communities_creator_write" on public.communities
   for update using (creator_id = auth.uid());
 
+drop policy if exists "communities_creator_delete" on public.communities;
 create policy "communities_creator_delete" on public.communities
   for delete using (creator_id = auth.uid());
 
+drop policy if exists "communities_insert" on public.communities;
 create policy "communities_insert" on public.communities
   for insert with check (creator_id = auth.uid());
 
+drop policy if exists "communities_admin_all" on public.communities;
 create policy "communities_admin_all" on public.communities
   for all using (public.is_admin());
 
 -- ── community_members ───────────────────────────────────────
+drop policy if exists "community_members_read" on public.community_members;
 create policy "community_members_read" on public.community_members
-  for select using (
-    exists (select 1 from public.community_members cm2 where cm2.community_id = community_members.community_id and cm2.user_id = auth.uid())
-  );
+  for select using (public.is_community_member(community_id));
 
 -- Entrar num grupo: o community_id só chega até o client através de um
 -- link de convite válido (resolvido via get_community_by_invite_code) ou
 -- já sendo membro — o uuid funciona como token não adivinhável, mesmo
 -- princípio já usado no vínculo personal→aluno neste projeto.
+drop policy if exists "community_members_self_join" on public.community_members;
 create policy "community_members_self_join" on public.community_members
   for insert with check (auth.uid() = user_id);
 
 -- Sair do grupo (linha própria) ou o criador remover alguém.
+drop policy if exists "community_members_leave_or_remove" on public.community_members;
 create policy "community_members_leave_or_remove" on public.community_members
   for delete using (
-    auth.uid() = user_id
-    or exists (select 1 from public.communities c where c.id = community_members.community_id and c.creator_id = auth.uid())
+    auth.uid() = user_id or public.owns_community(community_id)
   );
 
+drop policy if exists "community_members_admin_all" on public.community_members;
 create policy "community_members_admin_all" on public.community_members
   for all using (public.is_admin());
 
@@ -1666,12 +1717,15 @@ create index if not exists idx_friend_connections_b on public.friend_connections
 
 alter table public.friend_connections enable row level security;
 
+drop policy if exists "friend_connections_read" on public.friend_connections;
 create policy "friend_connections_read" on public.friend_connections
   for select using (auth.uid() = user_id_a or auth.uid() = user_id_b);
 
+drop policy if exists "friend_connections_delete" on public.friend_connections;
 create policy "friend_connections_delete" on public.friend_connections
   for delete using (auth.uid() = user_id_a or auth.uid() = user_id_b);
 
+drop policy if exists "friend_connections_admin_all" on public.friend_connections;
 create policy "friend_connections_admin_all" on public.friend_connections
   for all using (public.is_admin());
 
