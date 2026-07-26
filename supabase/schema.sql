@@ -1840,7 +1840,7 @@ grant execute on function public.connect_via_friend_code(text) to authenticated;
 
 -- ── Minha lista de amigos, com resumo de atividade ───────────
 create or replace function public.get_my_friends()
-returns table (friend_id uuid, friend_name text, workouts_7d bigint, current_streak_dates date[])
+returns table (friend_id uuid, friend_name text, spotify_url text, workouts_7d bigint, current_streak_dates date[])
 language plpgsql
 security definer
 set search_path = public
@@ -1849,7 +1849,7 @@ as $$
 begin
   return query
   select
-    u.id, u.name,
+    u.id, u.name, u.spotify_url,
     (select count(*) from public.workout_logs w where w.user_id = u.id and w.date >= (current_date - interval '7 days')),
     (select array_agg(w.date order by w.date desc) from public.workout_logs w where w.user_id = u.id and w.date >= (current_date - interval '14 days'))
   from public.friend_connections fc
@@ -1887,6 +1887,68 @@ end;
 $$;
 
 grant execute on function public.get_friend_prs(uuid) to authenticated;
+
+-- ── Chat direto entre amigos (1-para-1) ──────────────────────
+-- Mesma ideia do chat de grupo (community_messages) e do chat
+-- personal↔aluno (messages) — aqui para a conexão direta entre duas
+-- pessoas. sender_id/receiver_id em vez de ligar a friend_connections.id
+-- porque uma conexão de amigo é sempre exatamente 2 pessoas, então não
+-- precisa de indireção nenhuma — mesmo formato já usado em messages.
+create table if not exists public.friend_messages (
+  id           uuid primary key default uuid_generate_v4(),
+  sender_id    uuid not null references public.users(id) on delete cascade,
+  receiver_id  uuid not null references public.users(id) on delete cascade,
+  content      text not null,
+  created_at   timestamptz default now()
+);
+
+create index if not exists idx_friend_messages_pair on public.friend_messages(sender_id, receiver_id, created_at);
+
+-- Registro no Realtime logo APÓS a tabela existir — na primeira versão
+-- do chat de grupo, esse registro tinha ficado num bloco mais acima no
+-- arquivo (que roda antes da tabela ser criada), e reaplicar o schema
+-- quebrava com "relation does not exist". Colocando aqui, fisicamente
+-- depois da criação da tabela, evita repetir o mesmo erro.
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'friend_messages'
+  ) then
+    alter publication supabase_realtime add table public.friend_messages;
+  end if;
+end $$;
+
+alter table public.friend_messages enable row level security;
+
+drop policy if exists "friend_messages_read" on public.friend_messages;
+create policy "friend_messages_read" on public.friend_messages
+  for select using (auth.uid() = sender_id or auth.uid() = receiver_id);
+
+-- Só manda mensagem pra quem de fato é seu amigo (existe uma linha em
+-- friend_connections entre os dois) — sem isso, bastaria adivinhar o
+-- uuid de qualquer usuário do Voryn pra mandar mensagem pra ele sem
+-- nunca terem se conectado.
+drop policy if exists "friend_messages_insert" on public.friend_messages;
+create policy "friend_messages_insert" on public.friend_messages
+  for insert with check (
+    auth.uid() = sender_id
+    and exists (
+      select 1 from public.friend_connections
+      where user_id_a = least(sender_id, receiver_id)
+        and user_id_b = greatest(sender_id, receiver_id)
+    )
+  );
+
+drop policy if exists "friend_messages_delete_own" on public.friend_messages;
+create policy "friend_messages_delete_own" on public.friend_messages
+  for delete using (auth.uid() = sender_id);
+
+drop policy if exists "friend_messages_admin_all" on public.friend_messages;
+create policy "friend_messages_admin_all" on public.friend_messages
+  for all using (public.is_admin());
 
 -- ============================================================
 --  CHAT DE GRUPO — comunidades

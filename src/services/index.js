@@ -1019,4 +1019,44 @@ export const friendService = {
     return supabase.from('friend_connections').delete()
       .or(`and(user_id_a.eq.${myId},user_id_b.eq.${friendId}),and(user_id_a.eq.${friendId},user_id_b.eq.${myId})`)
   },
+
+  // ── Chat direto (1-para-1) ───────────────────────────────────
+  // Mesmo padrão de messageService/communityService — busca as mensagens
+  // nos dois sentidos (eu→amigo e amigo→eu), já que não tem uma coluna
+  // única de "conversa" nessa tabela.
+  async getMessages(myId, friendId) {
+    try {
+      const { data, error } = await supabase
+        .from('friend_messages')
+        .select('*')
+        .or(`and(sender_id.eq.${myId},receiver_id.eq.${friendId}),and(sender_id.eq.${friendId},receiver_id.eq.${myId})`)
+        .order('created_at', { ascending: true })
+      if (error) throw error
+      return { data: data || [], error: null }
+    } catch (err) {
+      console.error('[Voryn] friendService.getMessages falhou:', err)
+      return { data: [], error: err }
+    }
+  },
+
+  async sendMessage(myId, friendId, content) {
+    return supabase
+      .from('friend_messages')
+      .insert({ sender_id: myId, receiver_id: friendId, content })
+      .select().single()
+  },
+
+  subscribeMessages(myId, friendId, callback) {
+    // Filtra só por receiver_id=eq.myId (mensagens chegando PRA mim) — as
+    // que EU mando já entram na tela na hora, direto do retorno de
+    // sendMessage, sem precisar esperar o Realtime confirmar de volta.
+    return supabase
+      .channel(`friend_chat_${[myId, friendId].sort().join('_')}`)
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'friend_messages',
+          filter: `receiver_id=eq.${myId}` },
+        payload => { if (payload.new.sender_id === friendId) callback(payload.new) }
+      )
+      .subscribe()
+  },
 }

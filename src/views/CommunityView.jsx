@@ -513,6 +513,7 @@ function FriendDetail({ friend, onBack }) {
   const [prs,     setPrs]     = useState([])
   const [loading, setLoading] = useState(true)
   const [confirmRemove, setConfirmRemove] = useState(false)
+  const [detailTab, setDetailTab] = useState('chat') // 'chat' | 'perfil'
   const { user } = useAuth()
 
   useEffect(() => {
@@ -538,7 +539,7 @@ function FriendDetail({ friend, onBack }) {
         Voltar
       </button>
 
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3 mb-4">
         <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 font-display text-2xl"
           style={{ background: 'rgba(var(--accent-rgb),.1)', color: 'var(--accent)' }}>
           {friend.friend_name?.charAt(0).toUpperCase() || '?'}
@@ -551,44 +552,157 @@ function FriendDetail({ friend, onBack }) {
         </div>
       </div>
 
-      <p className="f-label mb-2">Recordes</p>
-      {loading ? (
-        <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>Carregando...</p>
-      ) : prs.length === 0 ? (
-        <p className="text-sm" style={{ color: 'var(--text-3)' }}>Nenhum recorde registrado ainda.</p>
-      ) : (
-        <div className="space-y-2">
-          {prs.map((p, i) => (
-            <div key={i} className="f-card p-3 flex items-center gap-3">
-              <span className="text-lg flex-shrink-0">🏆</span>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>{p.exercise}</p>
-                <p className="text-xs" style={{ color: 'var(--text-3)' }}>
-                  {p.weight}kg × {p.reps} · {formatDateShort(p.pr_date)}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div className="mt-8 pt-4" style={{ borderTop: '1px solid var(--border)' }}>
-        {!confirmRemove ? (
-          <button onClick={() => setConfirmRemove(true)}
-            className="text-xs" style={{ color: 'rgba(239,68,68,.6)' }}>
-            Desfazer conexão
+      {/* Sub-tabs: Chat (padrão) | Perfil */}
+      <div className="flex gap-2 mb-4 p-1 rounded-xl" style={{ background: 'var(--surface)' }}>
+        {[['chat', '💬 Chat'], ['perfil', '👤 Perfil']].map(([id, label]) => (
+          <button key={id} onClick={() => setDetailTab(id)}
+            className="flex-1 py-2 rounded-lg text-sm font-semibold transition-all"
+            style={{
+              background: detailTab === id ? 'var(--accent)' : 'transparent',
+              color: detailTab === id ? '#fff' : 'var(--text-3)',
+            }}>
+            {label}
           </button>
-        ) : (
-          <div className="f-card p-3.5 space-y-2" style={{ borderColor: 'rgba(239,68,68,.3)' }}>
-            <p className="text-xs" style={{ color: 'var(--text-2)' }}>
-              Vocês podem se conectar de novo depois, se alguém mandar o link.
-            </p>
-            <div className="flex gap-2">
-              <Button variant="danger" size="sm" onClick={handleRemove}>Confirmar</Button>
-              <button onClick={() => setConfirmRemove(false)} className="text-xs px-3" style={{ color: 'var(--text-3)' }}>Cancelar</button>
+        ))}
+      </div>
+
+      {detailTab === 'chat' ? (
+        <ChatFriend myId={user.id} friendId={friend.friend_id} friendName={friend.friend_name}/>
+      ) : (
+        <>
+          {/* Spotify */}
+          {friend.spotify_url && (
+            <a href={friend.spotify_url} target="_blank" rel="noopener noreferrer"
+              className="f-card p-3.5 mb-4 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#1DB95420' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#1DB954">
+                  <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>Playlist de treino</p>
+                <p className="text-xs truncate" style={{ color: 'var(--text-3)' }}>{friend.spotify_url}</p>
+              </div>
+            </a>
+          )}
+
+          <p className="f-label mb-2">Recordes</p>
+          {loading ? (
+            <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>Carregando...</p>
+          ) : prs.length === 0 ? (
+            <p className="text-sm" style={{ color: 'var(--text-3)' }}>Nenhum recorde registrado ainda.</p>
+          ) : (
+            <div className="space-y-2">
+              {prs.map((p, i) => (
+                <div key={i} className="f-card p-3 flex items-center gap-3">
+                  <span className="text-lg flex-shrink-0">🏆</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>{p.exercise}</p>
+                    <p className="text-xs" style={{ color: 'var(--text-3)' }}>
+                      {p.weight}kg × {p.reps} · {formatDateShort(p.pr_date)}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
+          )}
+
+          <div className="mt-8 pt-4" style={{ borderTop: '1px solid var(--border)' }}>
+            {!confirmRemove ? (
+              <button onClick={() => setConfirmRemove(true)}
+                className="text-xs" style={{ color: 'rgba(239,68,68,.6)' }}>
+                Desfazer conexão
+              </button>
+            ) : (
+              <div className="f-card p-3.5 space-y-2" style={{ borderColor: 'rgba(239,68,68,.3)' }}>
+                <p className="text-xs" style={{ color: 'var(--text-2)' }}>
+                  Vocês podem se conectar de novo depois, se alguém mandar o link.
+                </p>
+                <div className="flex gap-2">
+                  <Button variant="danger" size="sm" onClick={handleRemove}>Confirmar</Button>
+                  <button onClick={() => setConfirmRemove(false)} className="text-xs px-3" style={{ color: 'var(--text-3)' }}>Cancelar</button>
+                </div>
+              </div>
+            )}
           </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+function ChatFriend({ myId, friendId, friendName }) {
+  const [msgs,    setMsgs]    = useState([])
+  const [input,   setInput]   = useState('')
+  const [loading, setLoading] = useState(true)
+  const bottomRef = useRef(null)
+
+  // Mesmo dedup já corrigido no chat personal↔aluno e no de grupo — evita
+  // mensagem duplicada quando o retorno do envio e o Realtime chegam
+  // quase juntos.
+  function addMsg(msg) {
+    setMsgs(m => m.some(x => x.id === msg.id) ? m : [...m, msg])
+  }
+
+  useEffect(() => {
+    if (!myId || !friendId) return
+    friendService.getMessages(myId, friendId).then(({ data }) => {
+      setMsgs(data || [])
+      setLoading(false)
+    })
+    const sub = friendService.subscribeMessages(myId, friendId, msg => addMsg(msg))
+    return () => sub?.unsubscribe?.()
+  }, [myId, friendId])
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [msgs])
+
+  async function send() {
+    const text = input.trim(); if (!text) return
+    setInput('')
+    const { data, error } = await friendService.sendMessage(myId, friendId, text)
+    if (data) addMsg(data)
+    if (error) console.error('[Voryn] ChatFriend send error:', error)
+  }
+
+  return (
+    <div className="flex flex-col" style={{ height: 'calc(100vh - 340px)' }}>
+      <div className="flex-1 overflow-y-auto space-y-3 py-2">
+        {loading ? (
+          <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>Carregando...</p>
+        ) : msgs.length === 0 ? (
+          <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>
+            Nenhuma mensagem ainda. Manda um "oi" pra {friendName?.split(' ')[0] || 'ele'} 👋
+          </p>
+        ) : (
+          msgs.map(m => {
+            const isMe = m.sender_id === myId
+            return (
+              <div key={m.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                <div className="max-w-xs px-4 py-2.5 rounded-2xl text-sm"
+                  style={{
+                    background: isMe ? 'var(--accent)' : 'var(--card)',
+                    color: isMe ? '#fff' : 'var(--text-1)',
+                    border: isMe ? 'none' : '1px solid var(--border)',
+                  }}>
+                  {m.content}
+                </div>
+              </div>
+            )
+          })
         )}
+        <div ref={bottomRef}/>
+      </div>
+      <div className="flex gap-2 pt-2" style={{ borderTop: '1px solid var(--border)' }}>
+        <input className="f-input flex-1" placeholder={`Mensagem para ${friendName?.split(' ')[0] || 'ele'}...`} value={input}
+          onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()}/>
+        <button onClick={send} className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+          style={{ background: 'var(--accent)' }}>
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
       </div>
     </div>
   )
