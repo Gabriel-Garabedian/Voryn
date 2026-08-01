@@ -1839,6 +1839,16 @@ $$;
 grant execute on function public.connect_via_friend_code(text) to authenticated;
 
 -- ── Minha lista de amigos, com resumo de atividade ───────────
+-- DROP explícito antes do CREATE OR REPLACE: diferente de policies e da
+-- maioria das funções deste schema, "create or replace" não é suficiente
+-- quando o FORMATO de saída de uma function muda (aqui, adicionamos a
+-- coluna spotify_url no meio do retorno de uma função que já existia
+-- rodando com um formato diferente). O Postgres recusa a substituição
+-- nesse caso especificamente ("cannot change return type of existing
+-- function") e pede pra apagar a versão antiga primeiro — é isso que
+-- este DROP faz, de forma seguro pra reaplicar quantas vezes precisar.
+drop function if exists public.get_my_friends();
+
 create or replace function public.get_my_friends()
 returns table (friend_id uuid, friend_name text, spotify_url text, workouts_7d bigint, current_streak_dates date[])
 language plpgsql
