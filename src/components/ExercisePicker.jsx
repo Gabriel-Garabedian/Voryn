@@ -86,7 +86,7 @@ export default function ExercisePicker({ onSelect, onClose, onCustom }) {
         {/* Custom exercise option */}
         {query.trim().length > 0 && (
           <button
-            onClick={() => onCustom?.(query.trim()) ?? onSelect({ id: `custom_${Date.now()}`, name: query.trim(), muscle: 'Outro', equipment: 'Livre', type: 'compound' })}
+            onClick={() => onCustom ? onCustom(query.trim()) : onSelect({ id: `custom_${Date.now()}`, name: query.trim(), muscle: 'Outro', equipment: 'Livre', type: 'compound' })}
             className="w-full f-card p-3 flex items-center gap-3 transition-all text-left"
             style={{ borderStyle: 'dashed', borderColor: 'rgba(var(--accent-rgb),.35)' }}>
             <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"

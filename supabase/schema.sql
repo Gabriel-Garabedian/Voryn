@@ -2025,4 +2025,3 @@ create policy "community_messages_admin_all" on public.community_messages
 -- ============================================================
 --  FIM DO SCHEMA
 -- ============================================================
- 

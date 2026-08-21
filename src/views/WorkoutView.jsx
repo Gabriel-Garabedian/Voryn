@@ -342,7 +342,7 @@ export default function WorkoutView() {
     activeWorkoutService.save(updated)
     setWorkout(updated)
     if (!wasDone) setLastSeriesDone((prev) => prev + 1)
-    setShowRest(true)
+    if (!wasDone) setShowRest(true)
 
     // Avança pro próximo exercício não concluído automaticamente — só
     // quando é o exercício que estava expandido que acabou de ser
