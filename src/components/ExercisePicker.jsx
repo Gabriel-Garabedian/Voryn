@@ -6,7 +6,7 @@ const AC = 'var(--accent)'
 
 const TYPE_LABEL = { compound: 'Composto', isolation: 'Isolado', cardio: 'Cardio' }
 const TYPE_COLOR = {
-  compound:  { bg: 'rgba(var(--accent-rgb),.1)',  color: '#A855F7' },
+  compound:  { bg: 'rgba(var(--accent-rgb),.1)',  color: 'var(--accent-2)' },
   isolation: { bg: 'rgba(74,222,128,.08)', color: '#4ade80' },
   cardio:    { bg: 'rgba(248,113,113,.1)', color: '#f87171' },
 }

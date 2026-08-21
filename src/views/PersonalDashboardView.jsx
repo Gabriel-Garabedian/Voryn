@@ -58,7 +58,7 @@ function StudentCard({ student, onSelect, inactive, pendingAssessment, lastWorko
         <p className="text-xs font-medium" style={{ color: lastWorkout.color }}>{lastWorkout.text}</p>
         <div className="flex flex-wrap items-center gap-2 mt-0.5">
           {pendingAssessment && (
-            <span className="text-xs font-semibold flex items-center gap-1" style={{ color:'#A855F7' }}>
+            <span className="text-xs font-semibold flex items-center gap-1" style={{ color:'var(--accent-2)' }}>
               <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
               </svg>
@@ -844,7 +844,7 @@ export default function PersonalDashboardView() {
                 <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
               </svg>
             ),
-            color: '#A855F7', bg: 'rgba(168,85,247,.08)', border: 'rgba(168,85,247,.2)',
+            color: 'var(--accent-2)', bg: 'rgba(var(--accent-rgb),.08)', border: 'rgba(var(--accent-rgb),.2)',
             urgent: (dashStats?.pendingAssessments ?? 0) > 0,
           },
         ].map(s => (

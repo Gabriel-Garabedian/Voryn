@@ -648,7 +648,7 @@ export default function WorkoutView() {
                     ? <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="3">
                         <polyline points="20 6 9 17 4 12"/>
                       </svg>
-                    : <span className="font-display text-xs" style={{ color: AC }}>{ei + 1}</span>
+                    : <span className="font-display text-xs" style={{ color: 'var(--text-3)' }}>{ei + 1}</span>
                   }
                 </div>
                 <div className="flex-1 min-w-0">
@@ -682,7 +682,7 @@ export default function WorkoutView() {
                     ? <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="3">
                         <polyline points="20 6 9 17 4 12"/>
                       </svg>
-                    : <span className="font-display text-xs" style={{ color: AC }}>{ei + 1}</span>
+                    : <span className="font-display text-xs" style={{ color: 'var(--text-3)' }}>{ei + 1}</span>
                   }
                 </div>
                 <button onClick={() => {
@@ -755,7 +755,7 @@ export default function WorkoutView() {
                         className="w-9 h-9 rounded-xl flex items-center justify-center mx-auto transition-all"
                         style={{
                           background: set.done ? AC : 'transparent',
-                          border: `2px solid ${set.done ? AC : 'var(--border)'}`,
+                          border: `2px solid ${set.done ? AC : 'var(--text-3)'}`,
                           boxShadow: set.done ? '0 0 10px rgba(var(--accent-rgb),.35)' : 'none',
                         }}>
                         {set.done && (
@@ -771,7 +771,7 @@ export default function WorkoutView() {
                       {ex.sets.length > 1 ? (
                         <button onClick={() => removeSet(ei, si)} aria-label="Remover série"
                           className="w-6 h-6 rounded-md flex items-center justify-center mx-auto"
-                          style={{ color: 'var(--text-3)' }}>
+                          style={{ color: 'var(--border)' }}>
                           <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                             <polyline points="3 6 5 6 21 6"/>
                             <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>

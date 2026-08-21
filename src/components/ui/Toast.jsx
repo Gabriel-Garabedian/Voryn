@@ -29,8 +29,8 @@ const ICONS = {
 const STYLES = {
   success: { bg: 'rgba(74,222,128,.12)', border: 'rgba(74,222,128,.3)', color: '#4ade80' },
   error:   { bg: 'rgba(248,113,113,.12)', border: 'rgba(248,113,113,.3)', color: '#f87171' },
-  info:    { bg: 'rgba(var(--accent-rgb),.12)', border: 'rgba(var(--accent-rgb),.3)', color: '#A855F7' },
-  loading: { bg: 'rgba(var(--accent-rgb),.12)', border: 'rgba(var(--accent-rgb),.3)', color: '#A855F7' },
+  info:    { bg: 'rgba(var(--accent-rgb),.12)', border: 'rgba(var(--accent-rgb),.3)', color: 'var(--accent-2)' },
+  loading: { bg: 'rgba(var(--accent-rgb),.12)', border: 'rgba(var(--accent-rgb),.3)', color: 'var(--accent-2)' },
 }
 
 function ToastItem({ toast, onRemove }) {

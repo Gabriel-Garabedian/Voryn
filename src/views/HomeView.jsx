@@ -35,7 +35,7 @@ const QUICK_ACTIONS = [
       <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
         <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
       </svg>
-    ), label:'Ver Evolução', path:'evolution', color: 'rgba(var(--accent-rgb),.12)', accent: '#A855F7' },
+    ), label:'Ver Evolução', path:'evolution', color: 'rgba(var(--accent-rgb),.12)', accent: 'var(--accent-2)' },
   { icon: (
       <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
         <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
