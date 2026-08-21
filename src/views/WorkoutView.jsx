@@ -357,6 +357,36 @@ export default function WorkoutView() {
     }
   }
 
+  // Marca todas as séries de UM exercício como concluídas de uma vez.
+  // Não dispara o timer de descanso nem o contador de série consecutiva
+  // (lastSeriesDone/showRest) — isso é pensado pra quando a pessoa já fez
+  // o exercício inteiro e só quer confirmar de uma vez, não pra passar por
+  // cada descanso entre séries que ela já terminou.
+  function completeAllSets(ei) {
+    const updated = {
+      ...workout,
+      exercises: workout.exercises.map((ex, eii) =>
+        eii !== ei ? ex : { ...ex, sets: ex.sets.map(s => ({ ...s, done: true })) }
+      )
+    }
+    activeWorkoutService.save(updated)
+    setWorkout(updated)
+    if (ei === expandedEx) {
+      const nextIdx = updated.exercises.findIndex((ex, i) => i > ei && !ex.sets.every(s => s.done))
+      if (nextIdx !== -1) setExpandedEx(nextIdx)
+    }
+  }
+
+  // Marca o treino inteiro (todos os exercícios) como concluído de uma vez.
+  function completeAllWorkout() {
+    const updated = {
+      ...workout,
+      exercises: workout.exercises.map(ex => ({ ...ex, sets: ex.sets.map(s => ({ ...s, done: true })) }))
+    }
+    activeWorkoutService.save(updated)
+    setWorkout(updated)
+  }
+
   function addSet(ei) {
     const updated = {
       ...workout,
@@ -565,6 +595,13 @@ export default function WorkoutView() {
           <span className="text-xs whitespace-nowrap" style={{ color: 'var(--text-3)' }}>
             {doneSets}/{totalSets} séries
           </span>
+          {doneSets < totalSets && (
+            <button onClick={completeAllWorkout}
+              className="text-xs font-semibold whitespace-nowrap flex-shrink-0"
+              style={{ color: AC }}>
+              marcar tudo
+            </button>
+          )}
         </div>
 
         {/* Rest timer config */}
@@ -662,6 +699,16 @@ export default function WorkoutView() {
                 <span className="text-xs font-semibold" style={{ color: exDone ? AC : 'var(--text-3)' }}>
                   {exDone ? 'Concluído ✓' : `${doneCount}/${ex.sets.length}`}
                 </span>
+                {!exDone && (
+                  <button onClick={() => completeAllSets(ei)} aria-label="Marcar todas as séries como concluídas"
+                    title="Marcar todas como concluídas"
+                    className="flex-shrink-0 p-1" style={{ color: 'var(--text-3)' }}>
+                    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path d="M9 11l3 3L22 4"/>
+                      <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                    </svg>
+                  </button>
+                )}
                 {/* Recolher de volta pra linha-resumo — escondido quando é
                     o único exercício do treino (não teria pra onde ir). */}
                 {workout.exercises.length > 1 && (
