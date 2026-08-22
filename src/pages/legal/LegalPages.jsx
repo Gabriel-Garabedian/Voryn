@@ -13,7 +13,7 @@ function LegalLayout({ title, children }) {
         </Link>
         <div className="flex items-center gap-3 mb-8">
           <img src="/voryn-icon-192.png" alt="Voryn" className="w-10 h-10 rounded-xl"
-            style={{ boxShadow: '0 0 16px rgba(130,10,209,.4)' }} />
+            style={{ boxShadow: '0 0 16px rgba(var(--accent-rgb),.4)' }} />
           <div>
             <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
               {title}

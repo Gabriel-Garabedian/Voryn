@@ -223,7 +223,7 @@ function NoWorkout({ user, onStart }) {
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                   style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
                   <svg width="20" height="20" fill="none" viewBox="0 0 24 24"
-                    stroke="var(--muted)" strokeWidth="1.8">
+                    stroke="var(--muted)" strokeWidth="2">
                     <polygon points="5 3 19 12 5 21 5 3"/>
                   </svg>
                 </div>

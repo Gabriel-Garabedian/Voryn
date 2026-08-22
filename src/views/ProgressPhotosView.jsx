@@ -78,7 +78,7 @@ function UploadCard({ studentId, onUploaded }) {
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
             <div className="w-12 h-12 rounded-2xl flex items-center justify-center"
               style={{ background: 'rgba(var(--accent-rgb),.1)' }}>
-              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke={AC} strokeWidth="1.5">
+              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke={AC} strokeWidth="2">
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
                 <polyline points="17 8 12 3 7 8"/>
                 <line x1="12" y1="3" x2="12" y2="15"/>

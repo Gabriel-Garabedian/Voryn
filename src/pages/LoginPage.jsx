@@ -7,7 +7,7 @@ function VorynLogo() {
   return (
     <div className="flex items-center justify-center gap-3 mb-2">
       <img src="/voryn-icon-192.png" alt="Voryn" className="w-12 h-12 rounded-2xl"
-        style={{ boxShadow: '0 0 24px rgba(130,10,209,.5)' }} />
+        style={{ boxShadow: '0 0 24px rgba(var(--accent-rgb),.5)' }} />
       <span className="font-display text-4xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
         Voryn
       </span>
@@ -20,7 +20,7 @@ function AuthCard({ children, title, sub }) {
     <div className="min-h-screen flex flex-col items-center justify-center px-6"
       style={{ background: 'var(--bg)' }}>
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle,rgba(130,10,209,.08) 0%,transparent 70%)' }}/>
+        style={{ background: 'radial-gradient(circle,rgba(var(--accent-rgb),.08) 0%,transparent 70%)' }}/>
       <div className="w-full max-w-sm relative z-10 animate-slide-up">
         <div className="text-center mb-8">
           <VorynLogo />

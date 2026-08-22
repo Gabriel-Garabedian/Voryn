@@ -40,7 +40,7 @@ export default class ErrorBoundary extends React.Component {
         </p>
         <button onClick={this.handleReload}
           className="px-8 py-3 rounded-xl font-semibold text-sm"
-          style={{ background: '#820AD1', color: '#fff', border: 'none', cursor: 'pointer' }}>
+          style={{ background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer' }}>
           Recarregar
         </button>
       </div>

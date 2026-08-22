@@ -355,7 +355,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
               <div className="text-center py-10">
                 <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center"
                   style={{ background: 'rgba(var(--accent-rgb),.06)', border: '1px dashed rgba(var(--accent-rgb),.2)' }}>
-                  <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke={AC} strokeWidth="1.5" opacity=".4">
+                  <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke={AC} strokeWidth="2" opacity=".4">
                     <path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"/>
                   </svg>
                 </div>

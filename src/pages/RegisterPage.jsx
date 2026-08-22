@@ -41,7 +41,7 @@ function InviteSuccessScreen({ trainerName, onContinue }) {
             style={{ background: 'rgba(130,10,209,.15)', animationDuration: '1.5s' }}/>
           <div className="w-24 h-24 rounded-full flex items-center justify-center relative"
             style={{ background: 'linear-gradient(135deg,rgba(130,10,209,.25),rgba(130,10,209,.1))', border: '2px solid rgba(130,10,209,.4)' }}>
-            <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="1.8">
+            <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2">
               <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
               <circle cx="9" cy="7" r="4"/>
               <path d="M23 21v-2a4 4 0 00-3-3.87"/>

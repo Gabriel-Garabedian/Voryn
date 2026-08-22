@@ -200,7 +200,7 @@ function Testimonials() {
             QUEM USA,<br/>NÃO LARGA.
           </h2>
         </div>
-        <div className="lp-reveal" className="lp-pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
+        <div className="lp-reveal lp-pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
           {tests.map(t => (
             <div key={t.name} style={{ background: '#18181f', border: '1px solid rgba(255,255,255,.06)', borderRadius: 20, padding: '28px 24px' }}>
               <div style={{ display: 'flex', gap: 2, marginBottom: 16 }}>
@@ -239,7 +239,7 @@ function Pricing() {
             14 dias grátis em todos os planos — sem cartão necessário
           </div>
         </div>
-        <div className="lp-reveal" className="lp-pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
+        <div className="lp-reveal lp-pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
           {plans.map(plan => (
             <div key={plan.id} style={{ background: '#18181f', border: `1px solid ${plan.highlight ? '#820AD1' : 'rgba(255,255,255,.06)'}`, borderRadius: 24, padding: '32px 28px', display: 'flex', flexDirection: 'column', position: 'relative', boxShadow: plan.highlight ? '0 0 40px rgba(130,10,209,.15)' : 'none' }}>
               {plan.highlight && (

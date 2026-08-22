@@ -48,7 +48,7 @@ export default function ExerciseMediaCarousel({ media = [], title, subtitle, asp
         // Estado vazio — sem foto/vídeo cadastrado ainda pra este
         // exercício. Não é um erro, é o estado padrão hoje pra todos.
         <div className="w-full h-full flex flex-col items-center justify-center gap-2 px-6 text-center">
-          <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="var(--text-3)" strokeWidth="1.5">
+          <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="var(--text-3)" strokeWidth="2">
             <rect x="3" y="3" width="18" height="18" rx="2"/>
             <circle cx="8.5" cy="8.5" r="1.5"/>
             <path d="M21 15l-5-5L5 21"/>

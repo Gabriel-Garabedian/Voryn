@@ -369,7 +369,7 @@ export default function PersonalInviteGuide({ onClose, trainerId, onStudentAdded
             style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
             onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(var(--accent-rgb),.4)'}
             onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="1.8">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2">
               <rect x="3" y="3" width="7" height="7" rx="1"/>
               <rect x="14" y="3" width="7" height="7" rx="1"/>
               <rect x="3" y="14" width="7" height="7" rx="1"/>

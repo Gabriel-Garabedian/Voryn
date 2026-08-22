@@ -47,7 +47,7 @@ export default function PricingPage() {
               className="f-card p-6 flex flex-col relative"
               style={plan.highlight ? {
                 borderColor: 'var(--accent)',
-                boxShadow: '0 0 30px rgba(130,10,209,.2)',
+                boxShadow: '0 0 30px rgba(var(--accent-rgb),.2)',
               } : {}}>
 
               {plan.highlight && (
@@ -89,7 +89,7 @@ export default function PricingPage() {
               <Link to={`/checkout/${plan.id}`}
                 className="f-btn text-sm font-semibold py-3 px-6 rounded-xl text-center w-full"
                 style={plan.highlight
-                  ? { background: 'var(--accent)', color: '#fff', boxShadow: '0 0 20px rgba(130,10,209,.35)' }
+                  ? { background: 'var(--accent)', color: '#fff', boxShadow: '0 0 20px rgba(var(--accent-rgb),.35)' }
                   : { background: 'var(--surface)', color: 'var(--text-1)', border: '1px solid var(--border)' }}>
                 Começar grátis
               </Link>
