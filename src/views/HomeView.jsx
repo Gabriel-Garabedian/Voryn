@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext'
 import { workoutLogService, routineService } from '@/services'
 import { calcStreak, calcBestStreak, localDateKey, getSubscription } from '@/utils/helpers'
 import { SkeletonHome } from '@/components/ui/Skeleton'
+import WorkoutLogModal from '@/components/WorkoutLogModal'
 
 const MONTHS    = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
 const DAYS_ABR  = ['D','S','T','Q','Q','S','S']
@@ -144,6 +145,7 @@ export default function HomeView() {
   const [lastWeek,     setLastWeek]     = useState(null)
   const [loading,      setLoading]      = useState(true)
   const [streakFlash,  setStreakFlash]  = useState(false)
+  const [openLogDate,  setOpenLogDate]  = useState(null)
 
   const todayKey = localDateKey(today)
 
@@ -204,6 +206,7 @@ export default function HomeView() {
   if (loading) return <SkeletonHome/>
 
   return (
+    <>
     <div className="app-view home-view px-4 pt-6 pb-6 space-y-5">
 
       {/* Trial banner */}
@@ -343,6 +346,9 @@ export default function HomeView() {
             const isToday = k === todayKey
             return (
               <div key={d}
+                onClick={trained ? () => setOpenLogDate(k) : undefined}
+                role={trained ? 'button' : undefined}
+                aria-label={trained ? `Ver treino de ${d}/${calMonth + 1}` : undefined}
                 className="aspect-square flex items-center justify-center rounded-lg text-sm font-medium transition-all"
                 style={{
                   background: trained ? AC : isToday ? 'rgba(var(--accent-rgb),.1)' : 'transparent',
@@ -350,6 +356,7 @@ export default function HomeView() {
                   fontWeight: (trained || isToday) ? 700 : 400,
                   border:     isToday && !trained ? `1.5px solid ${AC}` : '1.5px solid transparent',
                   boxShadow:  trained ? '0 0 10px rgba(var(--accent-rgb),.3)' : 'none',
+                  cursor:     trained ? 'pointer' : 'default',
                 }}>
                 {d}
               </div>
@@ -442,5 +449,10 @@ export default function HomeView() {
         </div>
       </div>
     </div>
+
+    {openLogDate && (
+      <WorkoutLogModal userId={user.id} date={openLogDate} onClose={() => setOpenLogDate(null)}/>
+    )}
+    </>
   )
 }

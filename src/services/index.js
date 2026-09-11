@@ -46,6 +46,26 @@ export const workoutLogService = {
     }
   },
 
+  // Busca o(s) treino(s) de um dia específico (formato 'YYYY-MM-DD'). Usado
+  // pelo calendário da Home: clicar num dia treinado busca só aquele
+  // registro, em vez de carregar o histórico inteiro pra isso. Retorna
+  // array (mesmo formato de getAll) porque, na teoria, dá pra ter mais de
+  // um treino registrado no mesmo dia.
+  async getByDate(userId, date) {
+    try {
+      const { data, error } = await supabase
+        .from('workout_logs')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('date', date)
+        .order('created_at', { ascending: false })
+      return { data: data || [], error }
+    } catch (err) {
+      console.error('[Voryn] workoutLogService.getByDate falhou (rede/parse):', err)
+      return { data: [], error: err }
+    }
+  },
+
   async create(userId, log) {
     const exercises  = log.exercises || []
     const totalSets  = exercises.reduce((a, ex) => a + (ex.sets?.length || 0), 0)
