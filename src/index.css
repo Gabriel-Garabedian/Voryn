@@ -354,14 +354,10 @@ body::after {
 .metric-wall {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px;
-  border: 1px solid var(--border);
-  background: var(--border);
+  gap: .5rem;
 }
 .metric-wall > * {
   min-width: 0;
-  padding: 12px 10px;
-  background: var(--card);
 }
 .metric-wall .font-display {
   color: var(--accent);
