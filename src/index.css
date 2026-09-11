@@ -499,3 +499,351 @@ body::after {
   .app-view::before { margin-left: 16px; }
   .native-dock { margin-left: 4px; margin-right: 4px; }
 }
+
+/* Voryn redesign — cleaner premium fitness look. */
+:root {
+  --bg: #06090f;
+  --surface: #0e1522;
+  --card: #141d2d;
+  --border: #253248;
+  --accent: #4f7dff;
+  --accent-dim: #3f64cc;
+  --accent-2: #8cb2ff;
+  --muted: #5f738f;
+  --text-1: #f3f7ff;
+  --text-2: #c5d1e6;
+  --text-3: #8ea2c0;
+  --accent-rgb: 79, 125, 255;
+  --surface-rgb: 14, 21, 34;
+  --card-rgb: 20, 29, 45;
+  --text-rgb: 243, 247, 255;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --shadow-card: 0 18px 42px rgba(3, 7, 15, .48);
+  --shadow-accent: 0 0 0 1px rgba(var(--accent-rgb), .22), 0 12px 34px rgba(var(--accent-rgb), .24);
+}
+
+.theme-light {
+  --bg: #f1f5fc;
+  --surface: #f8fbff;
+  --card: #ffffff;
+  --border: #d9e2f1;
+  --accent: #355fda;
+  --accent-dim: #284ab1;
+  --accent-2: #547df0;
+  --muted: #6f8098;
+  --text-1: #10223f;
+  --text-2: #2f4569;
+  --text-3: #5d7294;
+  --accent-rgb: 53, 95, 218;
+  --surface-rgb: 248, 251, 255;
+  --card-rgb: 255, 255, 255;
+  --text-rgb: 16, 34, 63;
+}
+
+body::before {
+  background-image:
+    radial-gradient(circle at 12% 12%, rgba(var(--accent-rgb), .18), transparent 34%),
+    radial-gradient(circle at 88% 20%, rgba(76, 227, 185, .1), transparent 26%),
+    linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.024) 1px, transparent 1px);
+  background-size: auto, auto, 30px 30px, 30px 30px;
+  mask-image: linear-gradient(to bottom, black 0%, transparent 94%);
+}
+body::after {
+  background: linear-gradient(180deg, rgba(var(--accent-rgb), .08), transparent 30%);
+}
+
+.f-card, .glass-card, .glass-panel {
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in srgb, var(--border) 85%, white 15%);
+  background: linear-gradient(180deg, rgba(var(--card-rgb), .94), rgba(var(--surface-rgb), .92));
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(14px);
+}
+.f-card::before, .glass-card::before, .glass-panel::before {
+  display: block;
+  background: linear-gradient(145deg, rgba(255,255,255,.08), transparent 34%, rgba(var(--accent-rgb), .06));
+}
+.f-card:hover, .glass-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(var(--accent-rgb), .42);
+  box-shadow: 0 24px 52px rgba(0,0,0,.4), 0 0 0 1px rgba(var(--accent-rgb), .2);
+}
+
+.f-btn, .f-input { border-radius: var(--radius-md); }
+.f-btn {
+  min-height: 46px;
+  font-weight: 700;
+}
+.f-btn-accent {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+  border-color: rgba(var(--accent-rgb), .45);
+  box-shadow: 0 14px 28px rgba(var(--accent-rgb), .3);
+}
+.f-btn-accent:hover:not(:disabled) {
+  filter: brightness(1.06);
+  box-shadow: 0 18px 32px rgba(var(--accent-rgb), .38);
+}
+.f-input {
+  min-height: 48px;
+  background: rgba(var(--surface-rgb), .94);
+  border-color: rgba(255,255,255,.12);
+}
+.f-input:hover { border-color: rgba(var(--accent-rgb), .35); }
+.f-input:focus { box-shadow: 0 0 0 4px rgba(var(--accent-rgb), .15); }
+
+.f-badge {
+  border-radius: var(--radius-pill);
+  letter-spacing: .08em;
+}
+
+.app-view {
+  padding-top: 10px;
+}
+.app-view::before {
+  width: 54px;
+  height: 4px;
+  margin: 14px 16px 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  box-shadow: 0 8px 20px rgba(var(--accent-rgb), .35);
+}
+.view-kicker,
+.section-index {
+  color: var(--accent-2);
+  letter-spacing: .15em;
+}
+.view-kicker::before,
+.section-index::before {
+  content: '●';
+  font-size: 8px;
+  color: var(--accent);
+}
+
+.metric-wall .f-card {
+  border-radius: var(--radius-md);
+}
+.status-strip {
+  border-radius: var(--radius-md);
+  border-left: 1px solid var(--border);
+  box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), .14);
+  background: linear-gradient(90deg, rgba(var(--accent-rgb), .12), rgba(var(--surface-rgb), .9) 25%);
+}
+
+.native-header {
+  background: linear-gradient(180deg, rgba(8,12,21,.96), rgba(8,12,21,.85));
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(14px);
+}
+.native-dock {
+  border-radius: 20px !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  background: linear-gradient(180deg, rgba(13,20,34,.96), rgba(10,16,28,.94)) !important;
+  box-shadow: 0 22px 36px rgba(0,0,0,.45);
+}
+.native-dock button { border-radius: 14px !important; }
+
+.auth-shell {
+  background:
+    radial-gradient(circle at 18% 15%, rgba(var(--accent-rgb), .22), transparent 38%),
+    linear-gradient(180deg, #06090f, #0a1321) !important;
+}
+.auth-shell .glass-panel {
+  border: 1px solid rgba(255,255,255,.14);
+  border-top: 1px solid rgba(255,255,255,.22);
+  border-radius: var(--radius-xl);
+}
+
+.landing-shell {
+  background: radial-gradient(circle at 50% -5%, rgba(var(--accent-rgb), .2), transparent 46%), var(--bg) !important;
+}
+.landing-shell section { border-radius: var(--radius-xl) !important; }
+.landing-shell .lp-reveal > div[style*="repeat(3,1fr)"] {
+  border-left: 0;
+}
+
+@media (max-width: 640px) {
+  .native-dock {
+    border-radius: 16px !important;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .app-view::before { width: 42px; }
+}
+
+.brand-hub {
+  padding: 6px 10px;
+  margin-left: -10px;
+  border-radius: 14px;
+  transition: background .2s ease;
+}
+.brand-hub:hover {
+  background: rgba(var(--accent-rgb), .08);
+}
+.profile-chip {
+  box-shadow: 0 10px 18px rgba(var(--accent-rgb), .22);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.profile-chip:hover {
+  transform: translateY(-1px) scale(1.02);
+  border-color: rgba(var(--accent-rgb), .62) !important;
+  box-shadow: 0 14px 24px rgba(var(--accent-rgb), .3);
+}
+.dock-item {
+  transition: background .2s ease, color .2s ease, transform .18s ease;
+}
+.dock-item:hover {
+  background: rgba(var(--accent-rgb), .1);
+}
+.qa-card {
+  border-color: rgba(255,255,255,.1);
+}
+.qa-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(var(--accent-rgb), .45) !important;
+}
+
+.landing-shell .lp-nav-link {
+  position: relative;
+  transition: color .2s ease !important;
+}
+.landing-shell .lp-nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform .2s ease;
+}
+.landing-shell .lp-nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+.landing-shell .lp-primary-cta,
+.landing-shell .lp-secondary-cta {
+  transition: transform .18s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease !important;
+}
+.landing-shell .lp-primary-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 36px rgba(var(--accent-rgb), .38) !important;
+}
+.landing-shell .lp-secondary-cta:hover {
+  transform: translateY(-2px);
+  border-color: rgba(var(--accent-rgb), .42) !important;
+  color: var(--text-1) !important;
+  background: rgba(var(--accent-rgb), .12) !important;
+}
+
+.landing-shell .lp-feature-card,
+.landing-shell .lp-testimonial-card,
+.landing-shell .lp-price-card,
+.landing-shell .lp-faq-item {
+  transition: transform .24s ease, box-shadow .24s ease, border-color .24s ease, background .24s ease;
+}
+.landing-shell .lp-feature-card:hover,
+.landing-shell .lp-testimonial-card:hover,
+.landing-shell .lp-price-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(var(--accent-rgb), .35) !important;
+  box-shadow: 0 24px 38px rgba(0,0,0,.32), 0 0 0 1px rgba(var(--accent-rgb), .16);
+}
+.landing-shell .lp-faq-item {
+  border-radius: 14px;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+.landing-shell .lp-faq-item:hover {
+  background: rgba(var(--accent-rgb), .06);
+}
+.landing-shell .lp-faq-trigger {
+  border-radius: 10px;
+  padding: 6px 2px;
+}
+.landing-shell .lp-faq-trigger:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 3px;
+}
+
+/* SaaS premium tier 3 — internal app-wide consistency. */
+.app-shell {
+  background:
+    radial-gradient(circle at 12% -10%, rgba(var(--accent-rgb), .14), transparent 35%),
+    radial-gradient(circle at 88% -18%, rgba(76, 227, 185, .08), transparent 30%),
+    var(--bg) !important;
+}
+.app-view {
+  letter-spacing: .005em;
+}
+.app-view h1,
+.app-view h2 {
+  text-wrap: balance;
+}
+.app-view .f-card,
+.app-view .glass-card,
+.app-view .glass-panel {
+  border-color: rgba(255,255,255,.12);
+  box-shadow: 0 16px 28px rgba(0,0,0,.28), 0 0 0 1px rgba(var(--accent-rgb), .08);
+}
+.app-view .f-card:hover,
+.app-view .glass-card:hover,
+.app-view .glass-panel:hover {
+  box-shadow: 0 22px 34px rgba(0,0,0,.34), 0 0 0 1px rgba(var(--accent-rgb), .2);
+}
+
+.app-view .f-label {
+  letter-spacing: .12em;
+  color: var(--text-2);
+}
+.app-view .f-input {
+  border-color: rgba(255,255,255,.14);
+  background: linear-gradient(180deg, rgba(var(--surface-rgb), .92), rgba(var(--surface-rgb), .8));
+}
+.app-view .f-input:focus {
+  border-color: rgba(var(--accent-rgb), .62);
+  box-shadow: 0 0 0 4px rgba(var(--accent-rgb), .16), 0 8px 22px rgba(var(--accent-rgb), .14);
+}
+.app-view .f-btn {
+  border-radius: 12px;
+  letter-spacing: .04em;
+}
+
+.app-view button:not(.f-btn):not(.dock-item):not(.profile-chip):not(.brand-hub),
+.app-view a:not(.f-btn):not(.dock-item):not(.profile-chip):not(.brand-hub) {
+  transition: transform .16s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
+}
+.app-view button:not(.f-btn):not(.dock-item):not(.profile-chip):not(.brand-hub):hover,
+.app-view a:not(.f-btn):not(.dock-item):not(.profile-chip):not(.brand-hub):hover {
+  transform: translateY(-1px);
+}
+.app-view button:not(.f-btn):focus-visible,
+.app-view a:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 3px;
+}
+
+.app-view .status-strip,
+.app-view .progress-chip,
+.app-view .summary-mark {
+  backdrop-filter: blur(8px);
+}
+.app-view .summary-mark {
+  border-left: 0;
+  border-radius: 999px;
+  background: rgba(var(--accent-rgb), .14);
+  color: var(--accent-2);
+  min-width: 34px;
+  min-height: 22px;
+  padding: 0 10px;
+}
+.app-view .view-kicker,
+.app-view .section-index {
+  color: color-mix(in srgb, var(--accent-2) 86%, #fff 14%);
+}

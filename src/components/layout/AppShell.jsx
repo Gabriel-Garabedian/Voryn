@@ -204,7 +204,7 @@ export default function AppShell() {
 
       <header className="app-header px-4 pt-4 pb-2 native-header">
         <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
-          <button onClick={() => navigate(base)} className="flex items-center gap-2.5 bg-transparent border-0 p-0 cursor-pointer" aria-label="Ir para início">
+          <button onClick={() => navigate(base)} className="brand-hub flex items-center gap-2.5 bg-transparent border-0 p-0 cursor-pointer" aria-label="Ir para início">
             <img src="/voryn-icon-192.png" alt="Voryn" className="w-9 h-9 rounded-xl" style={{ boxShadow: '0 0 18px rgba(var(--accent-rgb),.3)' }} />
             <div className="text-left">
               <div className="font-display text-xl uppercase tracking-widest leading-none">Voryn</div>
@@ -215,7 +215,7 @@ export default function AppShell() {
             <span className="hidden sm:block text-xs text-right" style={{ color: 'var(--text-3)' }}>
               Olá, <strong style={{ color: 'var(--text-2)' }}>{displayName}</strong>
             </span>
-            <button onClick={() => navigate(`${base}/profile`)} className="w-10 h-10 rounded-full flex items-center justify-center border cursor-pointer font-display text-lg" style={{ background: 'rgba(var(--accent-rgb),.16)', color: 'var(--accent-2)', borderColor: 'rgba(var(--accent-rgb),.35)' }} aria-label="Abrir perfil">
+            <button onClick={() => navigate(`${base}/profile`)} className="profile-chip w-10 h-10 rounded-full flex items-center justify-center border cursor-pointer font-display text-lg" style={{ background: 'rgba(var(--accent-rgb),.16)', color: 'var(--accent-2)', borderColor: 'rgba(var(--accent-rgb),.35)' }} aria-label="Abrir perfil">
               {displayName.charAt(0).toUpperCase()}
             </button>
             <span className="w-2 h-2 rounded-full" title="Status online" style={{ background: 'var(--success)', boxShadow: '0 0 10px rgba(61,220,151,.7)' }} />
@@ -252,7 +252,7 @@ export default function AppShell() {
             const active = isActive(item.path)
             return (
               <button key={item.path} onClick={() => handleNav(item.path)}
-                className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all relative active:scale-95 min-w-[58px]"
+                className="dock-item flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all relative active:scale-95 min-w-[58px]"
                 style={{ color: active ? 'var(--accent-2)' : 'var(--muted)', border: 'none', background: active ? 'rgba(var(--accent-rgb),.1)' : 'transparent', cursor: 'pointer' }}>
                 {active && (
                   <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-7 h-1 rounded-full"
