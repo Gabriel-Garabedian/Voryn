@@ -380,7 +380,18 @@ export default function HomeView() {
         <p className="font-display text-base uppercase tracking-widest mb-3"
           style={{ color: 'var(--text-3)' }}>Semana Atual</p>
         <div className="schedule-grid space-y-2">
-          {weekDays.map(({ date, dayIndex, plan, isToday, trained }) => (
+          {weekDays.map(({ date, dayIndex, plan, isToday, trained }) => {
+            // "Descanso" chega de duas formas dependendo do dia: às vezes plan
+            // é null (sem rotina no dia), às vezes é um plano de verdade com
+            // name:'Descanso' (e um exercício de mobilidade/alongamento
+            // dentro). Antes cada caminho tinha um visual diferente — um
+            // esmaecido a 25%, outro com o mesmo peso de PUSH/UPPER — e só o
+            // segundo mostrava contagem de exercício, no singular errado
+            // quando dava 1 ("1 exercícios"). Unificado: mesmo visual sempre,
+            // sem contagem em dia de descanso (não faz sentido pra esse caso).
+            const isRestDay = !plan?.name || plan.name === 'Descanso'
+            const exCount = plan?.exercises?.length || 0
+            return (
             <div key={dayIndex} className="f-card px-4 py-3 flex items-center gap-3 transition-all"
               style={isToday ? { borderColor: 'rgba(var(--accent-rgb),.4)', background: 'rgba(var(--accent-rgb),.04)' } : {}}>
               <div className="w-10 h-10 rounded-xl flex flex-col items-center justify-center flex-shrink-0"
@@ -399,17 +410,17 @@ export default function HomeView() {
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                {plan?.name
-                  ? <>
+                {isRestDay
+                  ? <p className="font-semibold text-sm" style={{ color: isToday ? AC : 'var(--text-1)' }}>Descanso</p>
+                  : <>
                       <p className="font-semibold text-sm truncate"
                         style={{ color: isToday ? AC : 'var(--text-1)' }}>
                         {plan.name}
                       </p>
                       <p className="text-xs" style={{ color: 'var(--text-3)' }}>
-                        {plan.exercises?.length || 0} exercícios
+                        {exCount} exercício{exCount === 1 ? '' : 's'}
                       </p>
                     </>
-                  : <p className="text-sm" style={{ color: 'rgba(var(--accent-rgb),.25)' }}>Descanso</p>
                 }
               </div>
               {trained && (
@@ -426,7 +437,8 @@ export default function HomeView() {
                 </button>
               )}
             </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </div>
