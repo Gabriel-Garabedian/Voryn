@@ -8,11 +8,11 @@ const DAYS_FULL  = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sáb
 const DAYS_SHORT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
 
 const GOALS = [
-  { id:'hypertrophy', label:'💪 Hipertrofia',    desc:'Ganhar músculo e força' },
-  { id:'fat_loss',    label:'🔥 Emagrecimento',  desc:'Perder gordura' },
-  { id:'endurance',   label:'🏃 Resistência',    desc:'Melhorar condicionamento' },
-  { id:'strength',    label:'🏋️ Força máxima',  desc:'Levantar mais peso' },
-  { id:'health',      label:'❤️ Saúde geral',   desc:'Qualidade de vida' },
+  { id:'hypertrophy', label:'Hipertrofia',    desc:'Ganhar músculo e força' },
+  { id:'fat_loss',    label:'Emagrecimento',  desc:'Perder gordura' },
+  { id:'endurance',   label:'Resistência',    desc:'Melhorar condicionamento' },
+  { id:'strength',    label:'Força máxima',  desc:'Levantar mais peso' },
+  { id:'health',      label:'Saúde geral',   desc:'Qualidade de vida' },
 ]
 
 const TRAINING_DAYS_PRESETS = [
@@ -98,7 +98,7 @@ export default function OnboardingView() {
   const AC = 'var(--accent)'
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-10"
+    <div className="app-view onboarding-view min-h-screen flex flex-col items-center justify-center px-6 py-10"
       style={{ background: 'var(--bg)' }}>
 
       {/* Background glow */}
@@ -108,6 +108,7 @@ export default function OnboardingView() {
       <div className="w-full max-w-sm relative z-10">
         {/* Logo */}
         <div className="text-center mb-8">
+          <p className="view-kicker justify-center">Start protocol / 00</p>
           <img src="/voryn-icon-192.png" alt="Voryn" className="w-14 h-14 rounded-2xl mx-auto mb-3"
             style={{ boxShadow: '0 0 28px rgba(var(--accent-rgb),.45)' }} />
           <p className="text-sm font-semibold" style={{ color: 'var(--text-3)' }}>
@@ -135,10 +136,10 @@ export default function OnboardingView() {
                     borderColor: goal === g.id ? AC : 'var(--border)',
                     background:  goal === g.id ? 'rgba(var(--accent-rgb),.06)' : 'var(--card)',
                   }}>
-                  <span className="text-xl flex-shrink-0">{g.label.split(' ')[0]}</span>
+                  <span className="goal-index flex-shrink-0">{String(GOALS.indexOf(g) + 1).padStart(2, '0')}</span>
                   <div>
                     <p className="font-semibold text-sm" style={{ color: 'var(--text-1)' }}>
-                      {g.label.split(' ').slice(1).join(' ')}
+                      {g.label}
                     </p>
                     <p className="text-xs" style={{ color: 'var(--text-3)' }}>{g.desc}</p>
                   </div>
@@ -241,7 +242,7 @@ export default function OnboardingView() {
 
             <div className="f-card p-5 mb-4 space-y-4" style={{ borderColor: 'rgba(var(--accent-rgb),.3)' }}>
               <div className="flex items-center gap-3">
-                <span className="text-2xl">🎯</span>
+                <span className="section-index">01</span>
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>Objetivo</p>
                   <p className="font-semibold text-sm" style={{ color: 'var(--text-1)' }}>
@@ -250,7 +251,7 @@ export default function OnboardingView() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-2xl">📅</span>
+                <span className="section-index">02</span>
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>Frequência</p>
                   <p className="font-semibold text-sm" style={{ color: 'var(--text-1)' }}>
@@ -259,7 +260,7 @@ export default function OnboardingView() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-2xl">✅</span>
+                <span className="section-index">03</span>
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>Rotina criada</p>
                   <p className="font-semibold text-sm" style={{ color: 'var(--text-1)' }}>
@@ -271,7 +272,7 @@ export default function OnboardingView() {
 
             <div className="f-card p-4 mb-6" style={{ background: 'rgba(74,222,128,.05)', borderColor: 'rgba(74,222,128,.2)' }}>
               <p className="text-sm" style={{ color: '#4ade80' }}>
-                🎉 Você tem <strong>14 dias grátis</strong> para explorar tudo. Sem cartão necessário.
+                Você tem <strong>14 dias grátis</strong> para explorar tudo. Sem cartão necessário.
               </p>
             </div>
 

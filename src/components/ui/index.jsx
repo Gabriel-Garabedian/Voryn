@@ -8,7 +8,7 @@ export function Button({ children, variant='accent', size='md', className, loadi
     accent:  'f-btn-accent',
     ghost:   'f-btn-ghost',
     danger:  'f-btn-danger',
-    outline: 'border border-[var(--border)] text-[var(--text-2)] hover:border-[var(--accent)] hover:text-[var(--accent)]',
+    outline: 'border border-[var(--border)] text-[var(--text-2)] hover:border-[var(--accent)] hover:text-[var(--accent)] bg-transparent',
   }
   const sizes = {
     sm: 'py-1.5 px-3 text-xs rounded-lg',
@@ -18,7 +18,7 @@ export function Button({ children, variant='accent', size='md', className, loadi
   }
   return (
     <button
-      className={clsx(base, variants[variant], sizes[size], 'disabled:opacity-50 disabled:cursor-not-allowed', className)}
+      className={clsx(base, variants[variant] || variants.accent, sizes[size] || sizes.md, 'disabled:opacity-50 disabled:cursor-not-allowed', className)}
       disabled={loading || props.disabled}
       {...props}
     >
@@ -46,12 +46,12 @@ export function Input({ label, error, className, ...props }) {
 
 // ── Card ───────────────────────────────────────────────────
 export function Card({ children, className, ...props }) {
-  return <div className={clsx('f-card p-4', className)} {...props}>{children}</div>
+  return <div className={clsx('f-card f-module p-5', className)} {...props}>{children}</div>
 }
 
 // ── Badge ──────────────────────────────────────────────────
 export function Badge({ children, variant='accent', className }) {
-  return <span className={clsx('f-badge', `f-badge-${variant}`, className)}>{children}</span>
+  return <span className={clsx('f-badge', `f-badge-${variant}`, 'backdrop-blur-sm', className)}>{children}</span>
 }
 
 // ── Modal ──────────────────────────────────────────────────
@@ -62,12 +62,12 @@ export function Modal({ open, onClose, title, children, size = 'md' }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: 'rgba(0,0,0,.7)', backdropFilter: 'blur(8px)' }}
       onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className={clsx('f-card w-full scale-in', sizes[size])}>
+      <div role="dialog" aria-modal="true" className={clsx('glass-panel w-full scale-in p-6', sizes[size])}>
         {title && (
-          <div className="flex items-center justify-between mb-4 pb-3"
+          <div className="flex items-center justify-between mb-5 pb-4"
             style={{ borderBottom: '1px solid var(--border)' }}>
-            <h3 className="font-semibold" style={{ color: 'var(--text-1)' }}>{title}</h3>
-            <button onClick={onClose} className="text-[var(--text-3)] hover:text-[var(--text-1)] transition-colors">
+            <h3 className="font-display text-2xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>{title}</h3>
+            <button aria-label="Fechar" onClick={onClose} className="f-btn f-btn-ghost p-2 min-h-0">
               <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
               </svg>
@@ -83,9 +83,9 @@ export function Modal({ open, onClose, title, children, size = 'md' }) {
 // ── Empty state ────────────────────────────────────────────
 export function EmptyState({ icon, title, description, action }) {
   return (
-    <div className="f-card p-10 text-center flex flex-col items-center gap-3">
-      {icon && <div className="text-4xl mb-1">{icon}</div>}
-      <p className="font-semibold text-base" style={{ color: 'var(--text-1)' }}>{title}</p>
+    <div className="glass-card f-empty-state p-10 text-center flex flex-col items-center gap-3">
+      {icon && <div className="f-empty-mark w-14 h-14 flex items-center justify-center text-2xl mb-1" style={{ background: 'rgba(var(--accent-rgb),.12)', border: '1px solid rgba(var(--accent-rgb),.25)' }}>{icon}</div>}
+      <p className="font-display text-2xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>{title}</p>
       {description && <p className="text-sm" style={{ color: 'var(--text-3)' }}>{description}</p>}
       {action}
     </div>
@@ -107,11 +107,11 @@ export function SectionHeader({ eyebrow, title, sub }) {
   return (
     <div className="mb-4">
       {eyebrow && (
-        <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--accent-2)' }}>
+        <p className="text-xs font-semibold uppercase tracking-[.2em] mb-1" style={{ color: 'var(--accent-2)' }}>
           {eyebrow}
         </p>
       )}
-      <h2 className="font-display text-2xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>{title}</h2>
+      <h2 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>{title}</h2>
       {sub && <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>{sub}</p>}
     </div>
   )
@@ -120,10 +120,14 @@ export function SectionHeader({ eyebrow, title, sub }) {
 // ── Stat card ──────────────────────────────────────────────
 export function StatCard({ label, value, sub, icon }) {
   return (
-    <div className="f-card p-4 text-center">
-      {icon && <div className="text-2xl mb-1">{icon}</div>}
-      <div className="font-display text-3xl leading-none" style={{ color: 'var(--accent)' }}>{value}</div>
-      <div className="text-xs font-semibold uppercase tracking-wider mt-1" style={{ color: 'var(--text-3)' }}>{label}</div>
+    <div className="glass-card f-stat-card p-4 text-left">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="font-display text-4xl leading-none" style={{ color: 'var(--accent)' }}>{value}</div>
+          <div className="text-xs font-semibold uppercase tracking-wider mt-2" style={{ color: 'var(--text-3)' }}>{label}</div>
+        </div>
+        {icon && <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg" style={{ background: 'rgba(var(--accent-rgb),.12)', border: '1px solid rgba(var(--accent-rgb),.25)' }}>{icon}</div>}
+      </div>
       {sub && <div className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>{sub}</div>}
     </div>
   )

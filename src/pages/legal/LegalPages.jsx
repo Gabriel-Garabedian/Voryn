@@ -21,7 +21,7 @@ function LegalLayout({ title, children }) {
             <p className="text-xs" style={{ color: 'var(--text-3)' }}>Voryn Tracker · Última atualização: Junho 2025</p>
           </div>
         </div>
-        <div className="prose space-y-6 text-sm leading-relaxed" style={{ color: 'var(--text-2)' }}>
+        <div className="glass-panel p-6 sm:p-8 prose space-y-6 text-sm leading-relaxed" style={{ color: 'var(--text-2)' }}>
           {children}
         </div>
       </div>

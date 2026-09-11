@@ -38,13 +38,13 @@ const PERSONAL_NAV = [
 ]
 
 const MORE_EXTRAS = [
-  { path: 'evolution',    icon: '📈', label: 'Evolução'  },
-  { path: 'history',      icon: '📋', label: 'Histórico' },
-  { path: 'goals',        icon: '🎯', label: 'Metas'     },
-  { path: 'achievements', icon: '🏆', label: 'Conquistas'},
-  { path: 'photos',       icon: '📸', label: 'Progresso' },
-  { path: 'community',    icon: '👥', label: 'Comunidade'},
-  { path: 'personal',     icon: '👤', label: 'Personal'  },
+  { path: 'evolution',    icon: 'evolution',    label: 'Evolução'  },
+  { path: 'history',      icon: 'history',      label: 'Histórico' },
+  { path: 'goals',        icon: 'goals',        label: 'Metas'     },
+  { path: 'achievements', icon: 'achievements', label: 'Conquistas'},
+  { path: 'photos',       icon: 'photos',       label: 'Progresso' },
+  { path: 'community',    icon: 'community',    label: 'Comunidade'},
+  { path: 'personal',     icon: 'personal',     label: 'Personal'  },
 ]
 
 function NavIcon({ type, active }) {
@@ -60,13 +60,26 @@ function NavIcon({ type, active }) {
   return icons[type] || null
 }
 
+function MoreIcon({ type }) {
+  const paths = {
+    evolution: <><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></>,
+    history: <><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h6M8 17h4"/></>,
+    goals: <><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M22 12h-3"/></>,
+    achievements: <><path d="M8 4h8v5a4 4 0 01-8 0V4z"/><path d="M8 6H5v2a3 3 0 003 3M16 6h3v2a3 3 0 01-3 3M12 13v5M8 21h8"/></>,
+    photos: <><rect x="3" y="5" width="18" height="14" rx="1"/><circle cx="8.5" cy="10" r="1.5"/><path d="m21 15-5-5L5 19"/></>,
+    community: <><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 20a6 6 0 0112 0M15 20a4 4 0 018 0"/></>,
+    personal: <><circle cx="12" cy="8" r="3"/><path d="M5 21a7 7 0 0114 0"/></>,
+  }
+  return <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">{paths[type]}</svg>
+}
+
 function MoreSheet({ open, onClose, navigate, base }) {
   if (!open) return null
   return (
     <div className="fixed inset-0 z-50" onClick={onClose}>
       <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,.65)', backdropFilter: 'blur(6px)' }}/>
-      <div className="absolute bottom-0 left-0 right-0 max-w-2xl mx-auto slide-in-bottom"
-        style={{ background: 'var(--surface)', borderRadius: '24px 24px 0 0', border: '1px solid var(--border)', borderBottom: 'none', padding: '12px 20px 40px' }}
+      <div className="absolute bottom-0 left-0 right-0 max-w-2xl mx-auto slide-in-bottom glass-panel"
+        style={{ borderRadius: '24px 24px 0 0', borderBottom: 'none', padding: '12px 20px 40px' }}
         onClick={e => e.stopPropagation()}>
         <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: 'var(--border)' }}/>
         <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--text-3)' }}>Mais opções</p>
@@ -78,7 +91,7 @@ function MoreSheet({ open, onClose, navigate, base }) {
               style={{ cursor: 'pointer' }}
               onMouseEnter={ev => ev.currentTarget.style.borderColor='var(--accent)'}
               onMouseLeave={ev => ev.currentTarget.style.borderColor='var(--border)'}>
-              <span className="text-2xl">{e.icon}</span>
+              <span className="f-more-icon"><MoreIcon type={e.icon}/></span>
               <span className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>{e.label}</span>
             </button>
           ))}
@@ -168,8 +181,18 @@ export default function AppShell() {
     navigate(path === '' ? base : `${base}/${path}`)
   }
 
+  const screenLabels = {
+    routine: 'Rotina de treino', workout: 'Sessão ativa', profile: 'Seu perfil',
+    evolution: 'Evolução', history: 'Histórico', goals: 'Metas',
+    achievements: 'Conquistas', photos: 'Progresso', community: 'Comunidade',
+    personal: 'Seu personal', subscription: 'Assinatura',
+  }
+  const currentKey = Object.keys(screenLabels).find(key => location.pathname.includes(`${base}/${key}`))
+  const screenLabel = currentKey ? screenLabels[currentKey] : (isPersonal ? 'Painel de alunos' : 'Visão geral')
+  const displayName = profile?.name?.split(' ')[0] || (isPersonal ? 'Personal' : 'Atleta')
+
   return (
-    <div className="h-screen flex flex-col" style={{ background: 'var(--bg)' }}>
+    <div className="app-shell h-screen flex flex-col" style={{ background: 'var(--bg)' }}>
       <MoreSheet open={moreOpen} onClose={() => setMoreOpen(false)} navigate={navigate} base={base}/>
 
       {/* Push prompt */}
@@ -178,6 +201,27 @@ export default function AppShell() {
           <NotificationPrompt onDismiss={() => setShowPushPrompt(false)} />
         </div>
       )}
+
+      <header className="app-header px-4 pt-4 pb-2 native-header">
+        <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
+          <button onClick={() => navigate(base)} className="flex items-center gap-2.5 bg-transparent border-0 p-0 cursor-pointer" aria-label="Ir para início">
+            <img src="/voryn-icon-192.png" alt="Voryn" className="w-9 h-9 rounded-xl" style={{ boxShadow: '0 0 18px rgba(var(--accent-rgb),.3)' }} />
+            <div className="text-left">
+              <div className="font-display text-xl uppercase tracking-widest leading-none">Voryn</div>
+              <div className="text-[10px] uppercase tracking-[.18em] mt-1" style={{ color: 'var(--text-3)' }}>{screenLabel}</div>
+            </div>
+          </button>
+          <div className="flex items-center gap-2.5">
+            <span className="hidden sm:block text-xs text-right" style={{ color: 'var(--text-3)' }}>
+              Olá, <strong style={{ color: 'var(--text-2)' }}>{displayName}</strong>
+            </span>
+            <button onClick={() => navigate(`${base}/profile`)} className="w-10 h-10 rounded-full flex items-center justify-center border cursor-pointer font-display text-lg" style={{ background: 'rgba(var(--accent-rgb),.16)', color: 'var(--accent-2)', borderColor: 'rgba(var(--accent-rgb),.35)' }} aria-label="Abrir perfil">
+              {displayName.charAt(0).toUpperCase()}
+            </button>
+            <span className="w-2 h-2 rounded-full" title="Status online" style={{ background: 'var(--success)', boxShadow: '0 0 10px rgba(61,220,151,.7)' }} />
+          </div>
+        </div>
+      </header>
 
       {/* Main content */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden">
@@ -202,22 +246,22 @@ export default function AppShell() {
       </div>
 
       {/* Bottom Nav */}
-      <nav style={{ background: 'var(--surface)', borderTop: '1px solid var(--border)', flexShrink: 0 }}>
-        <div className="flex items-center justify-around px-2 pt-2 pb-3 max-w-2xl mx-auto" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
+      <nav className="px-3 pb-3" style={{ background: 'transparent', flexShrink: 0 }}>
+        <div className="glass-panel native-dock flex items-center justify-around px-2 pt-2 max-w-2xl mx-auto shadow-2xl" style={{ paddingBottom: 'max(10px, env(safe-area-inset-bottom))', borderColor: 'rgba(255,255,255,.12)' }}>
           {navItems.map(item => {
             const active = isActive(item.path)
             return (
               <button key={item.path} onClick={() => handleNav(item.path)}
-                className="flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-all relative"
-                style={{ color: active ? 'var(--accent)' : 'var(--muted)', border: 'none', background: 'transparent', cursor: 'pointer' }}>
+                className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all relative active:scale-95 min-w-[58px]"
+                style={{ color: active ? 'var(--accent-2)' : 'var(--muted)', border: 'none', background: active ? 'rgba(var(--accent-rgb),.1)' : 'transparent', cursor: 'pointer' }}>
                 {active && (
-                  <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-5 h-0.5 rounded-full"
-                    style={{ background: 'var(--accent)', boxShadow: '0 0 6px rgba(var(--accent-rgb),.6)' }}/>
+                  <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-7 h-1 rounded-full"
+                    style={{ background: 'var(--accent)', boxShadow: '0 0 10px rgba(var(--accent-rgb),.7)' }}/>
                 )}
-                <div style={{ transform: active ? 'scale(1.1)' : 'scale(1)', transition: 'transform .15s' }}>
+                <div style={{ transform: active ? 'scale(1.12)' : 'scale(1)', transition: 'transform .15s' }}>
                   <NavIcon type={item.icon} active={active}/>
                 </div>
-                <span style={{ fontSize: 10, fontWeight: active ? 600 : 400 }}>{item.label}</span>
+                <span className={item.path === 'workout' ? 'font-display uppercase tracking-wider' : ''} style={{ fontSize: item.path === 'workout' ? 12 : 10, fontWeight: active ? 800 : 500 }}>{item.label}</span>
               </button>
             )
           })}

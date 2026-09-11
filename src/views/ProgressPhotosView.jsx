@@ -9,7 +9,7 @@ const CATEGORIES = [
   { key: 'front', label: 'Frente',    emoji: '⬆️' },
   { key: 'side',  label: 'Lateral',   emoji: '↗️' },
   { key: 'back',  label: 'Costas',    emoji: '⬇️' },
-  { key: 'custom',label: 'Outro',     emoji: '📷' },
+  { key: 'custom',label: 'Outro' },
 ]
 const AC = 'var(--accent)'
 
@@ -49,7 +49,7 @@ function UploadCard({ studentId, onUploaded }) {
       return
     }
     setUploading(false)
-    toast.success('Foto salva! 📸')
+    toast.success('Foto salva!')
     setPreview(null); setFile(null)
     // Use preview as temporary display URL until getAll refreshes with signed URL
     if (data) onUploaded({ ...data, photo_url: preview })
@@ -140,7 +140,7 @@ function UploadCard({ studentId, onUploaded }) {
       <button onClick={handleUpload} disabled={!file || uploading}
         className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50"
         style={{ background: AC }}>
-        {uploading ? 'Enviando...' : '📸 Salvar foto de progresso'}
+        {uploading ? 'Enviando...' : 'Salvar foto de progresso'}
       </button>
     </div>
   )
@@ -327,13 +327,16 @@ export default function ProgressPhotosView({ studentId: propStudentId, readOnly 
   if (compare) return <CompareModal photos={photos} onClose={() => setCompare(false)}/>
 
   return (
-    <div className="pb-8">
+    <div className="app-view view-photos pb-8">
       {/* Header */}
       <div className="px-4 pt-6 pb-4">
         <div className="flex items-center justify-between mb-1">
-          <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
-            Progresso
-          </h1>
+          <div>
+            <p className="view-kicker">Visual log / 08</p>
+            <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
+              Progresso
+            </h1>
+          </div>
           {photos.length >= 2 && (
             <button onClick={() => setCompare(true)}
               className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl"
@@ -373,7 +376,7 @@ export default function ProgressPhotosView({ studentId: propStudentId, readOnly 
             {/* Category filter */}
             {photos.length > 0 && (
               <div className="flex gap-2 mb-4 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
-                {[{ key: 'all', label: 'Todas', emoji: '📸' }, ...CATEGORIES].map(c => (
+                {[{ key: 'all', label: 'Todas' }, ...CATEGORIES].map(c => (
                   <button key={c.key} onClick={() => setSelCat(c.key)}
                     className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
                     style={{
@@ -381,7 +384,7 @@ export default function ProgressPhotosView({ studentId: propStudentId, readOnly 
                       color:      selCat === c.key ? '#fff' : 'var(--text-3)',
                       border:     `1px solid ${selCat === c.key ? AC : 'var(--border)'}`,
                     }}>
-                    {c.emoji} {c.label}
+                    {c.label}
                   </button>
                 ))}
               </div>
@@ -393,7 +396,7 @@ export default function ProgressPhotosView({ studentId: propStudentId, readOnly 
               <div className="text-center py-12">
                 <div className="w-20 h-20 rounded-3xl mx-auto mb-4 flex items-center justify-center text-4xl"
                   style={{ background: 'rgba(var(--accent-rgb),.06)', border: '1px dashed rgba(var(--accent-rgb),.2)' }}>
-                  📸
+                  <span className="section-index">PHOTO LOG</span>
                 </div>
                 <p className="font-semibold text-sm mb-2" style={{ color: 'var(--text-2)' }}>
                   {photos.length === 0 ? 'Nenhuma foto ainda' : 'Nenhuma foto nesta categoria'}

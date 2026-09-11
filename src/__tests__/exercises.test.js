@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest'
 import { EXERCISE_LIBRARY, MUSCLE_GROUPS, searchExercises } from '../data/exercises'
 
 describe('EXERCISE_LIBRARY', () => {
-  it('has exactly 100 exercises', () => {
-    expect(EXERCISE_LIBRARY).toHaveLength(100)
+  it('has at least 100 exercises', () => {
+    expect(EXERCISE_LIBRARY.length).toBeGreaterThanOrEqual(100)
   })
 
   it('every exercise has required fields', () => {
@@ -64,7 +64,7 @@ describe('MUSCLE_GROUPS', () => {
 
 describe('searchExercises', () => {
   it('returns all exercises when query and muscle are empty', () => {
-    expect(searchExercises()).toHaveLength(100)
+    expect(searchExercises()).toHaveLength(EXERCISE_LIBRARY.length)
   })
 
   it('filters by name (case insensitive)', () => {

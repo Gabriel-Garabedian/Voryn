@@ -26,7 +26,7 @@ export default function AdminShell() {
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
       {/* Topbar */}
-      <header style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 50 }}>
+      <header className="glass-panel" style={{ borderRadius: 0, borderTop: 0, position: 'sticky', top: 0, zIndex: 50 }}>
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="/voryn-icon-192.png" alt="Voryn" className="w-8 h-8 rounded-lg" />
@@ -34,10 +34,10 @@ export default function AdminShell() {
               VORYN ADMIN
             </span>
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3 sm:gap-6">
             {tabs.map(t => (
               <button key={t.path} onClick={() => navigate(t.path)}
-                className="text-sm font-medium transition-colors"
+                className="text-sm font-medium transition-colors px-2 py-1.5 rounded-lg hover:bg-[rgba(var(--accent-rgb),.08)]"
                 style={{ color: location.pathname === t.path ? 'var(--accent)' : 'var(--text-3)', border: 'none', background: 'none', cursor: 'pointer' }}>
                 {t.label}
               </button>
@@ -52,7 +52,7 @@ export default function AdminShell() {
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <Routes>
           <Route index       element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
@@ -82,7 +82,7 @@ function CustomTooltip({ active, payload, label }) {
     <div className="f-card px-3 py-2 text-xs" style={{ border: '1px solid rgba(var(--accent-rgb),.3)' }}>
       <p style={{ color: 'var(--text-2)' }}>{label}</p>
       {payload.map(p => (
-        <p key={p.dataKey} style={{ color: '#A855F7' }}>{p.name}: <strong>{p.value}</strong></p>
+        <p key={p.dataKey} style={{ color: 'var(--accent-2)' }}>{p.name}: <strong>{p.value}</strong></p>
       ))}
     </div>
   )
@@ -121,7 +121,7 @@ function AdminDashboard() {
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard label="Usuários Total" value={stats.totalUsers} sub={`+${stats.newThisMonth} este mês`}/>
-        <StatCard label="Alunos" value={stats.totalStudents} color="#A855F7"/>
+        <StatCard label="Alunos" value={stats.totalStudents} color="var(--accent-2)"/>
         <StatCard label="Personais" value={stats.totalPersonals} color="#7c3aed"/>
         <StatCard label="MRR Estimado" value={`R$${stats.mrr}`} color="#4ade80" sub="receita mensal"/>
       </div>

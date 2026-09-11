@@ -23,7 +23,8 @@ export default function CommunityView() {
   }
 
   return (
-    <div className="px-4 pt-6 pb-8">
+    <div className="app-view view-community px-4 pt-6 pb-8">
+      <p className="view-kicker">Training network / 09</p>
       <h1 className="font-display text-3xl uppercase tracking-wide mb-4" style={{ color: 'var(--text-1)' }}>Comunidade</h1>
 
       {/* Tabs */}
@@ -65,7 +66,7 @@ function GroupsTab({ userId, onSelect }) {
   function handleCreated(newCommunity) {
     setCommunities(c => [{ ...newCommunity, myRole: 'creator' }, ...c])
     setShowCreate(false)
-    toast.success('Comunidade criada! 🎉')
+    toast.success('Comunidade criada!')
   }
 
   return (
@@ -83,7 +84,7 @@ function GroupsTab({ userId, onSelect }) {
       {loading ? (
         <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>Carregando...</p>
       ) : communities.length === 0 ? (
-        <EmptyState icon="👥" title="Nenhuma comunidade ainda"
+        <EmptyState icon="GROUP" title="Nenhuma comunidade ainda"
           description={isPayingUser
             ? 'Crie um grupo e chame seus amigos de treino, ou entre em um pelo link de convite que alguém te mandar.'
             : 'Entre em um grupo pelo link de convite que alguém te mandar, ou assine um plano para criar o seu.'}/>
@@ -94,7 +95,7 @@ function GroupsTab({ userId, onSelect }) {
               className="f-card w-full p-4 flex items-center gap-3 text-left">
               <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
                 style={{ background: 'rgba(var(--accent-rgb),.1)' }}>
-                <span className="text-lg">👥</span>
+                <span className="section-index">GROUP</span>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-sm truncate" style={{ color: 'var(--text-1)' }}>{c.name}</p>
@@ -221,7 +222,7 @@ function CommunityDetail({ community, userId, onBack, onLeft }) {
   }
 
   return (
-    <div className="px-4 pt-6 pb-8">
+    <div className="app-view view-community-detail px-4 pt-6 pb-8">
       <button onClick={onBack} className="flex items-center gap-2 text-sm mb-4" style={{ color: 'var(--text-3)' }}>
         <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <polyline points="15 18 9 12 15 6"/>
@@ -234,7 +235,7 @@ function CommunityDetail({ community, userId, onBack, onLeft }) {
 
       {/* Sub-tabs: Chat (padrão) | Sobre */}
       <div className="flex gap-2 my-4 p-1 rounded-xl" style={{ background: 'var(--surface)' }}>
-        {[['chat', '💬 Chat'], ['sobre', 'ℹ️ Sobre']].map(([id, label]) => (
+        {[['chat', 'Chat'], ['sobre', 'Sobre']].map(([id, label]) => (
           <button key={id} onClick={() => setDetailTab(id)}
             className="flex-1 py-2 rounded-lg text-sm font-semibold transition-all"
             style={{
@@ -287,7 +288,7 @@ function CommunityDetail({ community, userId, onBack, onLeft }) {
               <div className="space-y-2">
                 {prFeed.map((p, i) => (
                   <div key={i} className="f-card p-3 flex items-center gap-3">
-                    <span className="text-lg flex-shrink-0">🏆</span>
+                    <span className="section-index flex-shrink-0">PR</span>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm" style={{ color: 'var(--text-1)' }}>
                         <span className="font-semibold">{p.user_name}</span> bateu recorde em {p.exercise}
@@ -483,7 +484,7 @@ function FriendsTab({ userId, onSelect }) {
       {loading ? (
         <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>Carregando...</p>
       ) : friends.length === 0 ? (
-        <EmptyState icon="🤝" title="Nenhuma conexão ainda"
+        <EmptyState icon="LINK" title="Nenhuma conexão ainda"
           description="Manda seu link pessoal pra um amigo, ou peça o link dele pra vocês se conectarem."/>
       ) : (
         <div className="space-y-2">
@@ -554,7 +555,7 @@ function FriendDetail({ friend, onBack }) {
 
       {/* Sub-tabs: Chat (padrão) | Perfil */}
       <div className="flex gap-2 mb-4 p-1 rounded-xl" style={{ background: 'var(--surface)' }}>
-        {[['chat', '💬 Chat'], ['perfil', '👤 Perfil']].map(([id, label]) => (
+        {[['chat','Chat'],['perfil','Perfil']].map(([id,label]) => (
           <button key={id} onClick={() => setDetailTab(id)}
             className="flex-1 py-2 rounded-lg text-sm font-semibold transition-all"
             style={{
@@ -595,7 +596,7 @@ function FriendDetail({ friend, onBack }) {
             <div className="space-y-2">
               {prs.map((p, i) => (
                 <div key={i} className="f-card p-3 flex items-center gap-3">
-                  <span className="text-lg flex-shrink-0">🏆</span>
+                  <span className="section-index flex-shrink-0">PR</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>{p.exercise}</p>
                     <p className="text-xs" style={{ color: 'var(--text-3)' }}>

@@ -40,7 +40,7 @@ export default function CheckoutPage() {
           Voltar
         </Link>
 
-        <div className="f-card p-6" style={plan.highlight ? { borderColor: 'var(--accent)' } : {}}>
+        <div className="glass-panel p-6 sm:p-7" style={plan.highlight ? { borderColor: 'var(--accent)' } : {}}>
           {/* Plan summary */}
           <div className="text-center mb-6 pb-6" style={{ borderBottom: '1px solid var(--border)' }}>
             <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--text-3)' }}>

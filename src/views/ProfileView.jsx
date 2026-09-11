@@ -243,11 +243,12 @@ export default function ProfileView() {
   const bestStreak   = calcBestStreak(logs.map(l => l.date))
 
   return (
-    <div className="px-4 pt-6 pb-10 space-y-5">
+    <div className="app-view view-profile px-4 pt-6 pb-10 space-y-5">
 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
+          <p className="view-kicker">Athlete file / 10</p>
           <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
             Perfil
           </h1>
@@ -262,7 +263,7 @@ export default function ProfileView() {
       </div>
 
       {/* User card */}
-      <div className="f-card p-4 flex items-center gap-4">
+      <div className="glass-card p-4 flex items-center gap-4">
         <div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
           style={{ background: 'linear-gradient(135deg,rgba(var(--accent-rgb),.2),rgba(var(--accent-rgb),.05))', border: '1.5px solid rgba(var(--accent-rgb),.2)' }}>
           <span className="font-display text-3xl" style={{ color: 'var(--accent)' }}>
@@ -296,7 +297,7 @@ export default function ProfileView() {
           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
             <Badge variant="accent">{planInfo?.name || 'Grátis'}</Badge>
             <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
-            {profile?.goal && <Badge variant="green">🎯 {profile.goal}</Badge>}
+            {profile?.goal && <Badge variant="green">{profile.goal}</Badge>}
           </div>
         </div>
       </div>
@@ -309,7 +310,7 @@ export default function ProfileView() {
           { label: 'Melhor',    value: bestStreak },
           { label: 'Avg',       value: formatDuration(avgDuration) },
         ].map(s => (
-          <div key={s.label} className="f-card p-3 text-center">
+          <div key={s.label} className="glass-card p-3 text-center">
             <div className="font-display text-xl" style={{ color: 'var(--accent)' }}>{s.value}</div>
             <div className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>{s.label}</div>
           </div>
@@ -319,7 +320,7 @@ export default function ProfileView() {
       {totalVolume > 0 && (
         <div className="f-card p-3 flex items-center justify-between"
           style={{ borderColor: 'rgba(var(--accent-rgb),.25)', background: 'rgba(var(--accent-rgb),.04)' }}>
-          <span className="text-sm" style={{ color: 'var(--text-2)' }}>🏋️ Volume total acumulado</span>
+          <span className="text-sm" style={{ color: 'var(--text-2)' }}>Volume total acumulado</span>
           <span className="font-display text-xl" style={{ color: 'var(--accent)' }}>
             {formatVolume(totalVolume)}
           </span>
@@ -367,7 +368,7 @@ export default function ProfileView() {
               onClick={async () => {
                 const r = await pushService.subscribe(user?.id)
                 setPushPerm(r.error ? 'denied' : 'granted')
-                if (!r.error) toast.success('Notificações ativadas! 🔔')
+                if (!r.error) toast.success('Notificações ativadas!')
                 else toast.error('Não foi possível ativar. Verifique as permissões do navegador.')
               }}
               className="text-xs font-semibold px-3 py-2 rounded-xl"
@@ -455,7 +456,7 @@ export default function ProfileView() {
           )}
           {Object.keys(prs).sort().map(key => (
             <div key={key} className="f-card p-4 flex items-center gap-4">
-              <span className="text-2xl flex-shrink-0">🏋️</span>
+              <span className="section-index flex-shrink-0">PR</span>
               <div className="flex-1">
                 <p className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>{key}</p>
                 {editingPR === key
@@ -601,7 +602,7 @@ export default function ProfileView() {
               await exportRoutinePDF({ studentName: profile?.name, routines: data || {} })
               toast.dismiss(t); toast.success('PDF gerado!')
             }},
-            { label: '📈 Meu Progresso (PDF)', fn: async () => {
+            { label: 'Meu Progresso (PDF)', fn: async () => {
               const t = toast.loading('Gerando relatório...')
               const { data: logs } = await workoutLogService.getAll(user.id)
               const { data: prs }  = await prService.getAll(user.id)
@@ -632,7 +633,7 @@ export default function ProfileView() {
           <a href="/privacy" target="_blank"
             className="f-card p-3 text-center text-sm transition-all"
             style={{ color: 'var(--text-3)' }}>
-            🔒 Privacidade
+            Privacidade
           </a>
           <a href="/terms" target="_blank"
             className="f-card p-3 text-center text-sm transition-all"
@@ -660,7 +661,7 @@ export default function ProfileView() {
           : <div className="f-card p-4 space-y-3 scale-in"
               style={{ borderColor: 'rgba(239,68,68,.3)', background: 'rgba(239,68,68,.04)' }}>
               <p className="text-sm font-semibold text-center" style={{ color: '#f87171' }}>
-                ⚠️ Isso excluirá todos os seus dados permanentemente.
+                Isso excluirá todos os seus dados permanentemente.
               </p>
               <p className="text-xs text-center" style={{ color: 'var(--text-3)' }}>
                 Treinos, histórico, fotos de progresso e conquistas — tudo é apagado

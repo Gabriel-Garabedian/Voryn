@@ -91,7 +91,7 @@ function RestTimer({ seconds, onSkip, seriesDone }) {
     const ms = Math.max(0, endsAtRef.current - Date.now())
     const notifId = setTimeout(() => {
       navigator.serviceWorker.ready.then(reg => {
-        reg.showNotification('⏱️ Descanso acabou!', {
+        reg.showNotification('Descanso acabou', {
           body:    'Hora da próxima série.',
           icon:    '/voryn-icon-192.png',
           badge:   '/voryn-badge-96.png',
@@ -118,7 +118,7 @@ function RestTimer({ seconds, onSkip, seriesDone }) {
       {/* "Série concluída!" badge */}
       <div className="mb-6 px-4 py-2 rounded-full text-xs font-semibold animate-slide-up"
         style={{ background: 'rgba(74,222,128,.12)', border: '1px solid rgba(74,222,128,.3)', color: '#4ade80' }}>
-        ✅ Série {seriesDone} concluída!
+        Série {seriesDone} concluída
       </div>
       <p className="font-display text-lg uppercase tracking-widest mb-6" style={{ color: 'var(--text-3)' }}>
         Descansando
@@ -177,7 +177,7 @@ function NoWorkout({ user, onStart }) {
   )
 
   return (
-    <div className="px-4 pt-6 pb-4 space-y-5">
+    <div className="app-view workout-picker px-4 pt-6 pb-4 space-y-5">
       <div>
         <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
           Em Treino
@@ -243,7 +243,7 @@ function NoWorkout({ user, onStart }) {
 
       {!todayPlan && others.length === 0 && (
         <div className="f-card p-8 text-center space-y-3">
-          <div className="text-4xl">🏋️</div>
+          <div className="section-index">NO PLAN</div>
           <p className="font-semibold" style={{ color: 'var(--text-1)' }}>Nenhum treino planejado</p>
           <p className="text-sm" style={{ color: 'var(--text-3)' }}>Vá em Rotina para criar seus treinos.</p>
         </div>
@@ -551,7 +551,7 @@ export default function WorkoutView() {
   const doneSets  = workout.exercises.reduce((a, ex) => a + ex.sets.filter(s => s.done).length, 0)
 
   return (
-    <div className="pb-8">
+    <div className="app-view workout-view pb-8">
       {showRest && <RestTimer seconds={restSecs} onSkip={skipRest} seriesDone={lastSeriesDone || 1} />}
 
       {detailExercise && (
@@ -564,10 +564,11 @@ export default function WorkoutView() {
       )}
 
       {/* Header */}
-      <div className="px-4 pt-6 pb-4"
-        style={{ borderBottom: '1px solid var(--border)', background: 'var(--surface)' }}>
+      <div className="native-header px-4 pt-6 pb-4 glass-panel"
+        style={{ borderRadius: '0 0 var(--radius-xl) var(--radius-xl)' }}>
         <div className="flex items-start justify-between mb-3">
           <div>
+            <p className="view-kicker">Live session / 03</p>
             <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>
               Em Treino
             </p>
@@ -664,7 +665,7 @@ export default function WorkoutView() {
 
           // ── Expandido: card completo (comportamento de sempre) ───────
           return (
-            <div key={ex.id} className="f-card overflow-hidden"
+            <div key={ex.id} className="glass-card overflow-hidden"
               style={exDone ? { borderColor: 'rgba(var(--accent-rgb),.4)' } : {}}>
 
               {/* Exercise header */}

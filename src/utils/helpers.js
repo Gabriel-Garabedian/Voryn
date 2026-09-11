@@ -125,7 +125,8 @@ export function parseWeight(val) {
 }
 
 export function formatVolume(kg) {
-  if (!kg || kg === 0) return '0kg'
+  if (kg == null || isNaN(kg)) return '—'
+  if (kg === 0) return '0kg'
   // BUG confirmado em teste real: o limiar de 1000kg para virar tonelada
   // era baixo demais. Um treino de força normal e individual facilmente
   // passa de 1000kg de volume (ex: supino 80kg x 10 reps x 4 séries =

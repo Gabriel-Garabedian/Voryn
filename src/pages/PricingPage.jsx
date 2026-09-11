@@ -44,7 +44,7 @@ export default function PricingPage() {
         <div className="grid md:grid-cols-3 gap-6 text-left">
           {plans.map(plan => (
             <div key={plan.id}
-              className="f-card p-6 flex flex-col relative"
+              className="glass-card p-6 flex flex-col relative"
               style={plan.highlight ? {
                 borderColor: 'var(--accent)',
                 boxShadow: '0 0 30px rgba(var(--accent-rgb),.2)',
@@ -87,7 +87,7 @@ export default function PricingPage() {
               </ul>
 
               <Link to={`/checkout/${plan.id}`}
-                className="f-btn text-sm font-semibold py-3 px-6 rounded-xl text-center w-full"
+                className="f-btn text-sm font-semibold py-3 px-6 rounded-xl text-center w-full active:scale-[.98]"
                 style={plan.highlight
                   ? { background: 'var(--accent)', color: '#fff', boxShadow: '0 0 20px rgba(var(--accent-rgb),.35)' }
                   : { background: 'var(--surface)', color: 'var(--text-1)', border: '1px solid var(--border)' }}>
@@ -108,7 +108,7 @@ export default function PricingPage() {
             ['Os dados ficam seguros?', 'Sim. Utilizamos Supabase com criptografia e Row Level Security — seus dados só são acessíveis por você.'],
             ['Posso mudar de plano?', 'Sim, a qualquer momento. O ajuste é proporcional ao período restante.'],
           ].map(([q, a]) => (
-            <div key={q} className="f-card p-4">
+            <div key={q} className="glass-card p-4">
               <p className="font-semibold text-sm mb-1" style={{ color: 'var(--text-1)' }}>{q}</p>
               <p className="text-sm" style={{ color: 'var(--text-3)' }}>{a}</p>
             </div>

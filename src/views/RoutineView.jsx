@@ -144,11 +144,12 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
   }
 
   return (
-    <div className="pb-8">
+    <div className="app-view routine-view pb-8">
       {/* Header */}
       <div className="px-4 pt-6 pb-4 flex items-start justify-between gap-3">
         <div>
-          <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
+            <p className="view-kicker">Planner / 02</p>
+            <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
             {isEmbedded ? 'Ficha de Treino' : 'Minha Rotina'}
           </h1>
           <p className="text-sm mt-1 flex items-center gap-2" style={{ color: 'var(--text-3)' }}>
@@ -185,7 +186,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
             Ficha montada por <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{trainerName}</span>
           </div>
         )}
-        <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+        <div className="schedule-rail flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
           {DAYS_SHORT.map((d, i) => {
             const hasPlan = routines[i]?.name || routines[i]?.exercises?.length
             const isSel   = i === selectedDay
@@ -258,7 +259,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
 
             {/* Exercise list */}
             {day?.exercises?.length > 0 && (
-              <div className="space-y-2">
+              <div className="exercise-list space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-widest px-1" style={{ color: 'var(--text-3)' }}>
                   {day.exercises.length} exercício{day.exercises.length !== 1 ? 's' : ''}
                 </p>

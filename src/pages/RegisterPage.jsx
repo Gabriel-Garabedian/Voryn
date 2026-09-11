@@ -9,7 +9,7 @@ function VorynLogo() {
   return (
     <div className="flex items-center justify-center gap-3 mb-2">
       <img src="/voryn-icon-192.png" alt="Voryn" className="w-12 h-12 rounded-2xl"
-        style={{ boxShadow: '0 0 24px rgba(130,10,209,.5)' }} />
+        style={{ boxShadow: '0 0 24px rgba(var(--accent-rgb),.5)', border: '1px solid rgba(var(--accent-rgb),.4)' }} />
       <span className="font-display text-4xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>Voryn</span>
     </div>
   )
@@ -25,7 +25,7 @@ function InviteSuccessScreen({ trainerName, onContinue }) {
       style={{ background: 'var(--bg)' }}>
       {/* glow */}
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle,rgba(130,10,209,.12) 0%,transparent 70%)' }}/>
+        style={{ background: 'radial-gradient(circle,rgba(var(--accent-rgb),.14) 0%,transparent 70%)' }}/>
 
       <div className="w-full max-w-sm relative z-10 text-center"
         style={{
@@ -38,9 +38,9 @@ function InviteSuccessScreen({ trainerName, onContinue }) {
         <div className="relative mx-auto mb-6" style={{ width: 96, height: 96 }}>
           {/* pulso externo */}
           <div className="absolute inset-0 rounded-full animate-ping"
-            style={{ background: 'rgba(130,10,209,.15)', animationDuration: '1.5s' }}/>
+            style={{ background: 'rgba(var(--accent-rgb),.15)', animationDuration: '1.5s' }}/>
           <div className="w-24 h-24 rounded-full flex items-center justify-center relative"
-            style={{ background: 'linear-gradient(135deg,rgba(130,10,209,.25),rgba(130,10,209,.1))', border: '2px solid rgba(130,10,209,.4)' }}>
+            style={{ background: 'linear-gradient(135deg,rgba(var(--accent-rgb),.25),rgba(var(--accent-rgb),.1))', border: '2px solid rgba(var(--accent-rgb),.4)' }}>
             <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2">
               <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
               <circle cx="9" cy="7" r="4"/>
@@ -60,11 +60,11 @@ function InviteSuccessScreen({ trainerName, onContinue }) {
 
         {/* card do personal */}
         <div className="f-card p-5 mb-6 text-left"
-          style={{ borderColor: 'rgba(130,10,209,.4)', background: 'rgba(130,10,209,.06)' }}>
+          style={{ borderColor: 'rgba(var(--accent-rgb),.4)', background: 'rgba(var(--accent-rgb),.06)' }}>
           <div className="flex items-center gap-4">
             {/* avatar com iniciais */}
             <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 font-display text-xl"
-              style={{ background: 'var(--accent)', color: '#fff', boxShadow: '0 0 16px rgba(130,10,209,.4)' }}>
+              style={{ background: 'var(--accent)', color: '#fff', boxShadow: '0 0 16px rgba(var(--accent-rgb),.4)' }}>
               {trainerName?.charAt(0)?.toUpperCase() || '?'}
             </div>
             <div>
@@ -116,7 +116,7 @@ function InviteBanner({ trainerInfo, loading: loadingInfo }) {
   if (loadingInfo) {
     return (
       <div className="f-card px-4 py-4 mb-4 flex items-center gap-3"
-        style={{ borderColor: 'rgba(130,10,209,.25)' }}>
+        style={{ borderColor: 'rgba(var(--accent-rgb),.25)' }}>
         <div className="w-10 h-10 rounded-xl skeleton-pulse flex-shrink-0"
           style={{ background: 'var(--border)' }}/>
         <div className="flex-1 space-y-2">
@@ -129,12 +129,12 @@ function InviteBanner({ trainerInfo, loading: loadingInfo }) {
 
   return (
     <div className="f-card px-4 py-4 mb-4 animate-slide-up"
-      style={{ borderColor: 'rgba(130,10,209,.4)', background: 'rgba(130,10,209,.05)' }}>
+      style={{ borderColor: 'rgba(var(--accent-rgb),.4)', background: 'rgba(var(--accent-rgb),.05)' }}>
 
       {/* cabeçalho */}
       <div className="flex items-center gap-2 mb-3">
         <div className="w-5 h-5 rounded-full flex items-center justify-center"
-          style={{ background: 'rgba(130,10,209,.2)' }}>
+          style={{ background: 'rgba(var(--accent-rgb),.2)' }}>
           <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2.5">
             <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .27h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/>
           </svg>
@@ -147,7 +147,7 @@ function InviteBanner({ trainerInfo, loading: loadingInfo }) {
       {/* personal info */}
       <div className="flex items-center gap-3 mb-3">
         <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 font-display text-lg"
-          style={{ background: 'var(--accent)', color: '#fff', boxShadow: '0 0 12px rgba(130,10,209,.35)' }}>
+          style={{ background: 'var(--accent)', color: '#fff', boxShadow: '0 0 12px rgba(var(--accent-rgb),.35)' }}>
           {trainerInfo?.name?.charAt(0)?.toUpperCase() || '?'}
         </div>
         <div>
@@ -160,7 +160,7 @@ function InviteBanner({ trainerInfo, loading: loadingInfo }) {
 
       {/* mensagem de convite */}
       <div className="rounded-xl px-3 py-2.5"
-        style={{ background: 'rgba(130,10,209,.08)', border: '1px solid rgba(130,10,209,.15)' }}>
+        style={{ background: 'rgba(var(--accent-rgb),.08)', border: '1px solid rgba(var(--accent-rgb),.15)' }}>
         <p className="text-xs leading-relaxed" style={{ color: 'var(--text-2)' }}>
           <strong style={{ color: 'var(--text-1)' }}>
             {trainerInfo?.name?.split(' ')[0] || 'Seu personal'}
@@ -338,12 +338,18 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-8"
+    <div className="auth-shell register-shell min-h-screen flex flex-col items-center justify-center px-6 py-8"
       style={{ background: 'var(--bg)' }}>
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle,rgba(130,10,209,.08) 0%,transparent 70%)' }}/>
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[34rem] h-[34rem] rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle,rgba(var(--accent-rgb),.13) 0%,transparent 70%)' }}/>
 
-      <div className="w-full max-w-sm relative z-10 animate-slide-up">
+      <div className="w-full max-w-4xl relative z-10 animate-slide-up grid md:grid-cols-[.85fr_1fr] gap-6 items-center">
+        <div className="hidden md:block px-5">
+          <p className="f-label" style={{ color: 'var(--accent-2)' }}>Performance club</p>
+          <h2 className="font-display uppercase text-7xl leading-[.82] tracking-wide mb-5">Seu treino.<br/><span style={{ color: 'var(--accent)' }}>Seu ritmo.</span><br/>Seu resultado.</h2>
+          <p className="max-w-xs text-sm leading-relaxed" style={{ color: 'var(--text-3)' }}>Crie seu perfil e deixe cada sessão contar.</p>
+        </div>
+        <div>
         <div className="text-center mb-6">
           <VorynLogo />
         </div>
@@ -353,9 +359,10 @@ export default function RegisterPage() {
           <InviteBanner trainerInfo={trainerInfo} loading={loadingInfo} />
         )}
 
-        <div className="f-card p-6 space-y-4">
+        <div className="glass-panel p-6 sm:p-8 space-y-4" style={{ borderColor: 'rgba(var(--accent-rgb),.2)' }}>
           <div className="mb-2">
-            <h1 className="text-xl font-semibold" style={{ color: 'var(--text-1)' }}>
+            <p className="f-label" style={{ color: 'var(--accent-2)' }}>Comece sua jornada</p>
+            <h1 className="font-display uppercase text-3xl tracking-wide" style={{ color: 'var(--text-1)' }}>
               {hasInvite ? 'Criar sua conta gratuita' : 'Criar conta'}
             </h1>
             <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>
@@ -391,13 +398,13 @@ export default function RegisterPage() {
               <div>
                 <label className="f-label">Você é</label>
                 <div className="grid grid-cols-2 gap-2">
-                  {[['student','🏋️ Aluno'],['personal','👤 Personal']].map(([val, label]) => (
+                  {[['student','Aluno'],['personal','Personal']].map(([val, label]) => (
                     <button key={val} type="button"
                       onClick={() => setForm(p => ({ ...p, role: val }))}
-                      className="f-card p-3 text-center text-sm font-semibold transition-all"
+                      className="glass-card p-3 text-center text-sm font-semibold transition-all active:scale-[.98]"
                       style={{
                         borderColor: form.role === val ? 'var(--accent)' : 'var(--border)',
-                        background:  form.role === val ? 'rgba(130,10,209,.08)' : 'var(--card)',
+                        background:  form.role === val ? 'rgba(var(--accent-rgb),.08)' : 'var(--card)',
                         color:       form.role === val ? 'var(--accent-2)' : 'var(--text-3)',
                       }}>
                       {label}
@@ -432,6 +439,7 @@ export default function RegisterPage() {
 
         </div>
       </div>
+    </div>
     </div>
   )
 }

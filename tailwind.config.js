@@ -21,23 +21,19 @@ export default {
         danger:   '#f87171',
       },
       fontFamily: {
-        display: ['Bebas Neue', 'sans-serif'],
-        body:    ['DM Sans', 'sans-serif'],
+        display: ['Barlow Condensed', 'Arial Narrow', 'sans-serif'],
+        body:    ['Manrope', 'system-ui', 'sans-serif'],
       },
-      // Escala de raio consolidada: os componentes já usavam rounded-md/lg/xl/2xl/3xl
-      // à vontade (6 valores efetivos sem critério — ver auditoria). Em vez de editar
-      // cada um dos 200+ usos, redirecionamos os nomes existentes pras variáveis que
-      // já estavam definidas (e nunca referenciadas) em index.css — agora são a fonte
-      // real, e qualquer ajuste futuro de raio muda tudo a partir de um lugar só.
       borderRadius: {
-        md:    'var(--radius-sm)',  // era 6px  → 8px
-        lg:    'var(--radius-md)',  // era 8px  → 12px
-        xl:    'var(--radius-lg)',  // era 12px → 14px
-        '2xl': 'var(--radius-xl)',  // era 16px → 20px
-        '3xl': 'var(--radius-xl)',  // era 24px → 20px (só 2 usos, incorporado ao xl)
+        md:    'var(--radius-sm)',
+        lg:    'var(--radius-md)',
+        xl:    'var(--radius-lg)',
+        '2xl': 'var(--radius-xl)',
+        '3xl': 'var(--radius-xl)',
         full:  'var(--radius-pill)',
       },
       boxShadow: {
+        card:      'var(--shadow-card)',
         'glow':    '0 0 24px rgba(var(--accent-rgb),.35)',
         'glow-sm': '0 0 12px rgba(var(--accent-rgb),.22)',
         'glow-lg': '0 0 48px rgba(var(--accent-rgb),.45)',

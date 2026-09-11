@@ -131,8 +131,8 @@ function StudentDetail({ student, trainerId, onBack }) {
             style={{ background:'var(--card)', border:'1px solid var(--border)', boxShadow:'0 8px 32px rgba(0,0,0,.4)', minWidth:160 }}>
             {[
               ['📋 Ficha de Treino', handleExportRoutine],
-              ['📊 Avaliações',      handleExportAssessment],
-              ['📈 Progresso',       handleExportProgress],
+              ['Avaliações',         handleExportAssessment],
+              ['Progresso',          handleExportProgress],
             ].map(([label, fn]) => (
               <button key={label} onClick={fn}
                 className="px-4 py-2.5 text-xs font-semibold text-left transition-all"
@@ -173,7 +173,7 @@ function StudentDetail({ student, trainerId, onBack }) {
       {/* Tabs */}
       <div className="px-4 mb-4">
         <div className="flex gap-1 p-1 rounded-xl overflow-x-auto" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-          {[['chat','💬 Chat'],['routine','🏋️ Ficha'],['evolution','📈 Evolução'],['goals','🎯 Metas'],['photos','📸 Fotos'],['assessments','📊 Avaliações'],['programs','📋 Programas']].map(([t,label]) => (
+          {[['chat','Chat'],['routine','Ficha'],['evolution','Evolução'],['goals','Metas'],['photos','Fotos'],['assessments','Avaliações'],['programs','Programas']].map(([t,label]) => (
             <button key={t} onClick={() => setTab(t)}
               className="flex-shrink-0 flex-1 py-2 rounded-lg text-xs font-semibold transition-all"
               style={{
@@ -320,7 +320,7 @@ function GoalsTrainer({ studentId }) {
   if (!hasAnyGoal) {
     return (
       <div className="f-card p-6 text-center" style={{ color: 'var(--text-3)' }}>
-        <div className="text-3xl mb-2">🎯</div>
+        <div className="section-index mb-2">TARGET</div>
         <p className="text-sm">Este aluno ainda não definiu metas.</p>
       </div>
     )
@@ -524,7 +524,7 @@ function PriorityActions({ students, dashStats, onSelect }) {
     if (!s) continue
     actions.push({
       priority: 0,
-      icon: '💬',
+      icon: 'MSG',
       text: `Responder ${s.name || 'aluno'}`,
       detail: `${count} mensagem${count !== 1 ? 's' : ''} não lida${count !== 1 ? 's' : ''}`,
       student: s,
@@ -538,7 +538,7 @@ function PriorityActions({ students, dashStats, onSelect }) {
     const days = last ? Math.round((new Date() - new Date(last + 'T12:00')) / 86400000) : null
     actions.push({
       priority: 1,
-      icon: '⚠️',
+      icon: 'ALERT',
       text: `Falar com ${s.name || 'aluno'}`,
       detail: days ? `sem treinar há ${days} dias` : 'nunca treinou',
       student: s,
@@ -551,7 +551,7 @@ function PriorityActions({ students, dashStats, onSelect }) {
     if (!s) continue
     actions.push({
       priority: 2,
-      icon: '📊',
+      icon: 'DATA',
       text: `Avaliar ${s.name || 'aluno'}`,
       detail: 'avaliação física pendente',
       student: s,
@@ -602,7 +602,7 @@ function ConsistencyRanking({ students, ranking, onSelect }) {
   return (
     <div className="f-card p-4 animate-slide-up" style={{ borderColor: 'rgba(250,204,21,.25)', background: 'rgba(250,204,21,.03)' }}>
       <div className="flex items-center gap-2 mb-3">
-        <span className="text-base">🔥</span>
+        <span className="section-index">STREAK</span>
         <p className="text-sm font-semibold" style={{ color: '#facc15' }}>Ranking de consistência</p>
       </div>
       <div className="space-y-2">
@@ -618,7 +618,7 @@ function ConsistencyRanking({ students, ranking, onSelect }) {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-1)' }}>{s.name || 'Aluno'}</p>
               </div>
-              <Badge variant="accent">{r.streak} dia{r.streak !== 1 ? 's' : ''} 🔥</Badge>
+              <Badge variant="accent">{r.streak} dia{r.streak !== 1 ? 's' : ''}</Badge>
             </button>
           )
         })}
@@ -632,7 +632,7 @@ function RecentPRsPanel({ newPRs, students }) {
   if (!newPRs?.length) {
     return (
       <div className="text-center py-10">
-        <div className="text-3xl mb-2">🏆</div>
+        <div className="section-index mb-2">PR BOARD</div>
         <p className="text-sm font-semibold" style={{ color: 'var(--text-2)' }}>
           Nenhum PR batido nos últimos 7 dias
         </p>
@@ -653,7 +653,7 @@ function RecentPRsPanel({ newPRs, students }) {
           style={{ borderColor: 'rgba(250,204,21,.2)', background: 'rgba(250,204,21,.03)' }}>
           <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-base"
             style={{ background: 'rgba(250,204,21,.12)' }}>
-            🏆
+            PR
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-1)' }}>
@@ -777,7 +777,7 @@ export default function PersonalDashboardView() {
   const atLimit = students.length >= studentLimit
 
   return (
-    <div className="px-4 pt-6 pb-4 space-y-5">
+    <div className="app-view personal-dashboard-view px-4 pt-6 pb-4 space-y-5">
       <div className="flex items-start justify-between">
         <div>
           <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color:'var(--text-1)' }}>Meus Alunos</h1>
@@ -990,7 +990,7 @@ export default function PersonalDashboardView() {
             if (filterView !== 'all' && filtered.length === 0) {
               return (
                 <div className="text-center py-10">
-                  <div className="text-3xl mb-2">🎉</div>
+                  <div className="section-index mb-2">CLEAR</div>
                   <p className="text-sm font-semibold" style={{ color: 'var(--text-2)' }}>
                     {filterView === 'inactive' ? 'Todos os alunos estão treinando!' : 'Todas as avaliações estão em dia!'}
                   </p>

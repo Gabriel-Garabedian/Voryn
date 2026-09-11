@@ -17,7 +17,7 @@ function useReveal() {
 function Check() {
   return (
     <svg width="15" height="15" fill="none" viewBox="0 0 24 24"
-      stroke="#A855F7" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 2 }}>
+      stroke="var(--accent)" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 2 }}>
       <polyline points="20 6 9 17 4 12"/>
     </svg>
   )
@@ -40,8 +40,8 @@ function Nav() {
       transition: 'all .3s',
     }}>
       <div style={{ maxWidth: 1140, margin: '0 auto', padding: '16px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Link to="/" style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 26, letterSpacing: '.1em', color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <img src="/voryn-icon-192.png" alt="Voryn" style={{ width: 32, height: 32, borderRadius: 8, boxShadow: '0 0 16px rgba(130,10,209,.5)' }} />
+        <Link to="/" style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 28, letterSpacing: '.1em', color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <img src="/voryn-icon-192.png" alt="Voryn" style={{ width: 32, height: 32, borderRadius: 8, boxShadow: '0 0 16px rgba(var(--accent-rgb),.5)' }} />
           Voryn
         </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
@@ -56,9 +56,9 @@ function Nav() {
             Entrar
           </Link>
           <Link to="/register" style={{
-            background: '#820AD1', color: '#fff', fontSize: 13, fontWeight: 600,
+            background: 'var(--accent)', color: '#fff', fontSize: 13, fontWeight: 700,
             padding: '10px 20px', borderRadius: 10, textDecoration: 'none',
-            boxShadow: '0 0 16px rgba(130,10,209,.4)', transition: 'all .2s',
+            boxShadow: '0 0 16px rgba(var(--accent-rgb),.4)', transition: 'all .2s',
           }}>
             Começar grátis
           </Link>
@@ -72,12 +72,12 @@ function Nav() {
 function Hero() {
   return (
     <section style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden', paddingTop: 100 }}>
-      <div style={{ position: 'absolute', top: -100, left: '50%', transform: 'translateX(-50%)', width: 800, height: 600, borderRadius: '50%', background: 'radial-gradient(circle,rgba(130,10,209,.12) 0%,transparent 70%)', pointerEvents: 'none' }}/>
+      <div style={{ position: 'absolute', top: -100, left: '50%', transform: 'translateX(-50%)', width: 800, height: 600, borderRadius: '50%', background: 'radial-gradient(circle,rgba(var(--accent-rgb),.14) 0%,transparent 70%)', pointerEvents: 'none' }}/>
       <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px 80px', width: '100%' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
-          <h1 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(72px,11vw,140px)', lineHeight: .9, letterSpacing: '.03em', color: '#fff', margin: '0 0 16px' }}>
+          <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 'clamp(72px,11vw,140px)', lineHeight: .84, letterSpacing: '.03em', color: '#fff', margin: '0 0 16px', fontWeight: 800 }}>
             VORYN<br/>
-            <span style={{ background: 'linear-gradient(135deg,#A855F7,#820AD1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            <span style={{ background: 'linear-gradient(135deg,var(--accent-2),var(--accent))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               SEU
             </span>{' '}CORPO.
           </h1>
@@ -86,7 +86,7 @@ function Hero() {
             Calendário de consistência, tracker ao vivo, personal integrado e muito mais.
           </p>
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 60 }}>
-            <Link to="/register" style={{ background: '#820AD1', color: '#fff', fontWeight: 600, fontSize: 16, padding: '16px 40px', borderRadius: 14, textDecoration: 'none', boxShadow: '0 0 30px rgba(130,10,209,.45)', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+            <Link to="/register" style={{ background: 'var(--accent)', color: '#fff', fontWeight: 700, fontSize: 16, padding: '16px 40px', borderRadius: 10, textDecoration: 'none', boxShadow: '0 0 30px rgba(var(--accent-rgb),.45)', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
               <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               Começar grátis — 14 dias
             </Link>
@@ -97,7 +97,7 @@ function Hero() {
           <div style={{ display: 'flex', gap: 40, justifyContent: 'center', flexWrap: 'wrap', paddingTop: 28, borderTop: '1px solid rgba(255,255,255,.07)' }}>
             {[['10+','Telas completas'],['PWA','Instala no celular'],['100%','Dark mode premium'],['LGPD','Conformidade garantida']].map(([v,l]) => (
               <div key={l} style={{ textAlign: 'center' }}>
-                <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 34, color: '#A855F7', lineHeight: 1 }}>{v}</div>
+                <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 34, color: 'var(--accent-2)', lineHeight: 1 }}>{v}</div>
                 <div style={{ fontSize: 12, color: 'rgba(255,255,255,.4)', marginTop: 4 }}>{l}</div>
               </div>
             ))}
@@ -111,22 +111,22 @@ function Hero() {
 // ── FEATURES ───────────────────────────────────────────────
 function Features() {
   const features = [
-    { icon:'📅', title:'Calendário de Consistência',   desc:'Dias treinados destacados em roxo. Sequências automáticas. Motivação visual diária.' },
-    { icon:'📋', title:'Planejador Semanal',            desc:'Monte sua rotina de Seg a Dom. Exercícios, séries e reps salvos na nuvem em tempo real.' },
-    { icon:'⚡', title:'Tracker ao Vivo',               desc:'Registre cargas por série. Timer de descanso 30s–5min configurável. Vibração no celular.' },
-    { icon:'🎯', title:'Metas Semanais',                desc:'Defina quantos treinos quer fazer por semana. Acompanhe com anel visual de progresso.' },
-    { icon:'📈', title:'Gráficos de Evolução',          desc:'Progressão de carga por exercício, volume semanal e frequência mensal em gráficos claros.' },
-    { icon:'🏆', title:'Conquistas & Streaks',          desc:'12 conquistas desbloqueáveis. Sequências de dias que criam hábito e retenção.' },
-    { icon:'👤', title:'Personal Trainer Integrado',    desc:'Chat ao vivo, avaliações físicas, programas de treino e histórico compartilhado.' },
-    { icon:'☁️', title:'Dados na Nuvem',                desc:'Supabase PostgreSQL com sincronização entre dispositivos e backup automático.' },
-    { icon:'🔐', title:'Segurança Real',                desc:'Row Level Security, autenticação Supabase, conformidade LGPD, política de privacidade.' },
+    { icon:'01', title:'Calendário de Consistência',   desc:'Dias treinados destacados em roxo. Sequências automáticas. Motivação visual diária.' },
+    { icon:'02', title:'Planejador Semanal',            desc:'Monte sua rotina de Seg a Dom. Exercícios, séries e reps salvos na nuvem em tempo real.' },
+    { icon:'03', title:'Tracker ao Vivo',               desc:'Registre cargas por série. Timer de descanso 30s–5min configurável. Vibração no celular.' },
+    { icon:'04', title:'Metas Semanais',                desc:'Defina quantos treinos quer fazer por semana. Acompanhe com anel visual de progresso.' },
+    { icon:'05', title:'Gráficos de Evolução',          desc:'Progressão de carga por exercício, volume semanal e frequência mensal em gráficos claros.' },
+    { icon:'06', title:'Conquistas & Streaks',          desc:'12 conquistas desbloqueáveis. Sequências de dias que criam hábito e retenção.' },
+    { icon:'07', title:'Personal Trainer Integrado',    desc:'Chat ao vivo, avaliações físicas, programas de treino e histórico compartilhado.' },
+    { icon:'08', title:'Dados na Nuvem',                desc:'Supabase PostgreSQL com sincronização entre dispositivos e backup automático.' },
+    { icon:'09', title:'Segurança Real',                desc:'Row Level Security, autenticação Supabase, conformidade LGPD, política de privacidade.' },
   ]
   return (
     <section id="features" style={{ padding: '120px 0', background: 'rgba(255,255,255,.01)', borderTop: '1px solid rgba(255,255,255,.05)' }}>
       <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px' }}>
         <div className="lp-reveal" style={{ textAlign: 'center', marginBottom: 72 }}>
-          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: '#A855F7', marginBottom: 12 }}>Funcionalidades</p>
-          <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(48px,7vw,88px)', lineHeight: .95, letterSpacing: '.03em', color: '#fff', marginBottom: 14 }}>TUDO QUE<br/>SEU ALUNO PRECISA.</h2>
+          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.25em', textTransform: 'uppercase', color: 'var(--accent-2)', marginBottom: 12 }}>Funcionalidades</p>
+          <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 'clamp(48px,7vw,88px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', marginBottom: 14, fontWeight: 800 }}>TUDO QUE<br/>SEU ALUNO PRECISA.</h2>
           <p style={{ fontSize: 17, color: 'rgba(255,255,255,.4)', maxWidth: 480, margin: '0 auto', fontWeight: 300 }}>
             Do calendário ao tracker em tempo real — um sistema completo, em português, no celular.
           </p>
@@ -136,7 +136,7 @@ function Features() {
             <div key={f.title} style={{ background: '#18181f', padding: '36px 28px', transition: 'background .2s', cursor: 'default' }}
               onMouseEnter={e => e.currentTarget.style.background='#1e1e28'}
               onMouseLeave={e => e.currentTarget.style.background='#18181f'}>
-              <div style={{ width: 50, height: 50, borderRadius: 13, background: 'rgba(130,10,209,.12)', border: '1px solid rgba(130,10,209,.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, marginBottom: 18 }}>{f.icon}</div>
+              <div className="landing-feature-mark" style={{ width: 50, height: 50, borderRadius: 13, background: 'rgba(var(--accent-rgb),.12)', border: '1px solid rgba(var(--accent-rgb),.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, marginBottom: 18 }}>{f.icon}</div>
               <h3 style={{ fontSize: 15, fontWeight: 600, color: '#f2f2f7', marginBottom: 8 }}>{f.title}</h3>
               <p style={{ fontSize: 13, color: 'rgba(255,255,255,.4)', lineHeight: 1.65, fontWeight: 300 }}>{f.desc}</p>
             </div>
@@ -160,17 +160,17 @@ function HowItWorks() {
     <section style={{ padding: '100px 0', background: '#111115', borderTop: '1px solid rgba(255,255,255,.05)', borderBottom: '1px solid rgba(255,255,255,.05)' }}>
       <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px' }}>
         <div className="lp-reveal" style={{ textAlign: 'center', marginBottom: 64 }}>
-          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: '#A855F7', marginBottom: 12 }}>Como funciona</p>
-          <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(44px,6vw,72px)', lineHeight: .95, letterSpacing: '.03em', color: '#fff' }}>
+          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: 'var(--accent-2)', marginBottom: 12 }}>Como funciona</p>
+          <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 'clamp(44px,6vw,72px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', fontWeight: 800 }}>
             5 PASSOS PARA<br/>COMEÇAR HOJE.
           </h2>
         </div>
         <div className="lp-reveal" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 0, position: 'relative' }}>
-          <div style={{ position: 'absolute', top: 38, left: '10%', right: '10%', height: 1, background: 'linear-gradient(90deg,transparent,rgba(130,10,209,.4),transparent)' }}/>
+          <div style={{ position: 'absolute', top: 38, left: '10%', right: '10%', height: 1, background: 'linear-gradient(90deg,transparent,rgba(var(--accent-rgb),.4),transparent)' }}/>
           {steps.map(s => (
             <div key={s.n} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '0 14px', position: 'relative', zIndex: 1 }}>
-              <div style={{ width: 76, height: 76, borderRadius: '50%', background: '#08080a', border: '2px solid rgba(255,255,255,.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily:"'Bebas Neue',sans-serif", fontSize: 30, color: 'rgba(255,255,255,.3)', marginBottom: 20, transition: 'all .3s', cursor: 'default' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor='#820AD1'; e.currentTarget.style.color='#A855F7'; e.currentTarget.style.boxShadow='0 0 24px rgba(130,10,209,.35)' }}
+              <div style={{ width: 76, height: 76, borderRadius: '50%', background: '#080a0b', border: '2px solid rgba(255,255,255,.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily:"'Barlow Condensed',sans-serif", fontSize: 30, color: 'rgba(255,255,255,.3)', marginBottom: 20, transition: 'all .3s', cursor: 'default' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor='var(--accent)'; e.currentTarget.style.color='var(--accent-2)'; e.currentTarget.style.boxShadow='0 0 24px rgba(var(--accent-rgb),.35)' }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,.08)'; e.currentTarget.style.color='rgba(255,255,255,.3)'; e.currentTarget.style.boxShadow='none' }}>
                 {s.n}
               </div>
@@ -195,8 +195,8 @@ function Testimonials() {
     <section style={{ padding: '120px 0' }}>
       <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px' }}>
         <div className="lp-reveal" style={{ textAlign: 'center', marginBottom: 64 }}>
-          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: '#A855F7', marginBottom: 12 }}>Depoimentos</p>
-          <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(44px,6vw,72px)', lineHeight: .95, letterSpacing: '.03em', color: '#fff' }}>
+          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: 'var(--accent-2)', marginBottom: 12 }}>Depoimentos</p>
+          <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 'clamp(44px,6vw,72px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', fontWeight: 800 }}>
             QUEM USA,<br/>NÃO LARGA.
           </h2>
         </div>
@@ -205,7 +205,7 @@ function Testimonials() {
             <div key={t.name} style={{ background: '#18181f', border: '1px solid rgba(255,255,255,.06)', borderRadius: 20, padding: '28px 24px' }}>
               <div style={{ display: 'flex', gap: 2, marginBottom: 16 }}>
                 {Array.from({ length: t.stars }).map((_, i) => (
-                  <span key={i} style={{ color: '#820AD1', fontSize: 16 }}>★</span>
+                  <span key={i} style={{ color: 'var(--accent)', fontSize: 16 }}>★</span>
                 ))}
               </div>
               <p style={{ fontSize: 15, color: 'rgba(255,255,255,.7)', lineHeight: 1.7, marginBottom: 20, fontWeight: 300, fontStyle: 'italic' }}>
@@ -213,7 +213,7 @@ function Testimonials() {
               </p>
               <div>
                 <p style={{ fontSize: 14, fontWeight: 600, color: '#f2f2f7' }}>{t.name}</p>
-                <p style={{ fontSize: 12, color: '#A855F7' }}>{t.role}</p>
+                <p style={{ fontSize: 12, color: 'var(--accent-2)' }}>{t.role}</p>
               </div>
             </div>
           ))}
@@ -230,8 +230,8 @@ function Pricing() {
     <section id="pricing" style={{ padding: '120px 0', background: '#111115', borderTop: '1px solid rgba(255,255,255,.05)' }}>
       <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px' }}>
         <div className="lp-reveal" style={{ textAlign: 'center', marginBottom: 72 }}>
-          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: '#A855F7', marginBottom: 12 }}>Planos e Preços</p>
-          <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(48px,7vw,88px)', lineHeight: .95, letterSpacing: '.03em', color: '#fff', marginBottom: 14 }}>
+          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: 'var(--accent-2)', marginBottom: 12 }}>Planos e Preços</p>
+          <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 'clamp(48px,7vw,88px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', marginBottom: 14, fontWeight: 800 }}>
             ESCOLHA SEU<br/>PLANO.
           </h2>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(74,222,128,.08)', border: '1px solid rgba(74,222,128,.2)', borderRadius: 99, padding: '8px 18px', fontSize: 13, color: '#4ade80', marginTop: 8 }}>
@@ -241,22 +241,22 @@ function Pricing() {
         </div>
         <div className="lp-reveal lp-pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
           {plans.map(plan => (
-            <div key={plan.id} style={{ background: '#18181f', border: `1px solid ${plan.highlight ? '#820AD1' : 'rgba(255,255,255,.06)'}`, borderRadius: 24, padding: '32px 28px', display: 'flex', flexDirection: 'column', position: 'relative', boxShadow: plan.highlight ? '0 0 40px rgba(130,10,209,.15)' : 'none' }}>
+            <div key={plan.id} style={{ background: '#171c20', border: `1px solid ${plan.highlight ? 'var(--accent)' : 'rgba(255,255,255,.06)'}`, borderRadius: 18, padding: '32px 28px', display: 'flex', flexDirection: 'column', position: 'relative', boxShadow: plan.highlight ? '0 0 40px rgba(var(--accent-rgb),.15)' : 'none' }}>
               {plan.highlight && (
-                <div style={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', background: '#820AD1', color: '#fff', fontSize: 11, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', padding: '4px 16px', borderRadius: 99 }}>
+                <div style={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', background: 'var(--accent)', color: '#fff', fontSize: 11, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', padding: '4px 16px', borderRadius: 99 }}>
                   Mais popular
                 </div>
               )}
               <p style={{ fontSize: 11, color: 'rgba(255,255,255,.35)', letterSpacing: '.15em', textTransform: 'uppercase', marginBottom: 6 }}>{plan.description}</p>
-              <h3 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 26, letterSpacing: '.04em', color: '#fff', marginBottom: 12 }}>{plan.name}</h3>
+              <h3 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 28, letterSpacing: '.04em', color: '#fff', marginBottom: 12, fontWeight: 800 }}>{plan.name}</h3>
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, marginBottom: plan.maxStudents ? 6 : 24 }}>
-                <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 52, color: plan.highlight ? '#A855F7' : '#fff', lineHeight: 1 }}>
+                <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 52, color: plan.highlight ? 'var(--accent-2)' : '#fff', lineHeight: 1, fontWeight: 800 }}>
                   R${plan.price.toFixed(2).replace('.', ',')}
                 </span>
                 <span style={{ fontSize: 13, color: 'rgba(255,255,255,.35)', marginBottom: 8 }}>/mês</span>
               </div>
               {plan.maxStudents > 0 && (
-                <p style={{ fontSize: 13, color: '#A855F7', marginBottom: 20 }}>Até {plan.maxStudents} alunos</p>
+                <p style={{ fontSize: 13, color: 'var(--accent-2)', marginBottom: 20 }}>Até {plan.maxStudents} alunos</p>
               )}
               <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 10, flex: 1 }}>
                 {plan.features.map(f => (
@@ -265,14 +265,14 @@ function Pricing() {
                   </li>
                 ))}
               </ul>
-              <Link to={`/register?plan=${plan.id}`} style={{ background: plan.highlight ? '#820AD1' : 'rgba(255,255,255,.06)', color: '#fff', fontWeight: 600, fontSize: 14, padding: '14px 24px', borderRadius: 12, textDecoration: 'none', textAlign: 'center', display: 'block', border: plan.highlight ? 'none' : '1px solid rgba(255,255,255,.08)', boxShadow: plan.highlight ? '0 0 24px rgba(130,10,209,.4)' : 'none' }}>
+              <Link to={`/register?plan=${plan.id}`} style={{ background: plan.highlight ? 'var(--accent)' : 'rgba(255,255,255,.06)', color: '#fff', fontWeight: 700, fontSize: 14, padding: '14px 24px', borderRadius: 10, textDecoration: 'none', textAlign: 'center', display: 'block', border: plan.highlight ? 'none' : '1px solid rgba(255,255,255,.08)', boxShadow: plan.highlight ? '0 0 24px rgba(var(--accent-rgb),.4)' : 'none' }}>
                 Começar grátis
               </Link>
             </div>
           ))}
         </div>
         <div className="lp-reveal" style={{ textAlign:'center', marginTop: 40, display:'flex', gap:24, justifyContent:'center', flexWrap:'wrap' }}>
-          {['💳 Cartão de crédito','🏦 Pix','📄 Boleto bancário','🔒 Pagamento seguro via Mercado Pago'].map(t => (
+          {['Cartão de crédito','Pix','Boleto bancário','Pagamento seguro via Mercado Pago'].map(t => (
             <span key={t} style={{ fontSize:13, color:'rgba(255,255,255,.35)', display:'flex', alignItems:'center', gap:6 }}>{t}</span>
           ))}
         </div>
@@ -297,8 +297,8 @@ function FAQ() {
     <section id="faq" style={{ padding: '120px 0', background: '#111115', borderTop: '1px solid rgba(255,255,255,.05)' }}>
       <div style={{ maxWidth: 800, margin: '0 auto', padding: '0 32px' }}>
         <div className="lp-reveal" style={{ textAlign: 'center', marginBottom: 64 }}>
-          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: '#A855F7', marginBottom: 12 }}>Dúvidas</p>
-          <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(44px,6vw,72px)', lineHeight: .95, letterSpacing: '.03em', color: '#fff' }}>PERGUNTAS<br/>FREQUENTES.</h2>
+          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: 'var(--accent-2)', marginBottom: 12 }}>Dúvidas</p>
+          <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 'clamp(44px,6vw,72px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', fontWeight: 800 }}>PERGUNTAS<br/>FREQUENTES.</h2>
         </div>
         <div className="lp-reveal">
           {faqs.map(([q, a], i) => (
@@ -306,7 +306,7 @@ function FAQ() {
               <button onClick={() => setOpen(open === i ? null : i)}
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', background: 'none', border: 'none', cursor: 'pointer', gap: 16, textAlign: 'left' }}>
                 <span style={{ fontSize: 16, fontWeight: 500, color: '#f2f2f7' }}>{q}</span>
-                <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(130,10,209,.1)', border: '1px solid rgba(130,10,209,.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16, color: '#A855F7', transform: open === i ? 'rotate(45deg)' : 'none', transition: 'all .25s' }}>+</div>
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(var(--accent-rgb),.1)', border: '1px solid rgba(var(--accent-rgb),.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16, color: 'var(--accent-2)', transform: open === i ? 'rotate(45deg)' : 'none', transition: 'all .25s' }}>+</div>
               </button>
               <div style={{ maxHeight: open === i ? 300 : 0, overflow: 'hidden', transition: 'max-height .3s ease' }}>
                 <p style={{ fontSize: 14, color: 'rgba(255,255,255,.5)', lineHeight: 1.7, paddingTop: 12, fontWeight: 300 }}>{a}</p>
@@ -323,14 +323,14 @@ function FAQ() {
 function CTA() {
   return (
     <section style={{ padding: '140px 0', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 700, height: 500, borderRadius: '50%', background: 'radial-gradient(circle,rgba(130,10,209,.15) 0%,transparent 70%)', pointerEvents: 'none' }}/>
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#820AD1,transparent)', opacity: .6 }}/>
-      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#820AD1,transparent)', opacity: .6 }}/>
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 700, height: 500, borderRadius: '50%', background: 'radial-gradient(circle,rgba(var(--accent-rgb),.15) 0%,transparent 70%)', pointerEvents: 'none' }}/>
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,var(--accent),transparent)', opacity: .6 }}/>
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,var(--accent),transparent)', opacity: .6 }}/>
       <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px', position: 'relative', zIndex: 1 }} className="lp-reveal">
-        <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: '#A855F7', marginBottom: 16 }}>Pronto para começar?</p>
-        <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(64px,10vw,130px)', lineHeight: .92, letterSpacing: '.04em', color: '#fff', marginBottom: 24 }}>
+        <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: 'var(--accent-2)', marginBottom: 16 }}>Pronto para começar?</p>
+        <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 'clamp(64px,10vw,130px)', lineHeight: .84, letterSpacing: '.04em', color: '#fff', marginBottom: 24, fontWeight: 800 }}>
           SEU APP.<br/>SEUS ALUNOS.<br/>
-          <span style={{ background: 'linear-gradient(135deg,#A855F7,#820AD1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+          <span style={{ background: 'linear-gradient(135deg,var(--accent-2),var(--accent))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
             SUA MARCA.
           </span>
         </h2>
@@ -338,7 +338,7 @@ function CTA() {
           14 dias grátis. Cancele quando quiser. Sem cartão necessário.
         </p>
         <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link to="/register" style={{ background: '#820AD1', color: '#fff', fontWeight: 600, fontSize: 17, padding: '18px 48px', borderRadius: 14, textDecoration: 'none', boxShadow: '0 0 40px rgba(130,10,209,.5)', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+          <Link to="/register" style={{ background: 'var(--accent)', color: '#fff', fontWeight: 700, fontSize: 17, padding: '18px 48px', borderRadius: 10, textDecoration: 'none', boxShadow: '0 0 40px rgba(var(--accent-rgb),.5)', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
             Começar 14 dias grátis →
           </Link>
           <Link to="/pricing" style={{ color: 'rgba(255,255,255,.5)', fontSize: 15, fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '18px 20px' }}>
@@ -346,7 +346,7 @@ function CTA() {
           </Link>
         </div>
         <div style={{ display: 'flex', gap: 32, justifyContent: 'center', flexWrap: 'wrap', marginTop: 48 }}>
-          {['📱 PWA nativo no celular','🔐 LGPD compliant','💳 Cancele quando quiser','🚀 Deploy gratuito'].map(t => (
+          {['PWA nativo no celular','LGPD compliant','Cancele quando quiser','Deploy gratuito'].map(t => (
             <span key={t} style={{ fontSize: 13, color: 'rgba(255,255,255,.35)' }}>{t}</span>
           ))}
         </div>
@@ -362,7 +362,7 @@ function Footer() {
       <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <img src="/voryn-icon-192.png" alt="Voryn" style={{ width: 24, height: 24, borderRadius: 6 }} />
-          <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 22, letterSpacing: '.1em', color: 'rgba(255,255,255,.3)' }}>Voryn</span>
+          <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 24, letterSpacing: '.1em', color: 'rgba(255,255,255,.3)' }}>Voryn</span>
         </div>
         <div style={{ textAlign: 'center' }}>
           <span style={{ fontSize: 13, color: 'rgba(255,255,255,.2)', display: 'block' }}>© 2025 Voryn App · Todos os direitos reservados</span>
@@ -400,6 +400,8 @@ export default function LandingPage() {
       @media(max-width:600px){
         div[style*="repeat(3,1fr)"] { grid-template-columns:1fr!important; }
         nav > div > div[style*="gap: 28px"] { display:none; }
+        nav > div { padding-left: 18px!important; padding-right: 18px!important; }
+        section > div { padding-left: 20px!important; padding-right: 20px!important; }
       }
     `
     document.head.appendChild(style)
@@ -407,7 +409,7 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <div style={{ background: '#080808', color: '#fff', fontFamily:"'DM Sans',sans-serif", overflowX: 'hidden' }}>
+    <div className="landing-shell" style={{ background: 'var(--bg)', color: 'var(--text-1)', fontFamily:"'Manrope',sans-serif", overflowX: 'hidden' }}>
       <Nav />
       <Hero />
       <Features />

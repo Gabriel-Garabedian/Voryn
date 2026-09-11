@@ -95,7 +95,7 @@ function LogCard({ log }) {
               {ex.notes && (
                 <p className="text-xs italic px-2 py-1.5 rounded-lg mt-1"
                   style={{ background: 'var(--surface)', color: 'var(--text-3)' }}>
-                  💬 {ex.notes}
+                  Nota · {ex.notes}
                 </p>
               )}
             </div>
@@ -164,7 +164,8 @@ export default function HistoryView() {
   const totalVolume   = filtered.reduce((a, l) => a + (parseFloat(l.total_volume) || 0), 0)
 
   if (loading) return (
-    <div className="px-4 pt-6 pb-8">
+    <div className="app-view view-history px-4 pt-6 pb-8">
+      <p className="view-kicker">Session archive / 05</p>
       <div className="skeleton-pulse h-8 w-32 rounded-lg mb-2" style={{ background: 'var(--border)' }}/>
       <div className="skeleton-pulse h-4 w-20 rounded mb-6" style={{ background: 'var(--border)' }}/>
       <SkeletonList count={5}/>
@@ -182,7 +183,7 @@ export default function HistoryView() {
         <button onClick={() => navigate('/app/subscription')}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-4 text-left transition-all"
           style={{ background: 'rgba(var(--accent-rgb),.08)', border: '1px solid rgba(var(--accent-rgb),.25)' }}>
-          <span className="text-lg">🔒</span>
+          <span className="section-index">LIMIT</span>
           <span className="flex-1 text-xs" style={{ color: 'var(--text-2)' }}>
             Mostrando só os últimos {historyDays} dias. Assine para ver todo o seu histórico.
           </span>
@@ -235,7 +236,7 @@ export default function HistoryView() {
       {filtered.length === 0
         ? (
           <div className="f-card p-8 text-center space-y-2">
-            <div className="text-4xl">📭</div>
+            <div className="section-index">NO LOGS</div>
             <p className="font-semibold" style={{ color: 'var(--text-1)' }}>
               {logs.length === 0 ? 'Nenhum treino registrado ainda' : 'Nenhum resultado encontrado'}
             </p>

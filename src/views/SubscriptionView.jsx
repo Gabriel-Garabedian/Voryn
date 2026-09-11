@@ -23,11 +23,11 @@ export default function SubscriptionView() {
     : 0
 
   const statusMap = {
-    active:   { label: 'Ativo',     variant: 'green',  icon: '✅' },
-    trialing: { label: 'Trial',     variant: 'yellow', icon: '⏱' },
-    canceled: { label: 'Cancelado', variant: 'red',    icon: '❌' },
-    past_due: { label: 'Vencido',   variant: 'red',    icon: '⚠️' },
-    inactive: { label: 'Inativo',   variant: 'red',    icon: '🔒' },
+    active:   { label: 'Ativo',     variant: 'green',  icon: 'ON' },
+    trialing: { label: 'Trial',     variant: 'yellow', icon: 'TR' },
+    canceled: { label: 'Cancelado', variant: 'red',    icon: 'NO' },
+    past_due: { label: 'Vencido',   variant: 'red',    icon: 'PD' },
+    inactive: { label: 'Inativo',   variant: 'red',    icon: 'OFF' },
   }
   // Aluno sem assinatura própria, mas com acesso liberado pelo plano do
   // personal: sem esta checagem, a tela mostrava "Plano Grátis" com badge
@@ -35,7 +35,7 @@ export default function SubscriptionView() {
   // dava a entender que precisava assinar quando não precisava.
   const accessViaTrainer = !['active', 'trialing'].includes(subStatus) && hasTrainerAccess
   const si = accessViaTrainer
-    ? { label: 'Incluso pelo personal', variant: 'green', icon: '🤝' }
+    ? { label: 'Incluso pelo personal', variant: 'green', icon: 'LINK' }
     : (statusMap[subStatus] || statusMap.inactive)
 
   async function handleCancel() {
@@ -69,8 +69,9 @@ export default function SubscriptionView() {
   }
 
   return (
-    <div className="px-4 pt-6 pb-10 space-y-6">
+    <div className="app-view view-subscription px-4 pt-6 pb-10 space-y-6">
       <div>
+        <p className="view-kicker">Access control / 11</p>
         <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
           Assinatura
         </h1>
@@ -98,14 +99,14 @@ export default function SubscriptionView() {
         {accessViaTrainer && (
           <div className="mb-4 px-4 py-3 rounded-xl text-sm"
             style={{ background: 'rgba(74,222,128,.08)', border: '1px solid rgba(74,222,128,.2)', color: '#4ade80' }}>
-            🤝 Seu acesso ao Voryn está incluso no plano do seu personal — você não precisa pagar nada enquanto esse vínculo estiver ativo.
+            Seu acesso ao Voryn está incluso no plano do seu personal — você não precisa pagar nada enquanto esse vínculo estiver ativo.
           </div>
         )}
 
         {subStatus === 'trialing' && trialDaysLeft > 0 && (
           <div className="mb-4 px-4 py-3 rounded-xl text-sm"
             style={{ background: 'rgba(250,204,21,.08)', border: '1px solid rgba(250,204,21,.2)', color: '#facc15' }}>
-            ⏱ Seu trial expira em <strong>{trialDaysLeft} dia{trialDaysLeft !== 1 ? 's' : ''}</strong>.
+            Seu trial expira em <strong>{trialDaysLeft} dia{trialDaysLeft !== 1 ? 's' : ''}</strong>.
             Assine agora para não perder o acesso.
           </div>
         )}
@@ -113,7 +114,7 @@ export default function SubscriptionView() {
         {subStatus === 'past_due' && (
           <div className="mb-4 px-4 py-3 rounded-xl text-sm"
             style={{ background: 'rgba(248,113,113,.08)', border: '1px solid rgba(248,113,113,.2)', color: '#f87171' }}>
-            ⚠️ Seu pagamento está em atraso. Assine novamente abaixo para regularizar.
+            Seu pagamento está em atraso. Assine novamente abaixo para regularizar.
           </div>
         )}
 
@@ -177,7 +178,7 @@ export default function SubscriptionView() {
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center"
             style={{ background: 'rgba(0,158,227,.1)', border: '1px solid rgba(0,158,227,.2)' }}>
-            <span style={{ fontSize: 18 }}>💳</span>
+            <span className="section-index">PAY</span>
           </div>
           <div>
             <p className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>Mercado Pago</p>
@@ -199,7 +200,7 @@ export default function SubscriptionView() {
             </p>
             {cancelDone ? (
               <p className="text-sm font-semibold" style={{ color: '#4ade80' }}>
-                ✅ Cancelamento processado. Seu acesso continua disponível até o fim do período já pago.
+                Cancelamento processado. Seu acesso continua disponível até o fim do período já pago.
               </p>
             ) : (
               <button onClick={handleCancel} disabled={cancelling}

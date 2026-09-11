@@ -142,8 +142,9 @@ export default function GoalsView() {
   )
 
   return (
-    <div className="px-4 pt-6 pb-8 space-y-6">
+    <div className="app-view view-goals px-4 pt-6 pb-8 space-y-6">
       <div>
+        <p className="view-kicker">Targets / 06</p>
         <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>Metas</h1>
         <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>Acompanhe seu progresso semanal</p>
       </div>
@@ -155,7 +156,7 @@ export default function GoalsView() {
         </p>
         <WeeklyGoalRing current={weekCount} goal={weeklyGoal}/>
         <p className="text-center mt-3 font-semibold text-sm" style={{ color: goalMet ? '#4ade80' : 'var(--text-1)' }}>
-          {goalMet ? '🎉 Meta atingida esta semana!' : `Faltam ${weeklyGoal - weekCount} treino${weeklyGoal - weekCount !== 1 ? 's' : ''} para sua meta`}
+          {goalMet ? 'Meta atingida esta semana!' : `Faltam ${weeklyGoal - weekCount} treino${weeklyGoal - weekCount !== 1 ? 's' : ''} para sua meta`}
         </p>
 
         {/* Goal selector */}
@@ -244,7 +245,7 @@ export default function GoalsView() {
 
         {bodyLogs.length === 0 && !showAddBody ? (
           <div className="f-card p-6 text-center">
-            <div className="text-3xl mb-2">⚖️</div>
+            <div className="section-index">BODY LOG</div>
             <p className="text-sm" style={{ color: 'var(--text-3)' }}>Nenhum registro ainda.</p>
             <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>Registre seu peso para acompanhar sua evolução.</p>
           </div>

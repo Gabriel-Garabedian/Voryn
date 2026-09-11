@@ -7,7 +7,7 @@ function VorynLogo() {
   return (
     <div className="flex items-center justify-center gap-3 mb-2">
       <img src="/voryn-icon-192.png" alt="Voryn" className="w-12 h-12 rounded-2xl"
-        style={{ boxShadow: '0 0 24px rgba(var(--accent-rgb),.5)' }} />
+        style={{ boxShadow: '0 0 24px rgba(var(--accent-rgb),.5)', border: '1px solid rgba(var(--accent-rgb),.4)' }} />
       <span className="font-display text-4xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
         Voryn
       </span>
@@ -17,21 +17,31 @@ function VorynLogo() {
 
 function AuthCard({ children, title, sub }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6"
+    <div className="auth-shell min-h-screen flex flex-col items-center justify-center px-5 py-8"
       style={{ background: 'var(--bg)' }}>
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle,rgba(var(--accent-rgb),.08) 0%,transparent 70%)' }}/>
-      <div className="w-full max-w-sm relative z-10 animate-slide-up">
-        <div className="text-center mb-8">
-          <VorynLogo />
-
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[34rem] h-[34rem] rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle,rgba(var(--accent-rgb),.13) 0%,transparent 68%)' }}/>
+      <div className="w-full max-w-4xl relative z-10 animate-slide-up grid md:grid-cols-[.85fr_1fr] gap-6 items-center">
+        <div className="hidden md:block px-5">
+          <p className="f-label" style={{ color: 'var(--accent-2)' }}>Performance club</p>
+          <h2 className="font-display uppercase text-7xl leading-[.82] tracking-wide mb-5">Treine.<br/><span style={{ color: 'var(--accent)' }}>Registre.</span><br/>Evolua.</h2>
+          <p className="max-w-xs text-sm leading-relaxed" style={{ color: 'var(--text-3)' }}>O painel de treino para quem transforma consistência em resultado.</p>
+          <div className="mt-8 flex gap-2">
+            {['FOCO', 'CARGA', 'RITMO'].map(item => <span key={item} className="f-badge f-badge-accent">{item}</span>)}
+          </div>
         </div>
-        <div className="f-card p-6 space-y-4">
+        <div>
+        <div className="text-center mb-7">
+          <VorynLogo />
+        </div>
+        <div className="glass-panel p-6 sm:p-8 space-y-5" style={{ borderColor: 'rgba(var(--accent-rgb),.2)' }}>
           <div className="mb-2">
-            <h1 className="text-xl font-semibold" style={{ color: 'var(--text-1)' }}>{title}</h1>
+            <p className="f-label" style={{ color: 'var(--accent-2)' }}>Acesso do atleta</p>
+            <h1 className="font-display uppercase text-3xl tracking-wide" style={{ color: 'var(--text-1)' }}>{title}</h1>
             {sub && <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>{sub}</p>}
           </div>
           {children}
+        </div>
         </div>
       </div>
     </div>
@@ -96,7 +106,7 @@ export function LoginPage() {
         </div>
         <ErrorBox msg={error}/>
         <button type="submit" id="voryn-login-btn" disabled={loading}
-          className="f-btn f-btn-accent w-full py-4 text-base font-display uppercase tracking-widest"
+          className="f-btn f-btn-accent glow-primary w-full py-4 text-base font-display uppercase tracking-widest"
           style={{ opacity: loading ? .65 : 1 }}>
           {loading ? 'Entrando...' : 'Entrar no Voryn'}
         </button>
@@ -147,7 +157,7 @@ export function ResetPasswordPage() {
       sub={isRecovery ? 'Digite sua nova senha' : 'Enviaremos um link por email'}>
       {sent ? (
         <div className="text-center space-y-3 py-4">
-          <div className="text-4xl">📧</div>
+          <div className="section-index">EMAIL SENT</div>
           <p style={{ color: 'var(--text-2)' }}>
             Link enviado para <strong>{email}</strong>
           </p>

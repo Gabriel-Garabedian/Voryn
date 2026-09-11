@@ -14,7 +14,7 @@ const SUBTABS = [
 
 function TrainerOverview({ data, onRemove }) {
   return (
-    <div className="space-y-4 animate-fade-in">
+    <div className="app-view view-personal space-y-4 animate-fade-in">
       <div className="f-card p-5">
         <div className="flex items-start gap-4">
           <div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
@@ -39,9 +39,9 @@ function TrainerOverview({ data, onRemove }) {
       <div className="f-card p-4 space-y-3">
         <p className="f-label">Contato</p>
         {[
-          { icon:'📱', label:'WhatsApp', val:data.phone,     href: data.phone ? `https://wa.me/${data.phone.replace(/\D/g,'')}` : null },
-          { icon:'📷', label:'Instagram',val:data.instagram, href: data.instagram ? `https://instagram.com/${data.instagram.replace('@','')}` : null },
-          { icon:'✉️', label:'Email',    val:data.user?.email,href: data.user?.email ? `mailto:${data.user.email}` : null },
+          { icon:'WA', label:'WhatsApp', val:data.phone,     href: data.phone ? `https://wa.me/${data.phone.replace(/\D/g,'')}` : null },
+          { icon:'IG', label:'Instagram',val:data.instagram, href: data.instagram ? `https://instagram.com/${data.instagram.replace('@','')}` : null },
+          { icon:'@', label:'Email',    val:data.user?.email,href: data.user?.email ? `mailto:${data.user.email}` : null },
         ].filter(c => c.val).map(c => (
           <a key={c.label} href={c.href} target="_blank" rel="noreferrer"
             className="flex items-center gap-3 p-3 rounded-xl transition-all"
@@ -121,7 +121,7 @@ function Chat({ trainerId, studentId, userId }) {
       <div className="flex-1 overflow-y-auto px-1 py-2 space-y-3">
         {msgs.length === 0 && (
           <div className="text-center py-12">
-            <div className="text-4xl mb-3">💬</div>
+            <div className="section-index mb-3">CHAT</div>
             <p className="text-sm" style={{ color:'var(--text-3)' }}>Nenhuma mensagem ainda. Diga olá!</p>
           </div>
         )}
@@ -204,7 +204,7 @@ function Assessments({ studentId, trainerId }) {
           </div>
         </div>
       )}
-      {items.length === 0 && !showAdd && <EmptyState icon="📊" title="Nenhuma avaliação" description="Registre peso e composição corporal."/>}
+      {items.length === 0 && !showAdd && <EmptyState icon="DATA" title="Nenhuma avaliação" description="Registre peso e composição corporal."/>}
       {items.map(a => (
         <div key={a.id} className="f-card p-4">
           <p className="font-display text-base uppercase tracking-wide mb-2" style={{ color:'var(--text-1)' }}>
@@ -338,8 +338,9 @@ export default function PersonalView() {
   }
 
   return (
-    <div className="pb-4">
+    <div className="app-view view-personal pb-4">
       <div className="px-4 pt-6 pb-3">
+        <p className="view-kicker">Coach link / 12</p>
         <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color:'var(--text-1)' }}>Personal</h1>
         <p className="text-sm mt-0.5" style={{ color:'var(--text-3)' }}>
           Acompanhamento com <span style={{ color:'var(--accent)', fontWeight:600 }}>{trainerData.user?.name?.split(' ')[0]}</span>

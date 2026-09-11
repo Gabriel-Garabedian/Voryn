@@ -33,7 +33,7 @@ function GateCard({ navigate }) {
   return (
     <div className="f-card p-8 text-center space-y-4 m-4"
       style={{ borderColor: 'rgba(var(--accent-rgb),.3)', background: 'rgba(var(--accent-rgb),.04)' }}>
-      <div className="text-4xl">📊</div>
+      <div className="section-index">DATA ACCESS</div>
       <h3 className="font-display text-xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
         Gráficos de Evolução
       </h3>
@@ -95,7 +95,7 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
   )
   if (logs.length === 0) return (
     <div className="px-4 pt-8 text-center space-y-3">
-      <div className="text-4xl">📈</div>
+      <div className="section-index">NO SESSIONS</div>
       <p className="font-semibold" style={{ color: 'var(--text-1)' }}>Sem dados ainda</p>
       <p className="text-sm" style={{ color: 'var(--text-3)' }}>Complete alguns treinos para ver sua evolução.</p>
     </div>
@@ -151,8 +151,9 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
     .slice(0, 8)
 
   return (
-    <div className="pb-6">
+    <div className="app-view view-evolution pb-6">
       <div className="px-4 pt-6 pb-4">
+        <p className="view-kicker">Load lab / 04</p>
         <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>Evolução</h1>
         <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>
           {isEmbedded ? `Progresso de ${embeddedName || 'aluno'}` : 'Acompanhe sua progressão'}
@@ -162,7 +163,7 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
       {/* Tab switcher */}
       <div className="px-4 mb-4">
         <div className="flex gap-1 p-1 rounded-xl" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-          {[['load','⚡ Carga'],['volume','🏋️ Volume'],['frequency','📅 Frequência']].map(([id,lbl]) => (
+          {[['load','Carga'],['volume','Volume'],['frequency','Frequência']].map(([id,lbl]) => (
             <button key={id} onClick={() => setTab(id)}
               className="flex-1 py-2 rounded-lg text-xs font-semibold transition-all"
               style={{
@@ -190,7 +191,7 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
           </div>
 
           {loadData.length > 0 ? (
-            <div className="f-card p-4">
+            <div className="glass-card p-4">
               <div className="flex items-center justify-between mb-3">
                 <p className="font-semibold text-sm" style={{ color: 'var(--text-1)' }}>Carga máxima (kg)</p>
                 {loadData.length > 0 && (
@@ -219,7 +220,7 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
 
           {/* Volume for selected exercise */}
           {loadData.length > 0 && (
-            <div className="f-card p-4">
+            <div className="glass-card p-4">
               <p className="font-semibold text-sm mb-3" style={{ color: 'var(--text-1)' }}>Volume por sessão (kg × reps)</p>
               <ResponsiveContainer width="100%" height={140}>
                 <BarChart data={loadData}>
@@ -238,7 +239,7 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
       {/* Volume tab */}
       {tab === 'volume' && (
         <div className="px-4 space-y-4">
-          <div className="f-card p-4">
+          <div className="glass-card p-4">
             <p className="font-semibold text-sm mb-3" style={{ color: 'var(--text-1)' }}>Volume total semanal</p>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={weeklyVolume}>
@@ -271,7 +272,7 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
       {/* Frequency tab */}
       {tab === 'frequency' && (
         <div className="px-4 space-y-4">
-          <div className="f-card p-4">
+          <div className="glass-card p-4">
             <p className="font-semibold text-sm mb-3" style={{ color: 'var(--text-1)' }}>Treinos por mês</p>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={monthlyFreq}>
@@ -315,7 +316,7 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
                   <span className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>{n.exercise}</span>
                   <span className="text-xs" style={{ color: 'var(--text-3)' }}>{formatDateShort(n.date)}</span>
                 </div>
-                <p className="text-xs italic" style={{ color: 'var(--text-3)' }}>💬 {n.note}</p>
+                <p className="text-xs italic" style={{ color: 'var(--text-3)' }}>Nota · {n.note}</p>
               </div>
             ))}
           </div>

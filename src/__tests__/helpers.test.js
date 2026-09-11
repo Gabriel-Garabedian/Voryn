@@ -54,9 +54,13 @@ describe('formatVolume', () => {
     const r = formatVolume(500)
     expect(r).toContain('500')
   })
-  it('formats tons for >= 1000', () => {
-    const r = formatVolume(1500)
-    expect(r).toMatch(/1[,.]5\s*t/)
+  it('keeps a single workout in kg, even past 1000 (ex: supino 80kg x10 x4 séries = 3200kg — não é tonelada)', () => {
+    const r = formatVolume(3200)
+    expect(r).toBe('3.200kg')
+  })
+  it('formats tons only for long-term accumulated totals (>= 10000kg)', () => {
+    const r = formatVolume(15000)
+    expect(r).toMatch(/15[,.]0\s*t/)
   })
   it('handles null', () => {
     expect(formatVolume(null)).toBe('—')

@@ -79,7 +79,7 @@ function WeeklySummaryBanner({ lastWeek, metrics, streak }) {
       style={{ borderColor:'rgba(var(--accent-rgb),.3)', background:'rgba(var(--accent-rgb),.05)' }}>
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className="text-xl">📊</span>
+          <span className="summary-mark">WK</span>
           <p className="font-semibold text-sm" style={{ color:'var(--text-1)' }}>
             Resumo da semana passada
           </p>
@@ -93,13 +93,13 @@ function WeeklySummaryBanner({ lastWeek, metrics, streak }) {
 
       <div className="grid grid-cols-3 gap-2 mb-3">
         {[
-          { label:'Treinos',  value: lastWeek.prevWeek, icon:'🏋️' },
-          { label:'Sequência',value: streak + ' dias',  icon:'🔥' },
-          ...(volumeK ? [{ label:'Volume', value: volumeK + 't', icon:'⚡' }] : []),
+          { label:'Treinos',  value: lastWeek.prevWeek, icon:'01' },
+          { label:'Sequência',value: streak + ' dias',  icon:'02' },
+          ...(volumeK ? [{ label:'Volume', value: volumeK + 't', icon:'03' }] : []),
         ].map(s => (
           <div key={s.label} className="text-center py-2 rounded-xl"
             style={{ background:'rgba(var(--accent-rgb),.08)', border:'1px solid rgba(var(--accent-rgb),.12)' }}>
-            <div className="text-base mb-0.5">{s.icon}</div>
+            <div className="summary-mark text-base mb-0.5">{s.icon}</div>
             <div className="font-display text-lg leading-none" style={{ color:'var(--accent)' }}>{s.value}</div>
             <div className="text-xs mt-0.5" style={{ color:'var(--text-3)' }}>{s.label}</div>
           </div>
@@ -108,7 +108,7 @@ function WeeklySummaryBanner({ lastWeek, metrics, streak }) {
 
       <p className="text-xs leading-relaxed" style={{ color:'var(--text-2)' }}>
         {lastWeek.delta > 0
-          ? `🔥 Você treinou ${lastWeek.delta} vez${lastWeek.delta > 1 ? 'es' : ''} a mais que na semana anterior! Continue assim.`
+          ? `Você treinou ${lastWeek.delta} vez${lastWeek.delta > 1 ? 'es' : ''} a mais que na semana anterior! Continue assim.`
           : lastWeek.delta < 0
           ? `💪 Semana passada foi mais leve. Essa semana você bota pra quebrar!`
           : `✅ Mesma frequência da semana anterior. Consistência é tudo!`}
@@ -204,14 +204,14 @@ export default function HomeView() {
   if (loading) return <SkeletonHome/>
 
   return (
-    <div className="px-4 pt-6 pb-6 space-y-5">
+    <div className="app-view home-view px-4 pt-6 pb-6 space-y-5">
 
       {/* Trial banner */}
       {isTrial && (
         <div className="f-card px-4 py-3 flex items-center justify-between animate-slide-up"
           style={{ borderColor: 'rgba(250,204,21,.3)', background: 'rgba(250,204,21,.05)' }}>
           <div className="flex items-center gap-2">
-            <span>⏱</span>
+            <span className="summary-mark">TRIAL</span>
             <p className="text-sm font-medium" style={{ color: '#facc15' }}>
               {trialDaysLeft > 0 ? `${trialDaysLeft} dias de trial restantes` : 'Trial expirado'}
             </p>
@@ -230,8 +230,9 @@ export default function HomeView() {
       )}
 
       {/* Header */}
-      <div className="flex items-start justify-between animate-slide-up">
+      <div className="home-hero flex items-start justify-between animate-slide-up">
         <div>
+          <p className="view-kicker">Performance / 01</p>
           <p className="text-sm" style={{ color: 'var(--text-3)' }}>{greeting()},</p>
           <h1 className="font-display text-3xl uppercase tracking-wide leading-tight"
             style={{ color: 'var(--text-1)' }}>
@@ -250,7 +251,7 @@ export default function HomeView() {
             {streak}
           </div>
           <div className="text-xs uppercase tracking-wider mt-0.5" style={{ color: 'var(--text-3)' }}>
-            dias {isStreakMilestone ? '🔥' : '🔥'}
+            dias seguidos
           </div>
           {isStreakMilestone && (
             <div className="text-xs mt-1 font-semibold" style={{ color: '#facc15' }}>Marco!</div>
@@ -260,7 +261,7 @@ export default function HomeView() {
 
       {/* CTA */}
       <button onClick={() => navigate('/app/workout')}
-        className="f-btn f-btn-accent w-full py-4 text-base font-display uppercase tracking-widest flex items-center justify-center gap-3 animate-slide-up">
+        className="f-btn f-btn-accent glow-primary w-full py-4 text-base font-display uppercase tracking-widest flex items-center justify-center gap-3 animate-slide-up">
         <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
           <polygon points="5 3 19 12 5 21 5 3"/>
         </svg>
@@ -268,7 +269,7 @@ export default function HomeView() {
       </button>
 
       {/* Stats row with delta vs last week */}
-      <div className="grid grid-cols-4 gap-2">
+      <div className="metric-wall grid grid-cols-2 sm:grid-cols-4 gap-2">
         <StatMini label="Este mês" value={monthCount} accent/>
         <StatMini label="Total"    value={metrics?.total ?? 0}/>
         <StatMini label="Melhor"   value={bestStreak}/>
@@ -283,10 +284,10 @@ export default function HomeView() {
             borderColor: lastWeek.delta > 0 ? 'rgba(74,222,128,.25)' : 'rgba(248,113,113,.2)',
             background: lastWeek.delta > 0 ? 'rgba(74,222,128,.04)' : 'rgba(248,113,113,.04)',
           }}>
-          <span className="text-xl">{lastWeek.delta > 0 ? '📈' : '📉'}</span>
+          <span className="summary-mark">{lastWeek.delta > 0 ? 'UP' : 'DOWN'}</span>
           <p className="text-sm" style={{ color: 'var(--text-2)' }}>
             {lastWeek.delta > 0
-              ? <><strong style={{ color: '#4ade80' }}>+{lastWeek.delta} treino{lastWeek.delta !== 1 ? 's'  : ''}</strong> a mais que semana passada 🔥</>
+              ? <><strong style={{ color: '#4ade80' }}>+{lastWeek.delta} treino{lastWeek.delta !== 1 ? 's'  : ''}</strong> a mais que semana passada</>
               : <><strong style={{ color: '#f87171' }}>{lastWeek.delta} treino{Math.abs(lastWeek.delta) !== 1 ? 's' : ''}</strong> a menos que semana passada</>
             }
           </p>
@@ -294,10 +295,10 @@ export default function HomeView() {
       )}
 
       {/* Quick actions — SVG icons instead of emoji */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-3">
         {QUICK_ACTIONS.map(q => (
           <button key={q.path} onClick={() => navigate(`/app/${q.path}`)}
-            className="f-card p-3 flex items-center gap-3 transition-all text-left"
+            className="glass-card p-3 flex items-center gap-3 transition-all text-left active:scale-[.98]"
             style={{ cursor: 'pointer' }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(var(--accent-rgb),.4)'; e.currentTarget.querySelector('.qa-icon').style.color = q.accent }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.querySelector('.qa-icon').style.color = q.accent }}>
@@ -375,10 +376,10 @@ export default function HomeView() {
       </div>
 
       {/* Weekly overview */}
-      <div>
+      <div className="home-schedule">
         <p className="font-display text-base uppercase tracking-widest mb-3"
           style={{ color: 'var(--text-3)' }}>Semana Atual</p>
-        <div className="space-y-2">
+        <div className="schedule-grid space-y-2">
           {weekDays.map(({ date, dayIndex, plan, isToday, trained }) => (
             <div key={dayIndex} className="f-card px-4 py-3 flex items-center gap-3 transition-all"
               style={isToday ? { borderColor: 'rgba(var(--accent-rgb),.4)', background: 'rgba(var(--accent-rgb),.04)' } : {}}>
