@@ -771,3 +771,79 @@ body::after {
   outline: 2px solid var(--accent-2);
   outline-offset: 3px;
 }
+
+/* SaaS premium tier 3 — internal app-wide consistency. */
+.app-shell {
+  background:
+    radial-gradient(circle at 12% -10%, rgba(var(--accent-rgb), .14), transparent 35%),
+    radial-gradient(circle at 88% -18%, rgba(76, 227, 185, .08), transparent 30%),
+    var(--bg) !important;
+}
+.app-view {
+  letter-spacing: .005em;
+}
+.app-view h1,
+.app-view h2 {
+  text-wrap: balance;
+}
+.app-view .f-card,
+.app-view .glass-card,
+.app-view .glass-panel {
+  border-color: rgba(255,255,255,.12);
+  box-shadow: 0 16px 28px rgba(0,0,0,.28), 0 0 0 1px rgba(var(--accent-rgb), .08);
+}
+.app-view .f-card:hover,
+.app-view .glass-card:hover,
+.app-view .glass-panel:hover {
+  box-shadow: 0 22px 34px rgba(0,0,0,.34), 0 0 0 1px rgba(var(--accent-rgb), .2);
+}
+
+.app-view .f-label {
+  letter-spacing: .12em;
+  color: var(--text-2);
+}
+.app-view .f-input {
+  border-color: rgba(255,255,255,.14);
+  background: linear-gradient(180deg, rgba(var(--surface-rgb), .92), rgba(var(--surface-rgb), .8));
+}
+.app-view .f-input:focus {
+  border-color: rgba(var(--accent-rgb), .62);
+  box-shadow: 0 0 0 4px rgba(var(--accent-rgb), .16), 0 8px 22px rgba(var(--accent-rgb), .14);
+}
+.app-view .f-btn {
+  border-radius: 12px;
+  letter-spacing: .04em;
+}
+
+.app-view button:not(.f-btn):not(.dock-item):not(.profile-chip):not(.brand-hub),
+.app-view a:not(.f-btn):not(.dock-item):not(.profile-chip):not(.brand-hub) {
+  transition: transform .16s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
+}
+.app-view button:not(.f-btn):not(.dock-item):not(.profile-chip):not(.brand-hub):hover,
+.app-view a:not(.f-btn):not(.dock-item):not(.profile-chip):not(.brand-hub):hover {
+  transform: translateY(-1px);
+}
+.app-view button:not(.f-btn):focus-visible,
+.app-view a:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 3px;
+}
+
+.app-view .status-strip,
+.app-view .progress-chip,
+.app-view .summary-mark {
+  backdrop-filter: blur(8px);
+}
+.app-view .summary-mark {
+  border-left: 0;
+  border-radius: 999px;
+  background: rgba(var(--accent-rgb), .14);
+  color: var(--accent-2);
+  min-width: 34px;
+  min-height: 22px;
+  padding: 0 10px;
+}
+.app-view .view-kicker,
+.app-view .section-index {
+  color: color-mix(in srgb, var(--accent-2) 86%, #fff 14%);
+}
