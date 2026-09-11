@@ -673,3 +673,101 @@ body::after {
   }
   .app-view::before { width: 42px; }
 }
+
+.brand-hub {
+  padding: 6px 10px;
+  margin-left: -10px;
+  border-radius: 14px;
+  transition: background .2s ease;
+}
+.brand-hub:hover {
+  background: rgba(var(--accent-rgb), .08);
+}
+.profile-chip {
+  box-shadow: 0 10px 18px rgba(var(--accent-rgb), .22);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.profile-chip:hover {
+  transform: translateY(-1px) scale(1.02);
+  border-color: rgba(var(--accent-rgb), .62) !important;
+  box-shadow: 0 14px 24px rgba(var(--accent-rgb), .3);
+}
+.dock-item {
+  transition: background .2s ease, color .2s ease, transform .18s ease;
+}
+.dock-item:hover {
+  background: rgba(var(--accent-rgb), .1);
+}
+.qa-card {
+  border-color: rgba(255,255,255,.1);
+}
+.qa-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(var(--accent-rgb), .45) !important;
+}
+
+.landing-shell .lp-nav-link {
+  position: relative;
+  transition: color .2s ease !important;
+}
+.landing-shell .lp-nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform .2s ease;
+}
+.landing-shell .lp-nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+.landing-shell .lp-primary-cta,
+.landing-shell .lp-secondary-cta {
+  transition: transform .18s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease !important;
+}
+.landing-shell .lp-primary-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 36px rgba(var(--accent-rgb), .38) !important;
+}
+.landing-shell .lp-secondary-cta:hover {
+  transform: translateY(-2px);
+  border-color: rgba(var(--accent-rgb), .42) !important;
+  color: var(--text-1) !important;
+  background: rgba(var(--accent-rgb), .12) !important;
+}
+
+.landing-shell .lp-feature-card,
+.landing-shell .lp-testimonial-card,
+.landing-shell .lp-price-card,
+.landing-shell .lp-faq-item {
+  transition: transform .24s ease, box-shadow .24s ease, border-color .24s ease, background .24s ease;
+}
+.landing-shell .lp-feature-card:hover,
+.landing-shell .lp-testimonial-card:hover,
+.landing-shell .lp-price-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(var(--accent-rgb), .35) !important;
+  box-shadow: 0 24px 38px rgba(0,0,0,.32), 0 0 0 1px rgba(var(--accent-rgb), .16);
+}
+.landing-shell .lp-faq-item {
+  border-radius: 14px;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+.landing-shell .lp-faq-item:hover {
+  background: rgba(var(--accent-rgb), .06);
+}
+.landing-shell .lp-faq-trigger {
+  border-radius: 10px;
+  padding: 6px 2px;
+}
+.landing-shell .lp-faq-trigger:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 3px;
+}

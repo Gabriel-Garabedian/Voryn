@@ -301,7 +301,7 @@ export default function HomeView() {
       <div className="grid grid-cols-2 gap-3">
         {QUICK_ACTIONS.map(q => (
           <button key={q.path} onClick={() => navigate(`/app/${q.path}`)}
-            className="glass-card p-3 flex items-center gap-3 transition-all text-left active:scale-[.98]"
+            className="glass-card qa-card p-3 flex items-center gap-3 transition-all text-left active:scale-[.98]"
             style={{ cursor: 'pointer' }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(var(--accent-rgb),.4)'; e.currentTarget.querySelector('.qa-icon').style.color = q.accent }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.querySelector('.qa-icon').style.color = q.accent }}>
