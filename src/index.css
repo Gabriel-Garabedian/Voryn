@@ -2,58 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Voryn Performance System — graphite base, electric purple, technical surfaces.
-   Editorial/compacto: cantos e sombra deliberadamente pequenos (ver comentário
-   mais abaixo, na seção "training UI") — valores já unificados aqui. Antes
-   havia um segundo bloco :root mais abaixo redefinindo --radius-* e
-   --shadow-card só por estarem depois no arquivo (cascata), sem nada
-   indicando que aquele era o valor "de verdade" — quem lesse só este bloco
-   veria valores que na prática nunca chegavam a ser usados. */
+/* Voryn Performance System — roxo como cor principal (confirmado). Um
+   segundo bloco :root mais abaixo no arquivo tinha trocado pra azul como
+   parte da passada "cleaner premium fitness look" — mantive o resto dessa
+   passada (raio de borda maior, sombra, glass no .f-card) mas revertido a
+   cor de volta pra roxo aqui. */
 :root {
-  --bg: #0b0d0f;
-  --surface: #111519;
-  --card: #171c20;
-  --border: #2b343a;
+  --bg: #06090f;
+  --surface: #0e1522;
+  --card: #141d2d;
+  --border: #253248;
   --accent: #820ad1;
   --accent-dim: #5a0896;
   --accent-2: #b66bea;
-  --muted: #66727a;
-  --text-1: #f3f5f5;
-  --text-2: #b5c0c4;
-  --text-3: #748087;
+  --muted: #5f738f;
+  --text-1: #f3f7ff;
+  --text-2: #c5d1e6;
+  --text-3: #8ea2c0;
   --accent-rgb: 130, 10, 209;
-  --surface-rgb: 17, 21, 25;
-  --card-rgb: 23, 28, 32;
-  --text-rgb: 243, 245, 245;
+  --surface-rgb: 14, 21, 34;
+  --card-rgb: 20, 29, 45;
+  --text-rgb: 243, 247, 255;
   --success: #3ddc97;
   --warning: #f4c95d;
   --danger: #ff6b6b;
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 10px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
   --radius-pill: 999px;
-  --shadow-card: 0 12px 28px rgba(0, 0, 0, .2);
-  --shadow-accent: 0 0 30px rgba(var(--accent-rgb), .24);
+  --shadow-card: 0 18px 42px rgba(3, 7, 15, .48);
+  --shadow-accent: 0 0 0 1px rgba(var(--accent-rgb), .22), 0 12px 34px rgba(var(--accent-rgb), .24);
   --line-strong: rgba(255,255,255,.16);
 }
 
 .theme-light {
-  --bg: #eef1f2;
-  --surface: #f8f9f9;
+  --bg: #f1f5fc;
+  --surface: #f8fbff;
   --card: #ffffff;
-  --border: #d6dde0;
+  --border: #d9e2f1;
   --accent: #7209b7;
   --accent-dim: #56078c;
   --accent-2: #8e3dcc;
-  --muted: #89949a;
-  --text-1: #152026;
-  --text-2: #40515a;
-  --text-3: #748087;
+  --muted: #6f8098;
+  --text-1: #10223f;
+  --text-2: #2f4569;
+  --text-3: #5d7294;
   --accent-rgb: 114, 9, 183;
-  --surface-rgb: 248, 249, 249;
+  --surface-rgb: 248, 251, 255;
   --card-rgb: 255, 255, 255;
-  --text-rgb: 21, 32, 38;
+  --text-rgb: 16, 34, 63;
 }
 
 /* Accent choices remain compatible with the paid theme selector. */
@@ -152,14 +150,29 @@
   .f-btn-accent:hover::after { transform: translateX(120%); }
 }
 
+/* Voryn training UI — editorial, compact and intentionally less card-like.
+   Consolidado: isso cobria 3 passadas de redesign sucessivas (compacto ->
+   "cleaner premium" -> "SaaS tier 3"), cada uma colada no fim do arquivo
+   em vez de editar a de cima. .app-view sozinho tinha 3 declarações
+   conflitantes; body::before/after, :root e mais uma dúzia de seletores
+   tinham 2. Nada indicava qual delas realmente valia — só a ordem no
+   arquivo decidia, silenciosamente. Mesclado numa passada só, mantendo o
+   valor mais recente (a passada "SaaS tier 3") em cada conflito real, e
+   preservando o que cada passada adicionava sem conflitar com as outras. */
+
 body::before {
   content: ''; position: fixed; inset: 0; z-index: -2; pointer-events: none;
-  background-image: linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px);
-  background-size: 32px 32px; mask-image: linear-gradient(to bottom, black 0%, transparent 88%);
+  background-image:
+    radial-gradient(circle at 12% 12%, rgba(var(--accent-rgb), .18), transparent 34%),
+    radial-gradient(circle at 88% 20%, rgba(76, 227, 185, .1), transparent 26%),
+    linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.024) 1px, transparent 1px);
+  background-size: auto, auto, 30px 30px, 30px 30px;
+  mask-image: linear-gradient(to bottom, black 0%, transparent 94%);
 }
 body::after {
   content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background: linear-gradient(180deg, rgba(var(--accent-rgb), .035), transparent 28%);
+  background: linear-gradient(180deg, rgba(var(--accent-rgb), .08), transparent 30%);
 }
 
 @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
@@ -196,6 +209,10 @@ body::after {
   .page-heading { padding: 23px 16px 15px; }
   .page-heading h1 { font-size: 2.15rem; }
   .glass-panel { border-radius: 18px; }
+  .native-dock { border-radius: 16px !important; margin-left: 0; margin-right: 0; }
+  .app-view::before { width: 42px; }
+  .metric-wall { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .app-view::before { margin-left: 16px; }
 }
 @media (min-width: 640px) and (max-width: 900px) {
   .lp-features-grid { grid-template-columns: repeat(2, 1fr) !important; }
@@ -214,20 +231,43 @@ body::after {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
 
-/* Voryn training UI — editorial, compact and intentionally less card-like. */
-
 .f-card, .glass-card, .glass-panel {
   border-radius: var(--radius-lg);
-  background: var(--card);
-  box-shadow: none;
-  backdrop-filter: none;
+  border: 1px solid color-mix(in srgb, var(--border) 85%, white 15%);
+  background: linear-gradient(180deg, rgba(var(--card-rgb), .94), rgba(var(--surface-rgb), .92));
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(14px);
 }
-.f-card::before, .glass-card::before, .glass-panel::before { display: none; }
-.f-card:hover { transform: translateY(-1px); box-shadow: 0 12px 24px rgba(0,0,0,.22); }
+.f-card::before, .glass-card::before, .glass-panel::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: -1;
+  display: block;
+  background: linear-gradient(145deg, rgba(255,255,255,.08), transparent 34%, rgba(var(--accent-rgb), .06));
+}
+.f-card:hover, .glass-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(var(--accent-rgb), .42);
+  box-shadow: 0 24px 52px rgba(0,0,0,.4), 0 0 0 1px rgba(var(--accent-rgb), .2);
+}
 .glass-panel { border-radius: var(--radius-xl); }
 .f-btn, .f-input { border-radius: var(--radius-md); }
-.f-btn-accent { box-shadow: 0 8px 18px rgba(var(--accent-rgb), .2); }
-.f-badge { border-radius: 3px; }
+.f-btn { min-height: 46px; font-weight: 700; }
+.f-btn-accent {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+  border-color: rgba(var(--accent-rgb), .45);
+  box-shadow: 0 14px 28px rgba(var(--accent-rgb), .3);
+}
+.f-btn-accent:hover:not(:disabled) {
+  filter: brightness(1.06);
+  box-shadow: 0 18px 32px rgba(var(--accent-rgb), .38);
+}
+.f-input {
+  min-height: 48px;
+  background: rgba(var(--surface-rgb), .94);
+  border-color: rgba(255,255,255,.12);
+}
+.f-input:hover { border-color: rgba(var(--accent-rgb), .35); }
+.f-input:focus { box-shadow: 0 0 0 4px rgba(var(--accent-rgb), .15); }
+.f-badge { border-radius: var(--radius-pill); letter-spacing: .08em; }
 .f-empty-mark,
 .achievement-mark,
 .goal-index,
@@ -282,7 +322,8 @@ body::after {
 
 .app-view {
   position: relative;
-  padding-top: 4px;
+  padding-top: 10px;
+  letter-spacing: .005em;
 }
 .app-view > * {
   animation: slideUp .3s ease-out both;
@@ -291,6 +332,21 @@ body::after {
 .app-view .glass-card,
 .app-view .glass-panel {
   border-radius: 10px;
+  border-color: rgba(255,255,255,.12);
+  box-shadow: 0 16px 28px rgba(0,0,0,.28), 0 0 0 1px rgba(var(--accent-rgb), .08);
+}
+.app-view .f-card:hover,
+.app-view .glass-card:hover,
+.app-view .glass-panel:hover {
+  box-shadow: 0 22px 34px rgba(0,0,0,.34), 0 0 0 1px rgba(var(--accent-rgb), .2);
+}
+.app-view button:not(.f-btn):not(.dock-item):not(.profile-chip):not(.brand-hub),
+.app-view a:not(.f-btn):not(.dock-item):not(.profile-chip):not(.brand-hub) {
+  transition: transform .16s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
+}
+.app-view button:not(.f-btn):not(.dock-item):not(.profile-chip):not(.brand-hub):hover,
+.app-view a:not(.f-btn):not(.dock-item):not(.profile-chip):not(.brand-hub):hover {
+  transform: translateY(-1px);
 }
 .app-view button:not(.f-btn):focus-visible,
 .app-view a:focus-visible {
@@ -300,11 +356,12 @@ body::after {
 .app-view::before {
   content: '';
   display: block;
-  width: 42px;
-  height: 3px;
-  margin: 16px 16px 0;
-  background: var(--accent);
-  box-shadow: 14px 0 0 rgba(var(--accent-rgb), .25);
+  width: 54px;
+  height: 4px;
+  margin: 14px 16px 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  box-shadow: 0 8px 20px rgba(var(--accent-rgb), .35);
 }
 .app-view > .px-4.pt-6,
 .app-view > .px-4.pt-6.pb-4,
@@ -312,8 +369,10 @@ body::after {
 .app-view > .px-4.pt-6.pb-10 {
   padding-top: 20px;
 }
-.app-view h1 {
+.app-view h1,
+.app-view h2 {
   letter-spacing: .08em;
+  text-wrap: balance;
 }
 .app-view .f-card,
 .app-view .glass-card {
@@ -323,6 +382,36 @@ body::after {
 .app-view .glass-card:hover {
   border-left-color: var(--accent);
 }
+.app-view .f-label {
+  letter-spacing: .12em;
+  color: var(--text-2);
+}
+.app-view .f-input {
+  border-color: rgba(255,255,255,.14);
+  background: linear-gradient(180deg, rgba(var(--surface-rgb), .92), rgba(var(--surface-rgb), .8));
+}
+.app-view .f-input:focus {
+  border-color: rgba(var(--accent-rgb), .62);
+  box-shadow: 0 0 0 4px rgba(var(--accent-rgb), .16), 0 8px 22px rgba(var(--accent-rgb), .14);
+}
+.app-view .f-btn {
+  border-radius: 12px;
+  letter-spacing: .04em;
+}
+.app-view .status-strip,
+.app-view .progress-chip,
+.app-view .summary-mark {
+  backdrop-filter: blur(8px);
+}
+.app-view .summary-mark {
+  border-left: 0;
+  border-radius: 999px;
+  background: rgba(var(--accent-rgb), .14);
+  color: var(--accent-2);
+  min-width: 34px;
+  min-height: 22px;
+  padding: 0 10px;
+}
 .view-kicker,
 .section-index {
   display: inline-flex;
@@ -331,14 +420,20 @@ body::after {
   color: var(--accent-2);
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: .2em;
+  letter-spacing: .15em;
   text-transform: uppercase;
 }
 .view-kicker::before,
 .section-index::before {
-  content: '//';
+  content: '●';
+  font-size: 8px;
   color: var(--accent);
 }
+.app-view .view-kicker,
+.app-view .section-index {
+  color: color-mix(in srgb, var(--accent-2) 86%, #fff 14%);
+}
+
 .status-strip {
   display: flex;
   align-items: center;
@@ -347,8 +442,10 @@ body::after {
   min-height: 40px;
   padding: 9px 12px;
   border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  background: var(--surface);
+  border-left: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), .14);
+  background: linear-gradient(90deg, rgba(var(--accent-rgb), .12), rgba(var(--surface-rgb), .9) 25%);
   font-size: 12px;
 }
 .metric-wall {
@@ -358,6 +455,9 @@ body::after {
 }
 .metric-wall > * {
   min-width: 0;
+}
+.metric-wall .f-card {
+  border-radius: var(--radius-md);
 }
 .metric-wall .font-display {
   color: var(--accent);
@@ -405,27 +505,61 @@ body::after {
   background: var(--surface);
 }
 .exercise-table > * + * { border-top: 1px solid var(--border); }
-.native-dock {
-  border-radius: 8px !important;
-  border: 1px solid var(--line-strong) !important;
-  background: #0d1113 !important;
-}
-.native-dock button { border-radius: 4px !important; }
-.native-dock button[style*="var(--accent)"],
-.native-dock button[style*="var(--accent-2)"] {
-  color: var(--accent-2) !important;
-  background: rgba(var(--accent-rgb), .12) !important;
-}
+
 .native-header {
-  border-bottom: 1px solid var(--border);
-  background: rgba(13,17,19,.96);
-  backdrop-filter: blur(10px);
+  background: linear-gradient(180deg, rgba(8,12,21,.96), rgba(8,12,21,.85));
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(14px);
 }
 .workout-view .native-header {
   position: sticky;
   top: 0;
   z-index: 20;
 }
+.native-dock {
+  border-radius: 20px !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  background: linear-gradient(180deg, rgba(13,20,34,.96), rgba(10,16,28,.94)) !important;
+  box-shadow: 0 22px 36px rgba(0,0,0,.45);
+}
+.native-dock button { border-radius: 14px !important; }
+.native-dock button[style*="var(--accent)"],
+.native-dock button[style*="var(--accent-2)"] {
+  color: var(--accent-2) !important;
+  background: rgba(var(--accent-rgb), .12) !important;
+}
+.brand-hub {
+  padding: 6px 10px;
+  margin-left: -10px;
+  border-radius: 14px;
+  transition: background .2s ease;
+}
+.brand-hub:hover {
+  background: rgba(var(--accent-rgb), .08);
+}
+.profile-chip {
+  box-shadow: 0 10px 18px rgba(var(--accent-rgb), .22);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.profile-chip:hover {
+  transform: translateY(-1px) scale(1.02);
+  border-color: rgba(var(--accent-rgb), .62) !important;
+  box-shadow: 0 14px 24px rgba(var(--accent-rgb), .3);
+}
+.dock-item {
+  transition: background .2s ease, color .2s ease, transform .18s ease;
+}
+.dock-item:hover {
+  background: rgba(var(--accent-rgb), .1);
+}
+.qa-card {
+  border-color: rgba(255,255,255,.1);
+}
+.qa-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(var(--accent-rgb), .45) !important;
+}
+
 .workout-view .workout-set-row .f-input {
   min-height: 42px;
   border-width: 1px 1px 2px;
@@ -442,22 +576,21 @@ body::after {
 
 .auth-shell {
   background:
-    linear-gradient(90deg, rgba(var(--accent-rgb), .08) 1px, transparent 1px) 0 0 / 48px 48px,
-    linear-gradient(rgba(var(--accent-rgb), .08) 1px, transparent 1px) 0 0 / 48px 48px,
-    var(--bg) !important;
+    radial-gradient(circle at 18% 15%, rgba(var(--accent-rgb), .22), transparent 38%),
+    linear-gradient(180deg, #06090f, #0a1321) !important;
 }
 .auth-shell .glass-panel {
-  border: 1px solid var(--line-strong);
-  border-top: 3px solid var(--accent);
-  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-top: 1px solid rgba(255,255,255,.22);
+  border-radius: var(--radius-xl);
   background: var(--card);
 }
 .auth-shell .f-label { color: var(--accent-2); }
 
 .landing-shell {
-  background: var(--bg) !important;
+  background: radial-gradient(circle at 50% -5%, rgba(var(--accent-rgb), .2), transparent 46%), var(--bg) !important;
 }
-.landing-shell section { border-radius: 0 !important; }
+.landing-shell section { border-radius: var(--radius-xl) !important; }
 .landing-shell [style*="borderRadius: 24"],
 .landing-shell [style*="borderRadius: 20"],
 .landing-shell [style*="borderRadius: 18"] {
@@ -470,7 +603,77 @@ body::after {
 }
 .landing-shell .lp-reveal > div[style*="repeat(3,1fr)"] {
   border-radius: 4px !important;
-  border-left: 3px solid var(--accent);
+  border-left: 0;
+}
+.landing-shell .lp-nav-link {
+  position: relative;
+  transition: color .2s ease !important;
+}
+.landing-shell .lp-nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform .2s ease;
+}
+.landing-shell .lp-nav-link:hover::after {
+  transform: scaleX(1);
+}
+.landing-shell .lp-primary-cta,
+.landing-shell .lp-secondary-cta {
+  transition: transform .18s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease !important;
+}
+.landing-shell .lp-primary-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 36px rgba(var(--accent-rgb), .38) !important;
+}
+.landing-shell .lp-secondary-cta:hover {
+  transform: translateY(-2px);
+  border-color: rgba(var(--accent-rgb), .42) !important;
+  color: var(--text-1) !important;
+  background: rgba(var(--accent-rgb), .12) !important;
+}
+.landing-shell .lp-feature-card,
+.landing-shell .lp-testimonial-card,
+.landing-shell .lp-price-card,
+.landing-shell .lp-faq-item {
+  transition: transform .24s ease, box-shadow .24s ease, border-color .24s ease, background .24s ease;
+}
+.landing-shell .lp-feature-card:hover,
+.landing-shell .lp-testimonial-card:hover,
+.landing-shell .lp-price-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(var(--accent-rgb), .35) !important;
+  box-shadow: 0 24px 38px rgba(0,0,0,.32), 0 0 0 1px rgba(var(--accent-rgb), .16);
+}
+.landing-shell .lp-faq-item {
+  border-radius: 14px;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+.landing-shell .lp-faq-item:hover {
+  background: rgba(var(--accent-rgb), .06);
+}
+.landing-shell .lp-faq-trigger {
+  border-radius: 10px;
+  padding: 6px 2px;
+}
+.landing-shell .lp-faq-trigger:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 3px;
+}
+
+.app-shell {
+  background:
+    radial-gradient(circle at 12% -10%, rgba(var(--accent-rgb), .14), transparent 35%),
+    radial-gradient(circle at 88% -18%, rgba(76, 227, 185, .08), transparent 30%),
+    var(--bg) !important;
 }
 
 .view-evolution .glass-card,
@@ -492,10 +695,4 @@ body::after {
 .view-profile .f-card,
 .view-subscription .f-card {
   border-radius: 5px;
-}
-
-@media (max-width: 640px) {
-  .metric-wall { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .app-view::before { margin-left: 16px; }
-  .native-dock { margin-left: 4px; margin-right: 4px; }
 }

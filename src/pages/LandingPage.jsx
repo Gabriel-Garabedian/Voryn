@@ -46,16 +46,16 @@ function Nav() {
         </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
           {[['#features','Funcionalidades'],['#pricing','Preços'],['#faq','FAQ']].map(([h,l]) => (
-            <a key={h} href={h} style={{ color: 'rgba(255,255,255,.5)', fontSize: 14, textDecoration: 'none', transition: 'color .2s' }}
+            <a key={h} href={h} className="lp-nav-link" style={{ color: 'rgba(255,255,255,.5)', fontSize: 14, textDecoration: 'none', transition: 'color .2s' }}
               onMouseEnter={e => e.target.style.color='#fff'}
               onMouseLeave={e => e.target.style.color='rgba(255,255,255,.5)'}>
               {l}
             </a>
           ))}
-          <Link to="/login" style={{ color: 'rgba(255,255,255,.5)', fontSize: 14, textDecoration: 'none' }}>
+          <Link to="/login" className="lp-nav-link" style={{ color: 'rgba(255,255,255,.5)', fontSize: 14, textDecoration: 'none' }}>
             Entrar
           </Link>
-          <Link to="/register" style={{
+          <Link to="/register" className="lp-primary-cta" style={{
             background: 'var(--accent)', color: '#fff', fontSize: 13, fontWeight: 700,
             padding: '10px 20px', borderRadius: 10, textDecoration: 'none',
             boxShadow: '0 0 16px rgba(var(--accent-rgb),.4)', transition: 'all .2s',
@@ -86,11 +86,11 @@ function Hero() {
             Calendário de consistência, tracker ao vivo, personal integrado e muito mais.
           </p>
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 60 }}>
-            <Link to="/register" style={{ background: 'var(--accent)', color: '#fff', fontWeight: 700, fontSize: 16, padding: '16px 40px', borderRadius: 10, textDecoration: 'none', boxShadow: '0 0 30px rgba(var(--accent-rgb),.45)', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+            <Link to="/register" className="lp-primary-cta" style={{ background: 'var(--accent)', color: '#fff', fontWeight: 700, fontSize: 16, padding: '16px 40px', borderRadius: 10, textDecoration: 'none', boxShadow: '0 0 30px rgba(var(--accent-rgb),.45)', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
               <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               Começar grátis — 14 dias
             </Link>
-            <a href="#pricing" style={{ color: 'rgba(255,255,255,.5)', fontSize: 15, fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 20px' }}>
+            <a href="#pricing" className="lp-secondary-cta" style={{ color: 'rgba(255,255,255,.5)', fontSize: 15, fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 20px' }}>
               Ver planos →
             </a>
           </div>
@@ -133,7 +133,7 @@ function Features() {
         </div>
         <div className="lp-reveal" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 2, background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.05)', borderRadius: 24, overflow: 'hidden' }}>
           {features.map(f => (
-            <div key={f.title} style={{ background: '#18181f', padding: '36px 28px', transition: 'background .2s', cursor: 'default' }}
+            <div key={f.title} className="lp-feature-card" style={{ background: '#18181f', padding: '36px 28px', transition: 'background .2s', cursor: 'default' }}
               onMouseEnter={e => e.currentTarget.style.background='#1e1e28'}
               onMouseLeave={e => e.currentTarget.style.background='#18181f'}>
               <div className="landing-feature-mark" style={{ width: 50, height: 50, borderRadius: 13, background: 'rgba(var(--accent-rgb),.12)', border: '1px solid rgba(var(--accent-rgb),.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, marginBottom: 18 }}>{f.icon}</div>
@@ -202,7 +202,7 @@ function Testimonials() {
         </div>
         <div className="lp-reveal lp-pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
           {tests.map(t => (
-            <div key={t.name} style={{ background: '#18181f', border: '1px solid rgba(255,255,255,.06)', borderRadius: 20, padding: '28px 24px' }}>
+            <div key={t.name} className="lp-testimonial-card" style={{ background: '#18181f', border: '1px solid rgba(255,255,255,.06)', borderRadius: 20, padding: '28px 24px' }}>
               <div style={{ display: 'flex', gap: 2, marginBottom: 16 }}>
                 {Array.from({ length: t.stars }).map((_, i) => (
                   <span key={i} style={{ color: 'var(--accent)', fontSize: 16 }}>★</span>
@@ -241,7 +241,7 @@ function Pricing() {
         </div>
         <div className="lp-reveal lp-pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
           {plans.map(plan => (
-            <div key={plan.id} style={{ background: '#171c20', border: `1px solid ${plan.highlight ? 'var(--accent)' : 'rgba(255,255,255,.06)'}`, borderRadius: 18, padding: '32px 28px', display: 'flex', flexDirection: 'column', position: 'relative', boxShadow: plan.highlight ? '0 0 40px rgba(var(--accent-rgb),.15)' : 'none' }}>
+            <div key={plan.id} className="lp-price-card" style={{ background: '#171c20', border: `1px solid ${plan.highlight ? 'var(--accent)' : 'rgba(255,255,255,.06)'}`, borderRadius: 18, padding: '32px 28px', display: 'flex', flexDirection: 'column', position: 'relative', boxShadow: plan.highlight ? '0 0 40px rgba(var(--accent-rgb),.15)' : 'none' }}>
               {plan.highlight && (
                 <div style={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', background: 'var(--accent)', color: '#fff', fontSize: 11, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', padding: '4px 16px', borderRadius: 99 }}>
                   Mais popular
@@ -265,7 +265,7 @@ function Pricing() {
                   </li>
                 ))}
               </ul>
-              <Link to={`/register?plan=${plan.id}`} style={{ background: plan.highlight ? 'var(--accent)' : 'rgba(255,255,255,.06)', color: '#fff', fontWeight: 700, fontSize: 14, padding: '14px 24px', borderRadius: 10, textDecoration: 'none', textAlign: 'center', display: 'block', border: plan.highlight ? 'none' : '1px solid rgba(255,255,255,.08)', boxShadow: plan.highlight ? '0 0 24px rgba(var(--accent-rgb),.4)' : 'none' }}>
+              <Link to={`/register?plan=${plan.id}`} className={plan.highlight ? 'lp-primary-cta' : 'lp-secondary-cta'} style={{ background: plan.highlight ? 'var(--accent)' : 'rgba(255,255,255,.06)', color: '#fff', fontWeight: 700, fontSize: 14, padding: '14px 24px', borderRadius: 10, textDecoration: 'none', textAlign: 'center', display: 'block', border: plan.highlight ? 'none' : '1px solid rgba(255,255,255,.08)', boxShadow: plan.highlight ? '0 0 24px rgba(var(--accent-rgb),.4)' : 'none' }}>
                 Começar grátis
               </Link>
             </div>
@@ -302,8 +302,9 @@ function FAQ() {
         </div>
         <div className="lp-reveal">
           {faqs.map(([q, a], i) => (
-            <div key={i} style={{ borderBottom: '1px solid rgba(255,255,255,.06)', padding: '20px 0' }}>
+            <div key={i} className="lp-faq-item" style={{ borderBottom: '1px solid rgba(255,255,255,.06)', padding: '20px 0' }}>
               <button onClick={() => setOpen(open === i ? null : i)}
+                className="lp-faq-trigger"
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', background: 'none', border: 'none', cursor: 'pointer', gap: 16, textAlign: 'left' }}>
                 <span style={{ fontSize: 16, fontWeight: 500, color: '#f2f2f7' }}>{q}</span>
                 <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(var(--accent-rgb),.1)', border: '1px solid rgba(var(--accent-rgb),.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16, color: 'var(--accent-2)', transform: open === i ? 'rotate(45deg)' : 'none', transition: 'all .25s' }}>+</div>
@@ -338,10 +339,10 @@ function CTA() {
           14 dias grátis. Cancele quando quiser. Sem cartão necessário.
         </p>
         <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link to="/register" style={{ background: 'var(--accent)', color: '#fff', fontWeight: 700, fontSize: 17, padding: '18px 48px', borderRadius: 10, textDecoration: 'none', boxShadow: '0 0 40px rgba(var(--accent-rgb),.5)', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+          <Link to="/register" className="lp-primary-cta" style={{ background: 'var(--accent)', color: '#fff', fontWeight: 700, fontSize: 17, padding: '18px 48px', borderRadius: 10, textDecoration: 'none', boxShadow: '0 0 40px rgba(var(--accent-rgb),.5)', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
             Começar 14 dias grátis →
           </Link>
-          <Link to="/pricing" style={{ color: 'rgba(255,255,255,.5)', fontSize: 15, fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '18px 20px' }}>
+          <Link to="/pricing" className="lp-secondary-cta" style={{ color: 'rgba(255,255,255,.5)', fontSize: 15, fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '18px 20px' }}>
             Ver todos os planos
           </Link>
         </div>
