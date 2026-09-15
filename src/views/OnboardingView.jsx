@@ -109,7 +109,7 @@ export default function OnboardingView() {
         {/* Logo */}
         <div className="text-center mb-8">
           <p className="view-kicker justify-center">Start protocol / 00</p>
-          <img src="/voryn-icon-192.png" alt="Voryn" className="w-14 h-14 rounded-2xl mx-auto mb-3"
+          <img src="/voryn-logo-purple.png" alt="Voryn" className="w-14 h-14 rounded-2xl mx-auto mb-3"
             style={{ boxShadow: '0 0 28px rgba(var(--accent-rgb),.45)' }} />
           <p className="text-sm font-semibold" style={{ color: 'var(--text-3)' }}>
             Olá, {profile?.name?.split(' ')[0] || 'atleta'}! 👋

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui'
 function VorynLogo() {
   return (
     <div className="flex items-center justify-center gap-3 mb-2">
-      <img src="/voryn-icon-192.png" alt="Voryn" className="w-12 h-12 rounded-2xl"
+      <img src="/voryn-logo-purple.png" alt="Voryn" className="w-12 h-12 rounded-2xl"
         style={{ boxShadow: '0 0 24px rgba(var(--accent-rgb),.5)', border: '1px solid rgba(var(--accent-rgb),.4)' }} />
       <span className="font-display text-4xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>Voryn</span>
     </div>

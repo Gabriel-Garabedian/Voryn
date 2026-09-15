@@ -75,11 +75,11 @@ export const pushService = {
   scheduleLocal(title, body, delayMs = 0) {
     if (!this.isSupported() || Notification.permission !== 'granted') return
     if (delayMs === 0) {
-      new Notification(title, { body, icon: '/voryn-icon-192.png', badge: '/voryn-badge.png' })
+      new Notification(title, { body, icon: '/voryn-icon-192.png', badge: '/voryn-badge-96.png' })
     } else {
       setTimeout(() => {
         navigator.serviceWorker.ready.then(reg => {
-          reg.showNotification(title, { body, icon: '/voryn-icon-192.png', badge: '/voryn-badge.png', tag: 'forge-workout' })
+          reg.showNotification(title, { body, icon: '/voryn-icon-192.png', badge: '/voryn-badge-96.png', tag: 'voryn-workout' })
         })
       }, delayMs)
     }
