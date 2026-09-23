@@ -64,37 +64,66 @@ function Nav() {
 // ── HERO ───────────────────────────────────────────────────
 function Hero() {
   return (
-    <section style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden', paddingTop: 100 }}>
-      <div style={{ position: 'absolute', top: -100, left: '50%', transform: 'translateX(-50%)', width: 800, height: 600, borderRadius: '50%', background: 'radial-gradient(circle,rgba(var(--accent-rgb),.14) 0%,transparent 70%)', pointerEvents: 'none' }}/>
-      <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px 80px', width: '100%' }}>
-        <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
-          <h1 className="lp-hero-title" style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 'clamp(72px,11vw,140px)', lineHeight: .84, letterSpacing: '.03em', color: '#fff', margin: '0 0 16px', fontWeight: 800 }}>
-            VORYN<br/>
-            <span style={{ background: 'linear-gradient(135deg,var(--accent-2),var(--accent))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              SEU
-            </span>{' '}CORPO.
-          </h1>
-          <p className="lp-hero-copy" style={{ fontSize: 18, color: 'rgba(255,255,255,.5)', maxWidth: 540, margin: '0 auto 48px', lineHeight: 1.7, fontWeight: 300 }}>
-            O app de academia que seu aluno vai usar todo dia.
-            Calendário de consistência, tracker ao vivo, personal integrado e muito mais.
-          </p>
-          <div className="lp-hero-actions" style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 60 }}>
-            <Link to="/register" className="lp-primary-cta" style={{ background: 'var(--accent)', color: '#fff', fontWeight: 700, fontSize: 16, padding: '16px 40px', borderRadius: 10, textDecoration: 'none', boxShadow: '0 0 30px rgba(var(--accent-rgb),.45)', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
-              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              Começar grátis — 14 dias
-            </Link>
-            <a href="#pricing" className="lp-secondary-cta" style={{ color: 'rgba(255,255,255,.5)', fontSize: 15, fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 20px' }}>
-              Ver planos →
-            </a>
-          </div>
-          <div className="lp-hero-stats" style={{ display: 'flex', gap: 40, justifyContent: 'center', flexWrap: 'wrap', paddingTop: 28, borderTop: '1px solid rgba(255,255,255,.07)' }}>
-            {[['10+','Telas completas'],['PWA','Instala no celular'],['100%','Dark mode premium'],['LGPD','Conformidade garantida']].map(([v,l]) => (
-              <div key={l} style={{ textAlign: 'center' }}>
-                <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 34, color: 'var(--accent-2)', lineHeight: 1 }}>{v}</div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,.4)', marginTop: 4 }}>{l}</div>
+    <section className="lp-hero" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden', paddingTop: 112 }}>
+      <div className="lp-hero-orb" />
+      <div className="lp-container" style={{ maxWidth: 1180, margin: '0 auto', padding: '0 32px 88px', width: '100%' }}>
+        <div className="lp-hero-grid">
+          <div className="lp-hero-copy-col">
+            <div className="lp-hero-kicker">Performance, sem complicação <span>•</span> Voryn 2.0</div>
+            <h1 className="lp-hero-title">
+              Treine melhor.
+              <br />
+              <span>Viva a evolução.</span>
+            </h1>
+            <p className="lp-hero-copy">
+              O espaço digital para transformar treino em hábito. Planeje sua semana,
+              registre cada série e veja seu progresso sem planilhas espalhadas.
+            </p>
+            <div className="lp-hero-actions">
+              <Link to="/register" className="lp-primary-cta">
+                Começar grátis <span>↗</span>
+              </Link>
+              <a href="#features" className="lp-secondary-cta">
+                Conhecer o Voryn <span>↓</span>
+              </a>
+            </div>
+            <div className="lp-hero-proof">
+              <div className="lp-proof-avatars" aria-hidden="true">
+                <span>R</span><span>F</span><span>T</span>
               </div>
-            ))}
+              <div>
+                <div className="lp-proof-stars">★★★★★</div>
+                <p>Feito para quem leva consistência a sério.</p>
+              </div>
+            </div>
           </div>
+          <div className="lp-product-stage" aria-label="Prévia do dashboard Voryn">
+            <div className="lp-stage-label">LIVE / DASHBOARD</div>
+            <div className="lp-product-card">
+              <div className="lp-product-topbar"><span>VORYN</span><i>•••</i></div>
+              <div className="lp-product-greeting">Bom dia, <strong>atleta</strong><span>↗</span></div>
+              <div className="lp-product-focus">
+                <div><small>FOCO DE HOJE</small><strong>Peito &amp; Tríceps</strong><em>4 exercícios · 52 min</em></div>
+                <div className="lp-product-play">▶</div>
+              </div>
+              <div className="lp-product-metrics">
+                <div><small>SEQUÊNCIA</small><strong>12<span>d</span></strong><em>+2 esta semana</em></div>
+                <div><small>VOLUME</small><strong>8.4<span>t</span></strong><em>melhor mês</em></div>
+              </div>
+              <div className="lp-product-chart">
+                <div className="lp-chart-head"><small>EVOLUÇÃO DE CARGA</small><b>+18,4%</b></div>
+                <div className="lp-chart-line"><i/><i/><i/><i/><i/><i/><i/></div>
+                <div className="lp-chart-axis"><span>JAN</span><span>FEV</span><span>MAR</span><span>ABR</span></div>
+              </div>
+            </div>
+            <div className="lp-float-card lp-float-card-top"><span>✓</span><div><small>ÚLTIMO TREINO</small><b>Registrado agora</b></div></div>
+            <div className="lp-float-card lp-float-card-bottom"><strong>47</strong><div><small>DIAS ATIVOS</small><b>Você está no ritmo</b></div></div>
+          </div>
+        </div>
+        <div className="lp-hero-stats">
+          {[['01','Rotina clara'],['02','Dados reais'],['03','Constância diária'],['04','Seu ritmo']].map(([v,l]) => (
+            <div key={l}><span>{v}</span><p>{l}</p></div>
+          ))}
         </div>
       </div>
     </section>
@@ -115,21 +144,21 @@ function Features() {
     { icon:'09', title:'Segurança Real',                desc:'Row Level Security, autenticação Supabase, conformidade LGPD, política de privacidade.' },
   ]
   return (
-    <section id="features" style={{ padding: '120px 0', background: 'rgba(255,255,255,.01)', borderTop: '1px solid rgba(255,255,255,.05)' }}>
-      <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px' }}>
+    <section id="features" className="lp-features-section" style={{ padding: '128px 0', background: 'rgba(255,255,255,.01)', borderTop: '1px solid rgba(255,255,255,.05)' }}>
+      <div className="lp-container" style={{ maxWidth: 1180, margin: '0 auto', padding: '0 32px' }}>
         <div className="lp-reveal" style={{ textAlign: 'center', marginBottom: 72 }}>
-          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.25em', textTransform: 'uppercase', color: 'var(--accent-2)', marginBottom: 12 }}>Funcionalidades</p>
-          <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 'clamp(48px,7vw,88px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', marginBottom: 14, fontWeight: 800 }}>TUDO QUE<br/>SEU ALUNO PRECISA.</h2>
+          <p className="lp-section-kicker">O sistema por trás da consistência</p>
+          <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 'clamp(48px,7vw,88px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', marginBottom: 14, fontWeight: 800 }}>MENOS RUÍDO.<br/><span>MAIS EVOLUÇÃO.</span></h2>
           <p style={{ fontSize: 17, color: 'rgba(255,255,255,.4)', maxWidth: 480, margin: '0 auto', fontWeight: 300 }}>
-            Do calendário ao tracker em tempo real — um sistema completo, em português, no celular.
+            Tudo que você precisa para treinar com intenção, em uma experiência feita para o dia a dia.
           </p>
         </div>
-        <div className="lp-reveal" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 2, background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.05)', borderRadius: 24, overflow: 'hidden' }}>
+        <div className="lp-reveal lp-features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
           {features.map(f => (
-            <div key={f.title} className="lp-feature-card" style={{ background: '#18181f', padding: '36px 28px', transition: 'background .2s', cursor: 'default' }}
+            <div key={f.title} className="lp-feature-card" style={{ background: '#18181f', padding: '32px 28px', transition: 'background .2s', cursor: 'default' }}
               onMouseEnter={e => e.currentTarget.style.background='#1e1e28'}
               onMouseLeave={e => e.currentTarget.style.background='#18181f'}>
-              <div className="landing-feature-mark" style={{ width: 50, height: 50, borderRadius: 13, background: 'rgba(var(--accent-rgb),.12)', border: '1px solid rgba(var(--accent-rgb),.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, marginBottom: 18 }}>{f.icon}</div>
+              <div className="landing-feature-mark" style={{ width: 44, height: 44, borderRadius: 13, background: 'rgba(var(--accent-rgb),.12)', border: '1px solid rgba(var(--accent-rgb),.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, marginBottom: 22 }}>{f.icon}</div>
               <h3 style={{ fontSize: 15, fontWeight: 600, color: '#f2f2f7', marginBottom: 8 }}>{f.title}</h3>
               <p style={{ fontSize: 13, color: 'rgba(255,255,255,.4)', lineHeight: 1.65, fontWeight: 300 }}>{f.desc}</p>
             </div>
