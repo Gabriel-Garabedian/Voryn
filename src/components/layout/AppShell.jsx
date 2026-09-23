@@ -202,16 +202,20 @@ export default function AppShell() {
         </div>
       )}
 
-      <header className="app-header px-4 pt-4 pb-2 native-header">
+      <header className="app-header px-4 pt-4 pb-3 native-header">
         <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
           <button onClick={() => navigate(base)} className="brand-hub flex items-center gap-2.5 bg-transparent border-0 p-0 cursor-pointer" aria-label="Ir para início">
             <img src="/voryn-icon-192.png" alt="Voryn" className="w-9 h-9 rounded-xl" style={{ boxShadow: '0 0 18px rgba(var(--accent-rgb),.3)' }} />
             <div className="text-left">
               <div className="font-display text-xl uppercase tracking-widest leading-none">Voryn</div>
-              <div className="text-[10px] uppercase tracking-[.18em] mt-1" style={{ color: 'var(--text-3)' }}>{screenLabel}</div>
+              <div className="app-header-context text-[10px] uppercase tracking-[.18em] mt-1" style={{ color: 'var(--text-3)' }}>{screenLabel}</div>
             </div>
           </button>
           <div className="flex items-center gap-2.5">
+            <span className="app-status-pill hidden sm:inline-flex">
+              <span />
+              Em movimento
+            </span>
             <span className="hidden sm:block text-xs text-right" style={{ color: 'var(--text-3)' }}>
               Olá, <strong style={{ color: 'var(--text-2)' }}>{displayName}</strong>
             </span>

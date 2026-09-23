@@ -24,7 +24,7 @@ export default function AdminShell() {
   ]
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
+    <div className="admin-shell min-h-screen" style={{ background: 'var(--bg)' }}>
       {/* Topbar */}
       <header className="glass-panel" style={{ borderRadius: 0, borderTop: 0, position: 'sticky', top: 0, zIndex: 50 }}>
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
