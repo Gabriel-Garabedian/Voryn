@@ -1,18 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { PLANS } from '@/services/payment'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
 
-// ── Helpers ────────────────────────────────────────────────
-function useReveal() {
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      entries => entries.forEach(e => e.isIntersecting && e.target.classList.add('lp-revealed')),
-      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
-    )
-    document.querySelectorAll('.lp-reveal').forEach(el => obs.observe(el))
-    return () => obs.disconnect()
-  }, [])
-}
+gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 function Check() {
   return (
@@ -75,17 +68,17 @@ function Hero() {
       <div style={{ position: 'absolute', top: -100, left: '50%', transform: 'translateX(-50%)', width: 800, height: 600, borderRadius: '50%', background: 'radial-gradient(circle,rgba(var(--accent-rgb),.14) 0%,transparent 70%)', pointerEvents: 'none' }}/>
       <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px 80px', width: '100%' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
-          <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 'clamp(72px,11vw,140px)', lineHeight: .84, letterSpacing: '.03em', color: '#fff', margin: '0 0 16px', fontWeight: 800 }}>
+          <h1 className="lp-hero-title" style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 'clamp(72px,11vw,140px)', lineHeight: .84, letterSpacing: '.03em', color: '#fff', margin: '0 0 16px', fontWeight: 800 }}>
             VORYN<br/>
             <span style={{ background: 'linear-gradient(135deg,var(--accent-2),var(--accent))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               SEU
             </span>{' '}CORPO.
           </h1>
-          <p style={{ fontSize: 18, color: 'rgba(255,255,255,.5)', maxWidth: 540, margin: '0 auto 48px', lineHeight: 1.7, fontWeight: 300 }}>
+          <p className="lp-hero-copy" style={{ fontSize: 18, color: 'rgba(255,255,255,.5)', maxWidth: 540, margin: '0 auto 48px', lineHeight: 1.7, fontWeight: 300 }}>
             O app de academia que seu aluno vai usar todo dia.
             Calendário de consistência, tracker ao vivo, personal integrado e muito mais.
           </p>
-          <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 60 }}>
+          <div className="lp-hero-actions" style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 60 }}>
             <Link to="/register" className="lp-primary-cta" style={{ background: 'var(--accent)', color: '#fff', fontWeight: 700, fontSize: 16, padding: '16px 40px', borderRadius: 10, textDecoration: 'none', boxShadow: '0 0 30px rgba(var(--accent-rgb),.45)', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
               <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               Começar grátis — 14 dias
@@ -94,7 +87,7 @@ function Hero() {
               Ver planos →
             </a>
           </div>
-          <div style={{ display: 'flex', gap: 40, justifyContent: 'center', flexWrap: 'wrap', paddingTop: 28, borderTop: '1px solid rgba(255,255,255,.07)' }}>
+          <div className="lp-hero-stats" style={{ display: 'flex', gap: 40, justifyContent: 'center', flexWrap: 'wrap', paddingTop: 28, borderTop: '1px solid rgba(255,255,255,.07)' }}>
             {[['10+','Telas completas'],['PWA','Instala no celular'],['100%','Dark mode premium'],['LGPD','Conformidade garantida']].map(([v,l]) => (
               <div key={l} style={{ textAlign: 'center' }}>
                 <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 34, color: 'var(--accent-2)', lineHeight: 1 }}>{v}</div>
@@ -386,14 +379,45 @@ function Footer() {
 
 // ── Main ───────────────────────────────────────────────────
 export default function LandingPage() {
-  useReveal()
+  const landingRef = useRef(null)
+
+  useGSAP(() => {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const revealItems = gsap.utils.toArray('.lp-reveal')
+
+    if (reduceMotion) {
+      gsap.set(revealItems, { clearProps: 'all', opacity: 1, y: 0 })
+      return
+    }
+
+    const intro = gsap.timeline({ defaults: { ease: 'power3.out' } })
+    intro
+      .from('.lp-hero-title', { autoAlpha: 0, y: 35, duration: 0.8 })
+      .from('.lp-hero-copy', { autoAlpha: 0, y: 22, duration: 0.55 }, '-=0.4')
+      .from('.lp-hero-actions', { autoAlpha: 0, y: 18, duration: 0.5 }, '-=0.3')
+      .from('.lp-hero-stats', { autoAlpha: 0, y: 18, duration: 0.5 }, '-=0.25')
+
+    revealItems.forEach((element) => {
+      gsap.fromTo(element,
+        { autoAlpha: 0, y: 28 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.7,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: element,
+            start: 'top 88%',
+            once: true,
+          },
+        },
+      )
+    })
+  }, { scope: landingRef })
 
   useEffect(() => {
     const style = document.createElement('style')
     style.textContent = `
-      .lp-reveal { opacity:0; transform:translateY(28px); transition:opacity .7s ease,transform .7s ease; }
-      .lp-revealed { opacity:1; transform:translateY(0); }
-      @keyframes lpPulse { 0%,100%{opacity:1} 50%{opacity:.2} }
       @media(max-width:900px){
         div[style*="repeat(3,1fr)"] { grid-template-columns:1fr!important; }
         div[style*="repeat(5,1fr)"] { grid-template-columns:1fr 1fr!important; }
@@ -410,7 +434,7 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <div className="landing-shell" style={{ background: 'var(--bg)', color: 'var(--text-1)', fontFamily:"'Manrope',sans-serif", overflowX: 'hidden' }}>
+    <div ref={landingRef} className="landing-shell" style={{ background: 'var(--bg)', color: 'var(--text-1)', fontFamily:"'Manrope',sans-serif", overflowX: 'hidden' }}>
       <Nav />
       <Hero />
       <Features />
