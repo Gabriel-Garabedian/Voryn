@@ -1714,6 +1714,60 @@ body::after {
   letter-spacing: .02em;
 }
 
+/* Theme overrides must remain after the visual system defaults above.
+   The app applies these attributes/classes to <html> at runtime. */
+:root.theme-light {
+  --bg: #f1f5fc;
+  --surface: #f8fbff;
+  --card: #ffffff;
+  --border: #d9e2f1;
+  --muted: #6f8098;
+  --text-1: #10223f;
+  --text-2: #2f4569;
+  --text-3: #5d7294;
+  --surface-rgb: 248, 251, 255;
+  --card-rgb: 255, 255, 255;
+  --text-rgb: 16, 34, 63;
+}
+
+:root[data-accent="blue"] {
+  --accent: #3b82f6; --accent-dim: #2563eb; --accent-2: #93c5fd; --accent-rgb: 59,130,246;
+}
+:root[data-accent="green"] {
+  --accent: #16a36a; --accent-dim: #118253; --accent-2: #6ee7b7; --accent-rgb: 22,163,106;
+}
+:root[data-accent="orange"] {
+  --accent: #ea580c; --accent-dim: #c2410c; --accent-2: #fb923c; --accent-rgb: 234,88,12;
+}
+:root[data-accent="red"] {
+  --accent: #ef4444; --accent-dim: #dc2626; --accent-2: #fca5a5; --accent-rgb: 239,68,68;
+}
+:root[data-accent="pink"] {
+  --accent: #ec4899; --accent-dim: #db2777; --accent-2: #f9a8d4; --accent-rgb: 236,72,153;
+}
+:root[data-accent="cyan"] {
+  --accent: #06b6d4; --accent-dim: #0891b2; --accent-2: #67e8f9; --accent-rgb: 6,182,212;
+}
+:root[data-accent="amber"] {
+  --accent: #f59e0b; --accent-dim: #d97706; --accent-2: #fcd34d; --accent-rgb: 245,158,11;
+}
+
+.native-header,
+.native-dock {
+  background: color-mix(in srgb, var(--surface) 88%, transparent) !important;
+}
+
+.landing-shell .lp-feature-card,
+.landing-shell .lp-testimonial-card,
+.landing-shell .lp-price-card {
+  background: color-mix(in srgb, var(--card) 94%, transparent) !important;
+}
+
+.landing-shell .lp-feature-card:nth-child(1),
+.landing-shell .lp-feature-card:nth-child(4) {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--card) 96%, var(--accent) 4%), var(--card)) !important;
+}
+
 .landing-shell h1,
 .landing-shell h2 {
   text-wrap: balance;
