@@ -979,3 +979,240 @@ body::after {
     padding-right: 20px !important;
   }
 }
+
+/* Route-specific polish. Keep layout ownership in each view, but give every
+   route the same spacing, hierarchy and interaction language. */
+.home-view .home-hero {
+  padding: 8px 2px 4px;
+}
+
+.home-view .home-hero h1 {
+  font-size: clamp(2rem, 8vw, 3rem);
+  line-height: .95;
+}
+
+.home-view .home-hero .font-display.text-3xl {
+  font-size: 2.4rem;
+}
+
+.home-view > .f-btn-accent {
+  min-height: 58px;
+  border-radius: 14px !important;
+  letter-spacing: .08em;
+}
+
+.home-view .qa-card {
+  min-height: 72px;
+  border-radius: 14px !important;
+  background: rgba(var(--card-rgb), .72) !important;
+}
+
+.home-view .qa-icon {
+  border-radius: 10px !important;
+}
+
+.home-view .home-schedule .schedule-grid .f-card {
+  min-height: 128px;
+  border-radius: 14px !important;
+}
+
+.routine-view .schedule-rail > button {
+  min-width: 64px;
+  padding: 12px 13px;
+  border-radius: 12px !important;
+  background: rgba(var(--card-rgb), .72) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+}
+
+.routine-view .schedule-rail > button[style*="var(--accent)"] {
+  background: rgba(var(--accent-rgb), .14) !important;
+  border-color: rgba(var(--accent-rgb), .5) !important;
+}
+
+.routine-view .exercise-list .f-card {
+  border-radius: 14px !important;
+  padding: 14px !important;
+}
+
+.routine-view .exercise-list .f-card > .flex > .w-8 {
+  border-radius: 9px !important;
+  background: rgba(var(--accent-rgb), .13) !important;
+}
+
+.workout-picker .f-card,
+.workout-view .glass-card {
+  border-radius: 16px !important;
+}
+
+.workout-view .workout-set-row .f-input {
+  min-height: 46px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-bottom: 2px solid rgba(var(--accent-rgb), .55);
+  border-radius: 10px !important;
+}
+
+.workout-view .timer-core {
+  border-radius: 50%;
+  box-shadow: 0 0 0 10px rgba(var(--accent-rgb), .06), 0 18px 40px rgba(var(--accent-rgb), .16);
+}
+
+.view-evolution .glass-card,
+.view-history .f-card,
+.view-goals .f-card,
+.view-achievements .f-card,
+.view-photos .f-card,
+.view-community .f-card,
+.view-personal .f-card,
+.view-profile .f-card,
+.view-subscription .f-card {
+  border-radius: 14px !important;
+}
+
+.view-evolution .recharts-wrapper {
+  padding: 8px 0;
+}
+
+.view-evolution .recharts-surface {
+  overflow: visible;
+}
+
+.view-goals .f-card,
+.view-achievements .f-card {
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+.view-goals .f-card:hover,
+.view-achievements .f-card:hover {
+  transform: translateY(-2px);
+}
+
+.view-achievements .achievement-mark {
+  border-radius: 12px !important;
+  border-left: 1px solid rgba(var(--accent-rgb), .35);
+}
+
+.view-photos img {
+  border-radius: 14px !important;
+}
+
+.view-community .f-card,
+.view-personal .f-card {
+  border-radius: 14px !important;
+}
+
+.view-profile > .glass-card:first-of-type {
+  border-color: rgba(var(--accent-rgb), .26) !important;
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), .12), rgba(var(--card-rgb), .88)) !important;
+}
+
+.view-profile .w-16.h-16,
+.view-profile .w-14.h-14 {
+  border-radius: 16px !important;
+  background: rgba(var(--accent-rgb), .14) !important;
+}
+
+.view-subscription .f-card {
+  background: rgba(var(--card-rgb), .72) !important;
+}
+
+.view-subscription .f-card[style*="var(--accent)"] {
+  border-color: rgba(var(--accent-rgb), .5) !important;
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), .15), rgba(var(--card-rgb), .88)) !important;
+}
+
+.personal-dashboard-view .f-card {
+  border-radius: 14px !important;
+}
+
+.personal-dashboard-view .f-card:hover {
+  transform: translateY(-2px);
+}
+
+.onboarding-view {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(var(--accent-rgb), .16), transparent 40%),
+    var(--bg);
+}
+
+.onboarding-view .glass-panel,
+.onboarding-view .f-card {
+  border-radius: 18px !important;
+}
+
+.onboarding-view .progress-dots > * {
+  transition: width .25s ease, background .25s ease;
+}
+
+.auth-shell .w-full.max-w-sm,
+.auth-shell .w-full.max-w-md {
+  width: min(100%, 430px);
+}
+
+.auth-shell .f-btn {
+  min-height: 52px;
+}
+
+.auth-shell input,
+.auth-shell select {
+  min-height: 52px;
+}
+
+.auth-shell .glass-panel {
+  padding: 28px !important;
+}
+
+.admin-shell .f-card,
+.min-h-screen > header + div .f-card {
+  border-radius: 14px !important;
+}
+
+.min-h-screen > header.glass-panel {
+  background: rgba(9, 10, 15, .88) !important;
+  border-bottom: 1px solid rgba(255,255,255,.08) !important;
+}
+
+.min-h-screen > header.glass-panel button[style*="var(--accent)"] {
+  background: rgba(var(--accent-rgb), .12) !important;
+  color: var(--accent-2) !important;
+}
+
+.min-h-screen > header.glass-panel + div h1 {
+  font-size: clamp(2.2rem, 6vw, 3.5rem);
+  letter-spacing: .02em;
+}
+
+.landing-shell h1,
+.landing-shell h2 {
+  text-wrap: balance;
+}
+
+.landing-shell .lp-feature-card,
+.landing-shell .lp-testimonial-card,
+.landing-shell .lp-price-card {
+  backdrop-filter: blur(12px);
+}
+
+.landing-shell .lp-primary-cta,
+.landing-shell .lp-secondary-cta {
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 640px) {
+  .home-view .home-hero {
+    align-items: flex-end;
+  }
+
+  .home-view .home-hero h1 {
+    font-size: 2.1rem;
+  }
+
+  .home-view .home-schedule .schedule-grid {
+    grid-template-columns: repeat(7, minmax(112px, 1fr));
+  }
+
+  .auth-shell .glass-panel {
+    padding: 22px !important;
+  }
+}
