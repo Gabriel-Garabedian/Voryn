@@ -932,6 +932,305 @@ body::after {
   .landing-shell .lp-hero-stats { grid-template-columns: repeat(2, 1fr); gap: 18px 12px; }
   .landing-shell .lp-feature-card:nth-child(1) { grid-column: auto; }
 }
+
+/* Internal product surfaces — one visual language, tuned per job. */
+.app-shell .app-header {
+  position: relative;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  background: linear-gradient(180deg, rgba(var(--bg-rgb, 6,9,15), .96), rgba(var(--bg-rgb, 6,9,15), .72));
+  backdrop-filter: blur(18px);
+}
+.app-shell .app-header::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb), .55), transparent);
+  opacity: .65;
+}
+.app-shell .brand-hub { transition: transform .2s ease, opacity .2s ease; }
+.app-shell .brand-hub:hover { opacity: .9; transform: translateX(2px); }
+.app-shell .app-header-context { color: var(--accent-2) !important; }
+.app-shell .app-status-pill {
+  align-items: center;
+  gap: 6px;
+  padding: 6px 9px;
+  border: 1px solid rgba(61,220,151,.18);
+  border-radius: 999px;
+  color: rgba(255,255,255,.48);
+  background: rgba(61,220,151,.06);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.app-shell .app-status-pill span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 8px rgba(61,220,151,.8);
+}
+.app-shell .app-view {
+  position: relative;
+  animation: viewEnter .4s ease both;
+}
+@keyframes viewEnter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.app-shell .view-kicker {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 9px;
+  color: var(--accent-2) !important;
+  font-size: 10px !important;
+  font-weight: 800;
+  letter-spacing: .19em !important;
+  text-transform: uppercase;
+}
+.app-shell .view-kicker::before {
+  content: '';
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(var(--accent-rgb), .65);
+}
+.app-shell .app-view > div > h1,
+.app-shell .app-view > div h1 {
+  letter-spacing: .045em;
+}
+.app-shell .home-hero {
+  padding: 18px;
+  border: 1px solid rgba(var(--accent-rgb), .16);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 90% 0%, rgba(var(--accent-rgb), .18), transparent 42%),
+    linear-gradient(145deg, rgba(255,255,255,.045), rgba(var(--accent-rgb), .035));
+  box-shadow: 0 16px 34px rgba(0,0,0,.18);
+}
+.app-shell .home-hero h1 { font-size: clamp(2.1rem, 8vw, 3rem); }
+.app-shell .home-view > .f-btn-accent {
+  min-height: 58px;
+  border-radius: 16px;
+  letter-spacing: .11em;
+  box-shadow: 0 14px 28px rgba(var(--accent-rgb), .28);
+}
+.app-shell .metric-wall > .f-card,
+.app-shell .home-view .qa-card,
+.app-shell .home-view .schedule-grid > .f-card {
+  border-color: rgba(255,255,255,.07);
+  background: linear-gradient(145deg, rgba(255,255,255,.045), rgba(var(--card-rgb), .72));
+}
+.app-shell .home-view .metric-wall > .f-card { min-height: 76px; }
+.app-shell .routine-view .schedule-rail {
+  padding: 4px 2px 10px;
+}
+.app-shell .routine-view .schedule-rail button {
+  min-width: 62px;
+  border-radius: 14px !important;
+  background: rgba(255,255,255,.035) !important;
+}
+.app-shell .routine-view .schedule-rail button[style*="background: rgb"] {
+  box-shadow: 0 10px 24px rgba(var(--accent-rgb), .22);
+}
+.app-shell .routine-view .exercise-list .f-card,
+.app-shell .workout-view .f-card,
+.app-shell .workout-picker .f-card {
+  border-radius: 16px;
+}
+.app-shell .routine-view .exercise-list .f-card:hover,
+.app-shell .workout-view .f-card:hover {
+  transform: translateY(-2px);
+}
+.app-shell .view-evolution .glass-card,
+.app-shell .view-history .f-card,
+.app-shell .view-goals .f-card,
+.app-shell .view-achievements .f-card,
+.app-shell .view-photos .f-card,
+.app-shell .view-community .f-card,
+.app-shell .view-personal .f-card,
+.app-shell .view-profile .f-card,
+.app-shell .view-subscription .f-card {
+  border-color: rgba(255,255,255,.075);
+  background: linear-gradient(145deg, rgba(255,255,255,.045), rgba(var(--card-rgb), .82));
+}
+.app-shell .view-evolution .glass-card,
+.app-shell .view-evolution .f-card {
+  box-shadow: 0 16px 32px rgba(0,0,0,.14);
+}
+.app-shell .view-evolution .recharts-wrapper,
+.app-shell .view-evolution .recharts-surface {
+  max-width: 100%;
+}
+.app-shell .view-profile > .glass-card:first-of-type {
+  border-color: rgba(var(--accent-rgb), .24);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(var(--accent-rgb), .15), transparent 40%),
+    linear-gradient(145deg, rgba(255,255,255,.06), rgba(var(--card-rgb), .86));
+}
+.app-shell .view-profile .grid.grid-cols-4 > .glass-card {
+  min-height: 70px;
+  border-radius: 14px;
+}
+.app-shell .view-subscription > div:first-child {
+  padding: 18px;
+  border: 1px solid rgba(var(--accent-rgb), .14);
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(var(--accent-rgb), .08), rgba(255,255,255,.025));
+}
+.app-shell .view-subscription > .f-card:first-of-type {
+  box-shadow: 0 18px 38px rgba(0,0,0,.2);
+}
+.app-shell .view-community .f-card,
+.app-shell .view-achievements .f-card,
+.app-shell .view-photos .f-card {
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.app-shell .view-community .f-card:hover,
+.app-shell .view-achievements .f-card:hover,
+.app-shell .view-photos .f-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(var(--accent-rgb), .3);
+  box-shadow: 0 14px 28px rgba(0,0,0,.18);
+}
+.app-shell .native-dock {
+  background: rgba(14, 21, 34, .84) !important;
+  box-shadow: 0 20px 42px rgba(0,0,0,.3) !important;
+  backdrop-filter: blur(20px);
+}
+.app-shell .dock-item {
+  transition: color .2s ease, background .2s ease, transform .2s ease;
+}
+.app-shell .dock-item:hover {
+  background: rgba(var(--accent-rgb), .08) !important;
+}
+
+@media (max-width: 640px) {
+  .app-shell .app-header { padding-top: 12px !important; }
+  .app-shell .home-hero { padding: 15px; }
+  .app-shell .view-profile .grid.grid-cols-4 { gap: 6px; }
+  .app-shell .view-profile .grid.grid-cols-4 > .glass-card { padding: 10px 4px; }
+  .app-shell .view-profile .grid.grid-cols-4 > .glass-card .font-display { font-size: 1.15rem; }
+}
+
+/* Entry, setup and admin surfaces use the same product shell. */
+.auth-shell,
+.onboarding-view,
+.admin-shell {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(var(--accent-rgb), .14), transparent 30%),
+    radial-gradient(circle at 88% 80%, rgba(76,227,185,.06), transparent 28%),
+    var(--bg) !important;
+}
+.auth-shell::before,
+.onboarding-view::before,
+.admin-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .35;
+  background-image:
+    linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(to bottom, black, transparent 78%);
+}
+.auth-shell > *,
+.onboarding-view > *,
+.admin-shell > * { position: relative; z-index: 1; }
+.auth-shell .glass-panel {
+  border-color: rgba(var(--accent-rgb), .22) !important;
+  background: linear-gradient(145deg, rgba(var(--card-rgb), .92), rgba(var(--surface-rgb), .82)) !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,.3), 0 0 0 1px rgba(255,255,255,.025);
+}
+.auth-shell .f-input {
+  min-height: 50px;
+  border-radius: 13px;
+  background: rgba(255,255,255,.035);
+}
+.auth-shell .f-btn,
+.onboarding-view .f-btn {
+  min-height: 48px;
+  border-radius: 13px;
+}
+.onboarding-view {
+  align-items: center;
+}
+.onboarding-view .w-full.max-w-sm {
+  padding: 26px 22px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(255,255,255,.045), rgba(var(--card-rgb), .78));
+  box-shadow: 0 24px 58px rgba(0,0,0,.26);
+}
+.onboarding-view .view-kicker { margin-bottom: 14px; }
+.onboarding-view .f-card {
+  border-radius: 15px;
+  border-color: rgba(255,255,255,.08);
+  background: rgba(255,255,255,.035);
+}
+.admin-shell > header {
+  border-radius: 0 !important;
+  border-right: 0;
+  border-left: 0;
+  border-color: rgba(255,255,255,.08) !important;
+  background: rgba(14,21,34,.82) !important;
+  backdrop-filter: blur(18px);
+}
+.admin-shell > header::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb), .58), transparent);
+}
+.admin-shell > header > div { position: relative; }
+.admin-shell > header button,
+.admin-shell > header a { transition: color .2s ease, background .2s ease, transform .2s ease; }
+.admin-shell > header button:hover,
+.admin-shell > header a:hover { transform: translateY(-1px); }
+.admin-shell .space-y-8 > div:first-child {
+  padding: 22px 24px;
+  border: 1px solid rgba(var(--accent-rgb), .14);
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(var(--accent-rgb), .08), rgba(255,255,255,.025));
+}
+.admin-shell .f-card {
+  border-color: rgba(255,255,255,.075);
+  background: linear-gradient(145deg, rgba(255,255,255,.045), rgba(var(--card-rgb), .82));
+}
+.app-shell .personal-dashboard-view .f-card {
+  border-color: rgba(255,255,255,.075);
+  background: linear-gradient(145deg, rgba(255,255,255,.045), rgba(var(--card-rgb), .82));
+}
+.app-shell .personal-dashboard-view > div:first-child {
+  padding: 18px;
+  border: 1px solid rgba(var(--accent-rgb), .15);
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(var(--accent-rgb), .08), rgba(255,255,255,.025));
+}
+.app-shell .view-community-detail,
+.app-shell .view-personal {
+  animation: viewEnter .4s ease both;
+}
+
+@media (max-width: 640px) {
+  .onboarding-view .w-full.max-w-sm { padding: 22px 16px; border-radius: 20px; }
+  .admin-shell > header > div { padding-right: 16px; padding-left: 16px; }
+  .admin-shell > header > div > div:last-child { gap: 4px; overflow-x: auto; }
+  .admin-shell > header button,
+  .admin-shell > header a { white-space: nowrap; font-size: 11px; }
+}
 :root {
   --bg: #090a0f;
   --surface: #11131a;
