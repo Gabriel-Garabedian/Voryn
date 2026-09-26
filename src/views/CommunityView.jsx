@@ -381,7 +381,7 @@ function ChatCommunity({ communityId, userId, members }) {
           <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>Carregando...</p>
         ) : msgs.length === 0 ? (
           <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>
-            Nenhuma mensagem ainda. Manda um "oi" pro grupo 👋
+            Nenhuma mensagem ainda. Manda um &quot;oi&quot; pro grupo 👋
           </p>
         ) : (
           msgs.map(m => {
@@ -674,7 +674,7 @@ function ChatFriend({ myId, friendId, friendName }) {
           <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>Carregando...</p>
         ) : msgs.length === 0 ? (
           <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>
-            Nenhuma mensagem ainda. Manda um "oi" pra {friendName?.split(' ')[0] || 'ele'} 👋
+            Nenhuma mensagem ainda. Manda um &quot;oi&quot; pra {friendName?.split(' ')[0] || 'ele'} 👋
           </p>
         ) : (
           msgs.map(m => {

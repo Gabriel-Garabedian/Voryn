@@ -179,6 +179,96 @@ export default function GoalsView() {
         </div>
       </div>
 
+      {/* Long-term targets — antes esse formulário existia só no estado
+          (goalForm/showGoalEdit/saveGoalDetails), sem nenhum botão ou UI
+          que os usasse: os dados chegavam a ser buscados do banco, mas a
+          pessoa nunca conseguia efetivamente definir ou editar uma meta de
+          longo prazo por aqui. O personal já via "Meta para {data}" na
+          ficha do aluno (PersonalDashboardView) — só faltava o aluno
+          conseguir preenchê-la. */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <p className="f-label">Metas de Longo Prazo</p>
+          <button onClick={() => setShowGoalEdit(!showGoalEdit)}
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg"
+            style={{ background: 'rgba(var(--accent-rgb),.1)', color: 'var(--accent)', border: '1px solid rgba(var(--accent-rgb),.2)' }}>
+            {showGoalEdit ? 'Fechar' : goals ? 'Editar' : '+ Definir'}
+          </button>
+        </div>
+
+        {showGoalEdit && (
+          <div className="f-card p-4 space-y-3 mb-3 scale-in" style={{ borderColor: 'rgba(var(--accent-rgb),.3)' }}>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="f-label">Peso alvo (kg)</label>
+                <input type="number" inputMode="decimal" className="f-input py-2 text-sm text-center"
+                  placeholder="80" value={goalForm.target_weight}
+                  onChange={e => setGoalForm(f => ({ ...f, target_weight: e.target.value }))}/>
+              </div>
+              <div>
+                <label className="f-label">% Gordura alvo</label>
+                <input type="number" inputMode="decimal" className="f-input py-2 text-sm text-center"
+                  placeholder="15" value={goalForm.target_body_fat}
+                  onChange={e => setGoalForm(f => ({ ...f, target_body_fat: e.target.value }))}/>
+              </div>
+            </div>
+            <div>
+              <label className="f-label">Data alvo</label>
+              <input type="date" className="f-input py-2 text-sm" value={goalForm.target_date}
+                onChange={e => setGoalForm(f => ({ ...f, target_date: e.target.value }))}/>
+            </div>
+            <div>
+              <label className="f-label">Notas</label>
+              <input className="f-input text-sm" placeholder="Ex: focar em hipertrofia até dezembro" value={goalForm.notes}
+                onChange={e => setGoalForm(f => ({ ...f, notes: e.target.value }))}/>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={saveGoalDetails} disabled={saving}
+                className="f-btn f-btn-accent flex-1 py-2.5 text-sm disabled:opacity-50">
+                {saving ? 'Salvando...' : 'Salvar metas'}
+              </button>
+              <button onClick={() => setShowGoalEdit(false)} className="f-btn f-btn-ghost px-4">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!showGoalEdit && (
+          goals && (goals.target_weight || goals.target_body_fat || goals.target_date || goals.notes) ? (
+            <div className="f-card p-4">
+              {goals.target_date && (
+                <p className="text-sm" style={{ color: 'var(--text-1)' }}>
+                  Meta para {new Date(goals.target_date + 'T12:00').toLocaleDateString('pt-BR')}
+                </p>
+              )}
+              {(goals.target_weight || goals.target_body_fat) && (
+                <div className="flex gap-4 mt-2">
+                  {goals.target_weight && (
+                    <span className="text-xs" style={{ color: 'var(--text-3)' }}>
+                      Peso: <span style={{ color: 'var(--accent)', fontWeight: 700 }}>{goals.target_weight}kg</span>
+                    </span>
+                  )}
+                  {goals.target_body_fat && (
+                    <span className="text-xs" style={{ color: 'var(--text-3)' }}>
+                      Gordura: <span style={{ color: 'var(--accent)', fontWeight: 700 }}>{goals.target_body_fat}%</span>
+                    </span>
+                  )}
+                </div>
+              )}
+              {goals.notes && (
+                <p className="text-xs italic mt-2" style={{ color: 'var(--text-3)' }}>&ldquo;{goals.notes}&rdquo;</p>
+              )}
+            </div>
+          ) : (
+            <div className="f-card p-6 text-center">
+              <p className="text-sm" style={{ color: 'var(--text-3)' }}>Nenhuma meta de longo prazo definida.</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>Defina um peso alvo, % de gordura ou data para seu personal acompanhar.</p>
+            </div>
+          )
+        )}
+      </div>
+
       {/* Body tracking */}
       <div>
         <div className="flex items-center justify-between mb-3">

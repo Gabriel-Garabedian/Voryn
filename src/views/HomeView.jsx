@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { workoutLogService, routineService } from '@/services'
@@ -119,7 +119,7 @@ function WeeklySummaryBanner({ lastWeek, metrics, streak }) {
 }
 
 export default function HomeView() {
-  const { profile, user, plan } = useAuth()
+  const { profile, user } = useAuth()
   const navigate = useNavigate()
   // Handle payment success redirect from MP
   useEffect(() => {
@@ -144,7 +144,6 @@ export default function HomeView() {
   const [metrics,      setMetrics]      = useState(null)
   const [lastWeek,     setLastWeek]     = useState(null)
   const [loading,      setLoading]      = useState(true)
-  const [streakFlash,  setStreakFlash]  = useState(false)
   const [openLogDate,  setOpenLogDate]  = useState(null)
 
   const todayKey = localDateKey(today)
@@ -168,6 +167,10 @@ export default function HomeView() {
       setLastWeek({ thisWeek: thisWeekCount, prevWeek: prevWeekCount, delta: thisWeekCount - prevWeekCount })
       setLoading(false)
     })
+    // 'today' é `new Date()` recém-criado a cada render (não memoizado);
+    // incluí-lo aqui faria esse fetch rodar de novo em toda renderização,
+    // não só quando o usuário muda.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   const firstDay   = new Date(calYear, calMonth, 1).getDay()

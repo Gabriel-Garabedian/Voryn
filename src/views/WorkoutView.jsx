@@ -22,9 +22,11 @@ function RestTimer({ seconds, onSkip, seriesDone }) {
   const circ = 2 * Math.PI * 44
   const prog = (rem / seconds) * circ
   const warn = rem <= 10
-  // Timestamp-alvo, não um contador que vai descendo. Guardado em ref
-  // para não ser recalculado a cada render.
-  const endsAtRef = useRef(Date.now() + seconds * 1000)
+  // Timestamp-alvo, não um contador que vai descendo. Guardado em ref e
+  // calculado só na primeira renderização (lazy init), para não chamar
+  // Date.now() de novo a cada re-render nem recalcular o alvo.
+  const endsAtRef = useRef(null)
+  if (endsAtRef.current === null) endsAtRef.current = Date.now() + seconds * 1000
   const firedRef  = useRef(false)
 
   // Smooth entrance after 300ms
@@ -294,6 +296,10 @@ export default function WorkoutView() {
       () => setElapsed(Math.floor((Date.now() - workout.startTime) / 1000)), 1000
     )
     return () => clearInterval(timerRef.current)
+    // Só depende de startTime (que não muda depois que o treino começa) —
+    // não do objeto `workout` inteiro, que muda toda vez que uma série é
+    // marcada como feita. Incluí-lo recriaria o interval a cada set.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workout?.startTime])
 
   async function startWorkout(dayIndex) {
@@ -472,7 +478,13 @@ export default function WorkoutView() {
     }
 
     clearInterval(timerRef.current)
-    setFinishedData({ ...workout })
+    // Guardamos a duração calculada no momento em que o treino terminou.
+    // Antes, o resumo pós-treino recalculava Date.now() - startTime a cada
+    // render do PostWorkoutModal — se a pessoa ficasse alguns minutos lendo
+    // o resumo (ou qualquer re-render acontecesse nesse meio tempo), o tempo
+    // exibido continuava subindo, ficando diferente da duração que já tinha
+    // sido salva no histórico.
+    setFinishedData({ ...workout, duration })
     activeWorkoutService.clear()
     setWorkout(null)
     setShowSummary(true)
@@ -539,7 +551,7 @@ export default function WorkoutView() {
     return (
       <PostWorkoutModal
         workout={finishedData}
-        elapsed={Math.floor((Date.now() - finishedData.startTime) / 1000)}
+        elapsed={finishedData.duration}
         onClose={handleSummaryClose}
       />
     )

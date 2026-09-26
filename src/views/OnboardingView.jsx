@@ -4,7 +4,6 @@ import { useAuth } from '@/context/AuthContext'
 import { routineService } from '@/services'
 import { Button } from '@/components/ui'
 
-const DAYS_FULL  = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
 const DAYS_SHORT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
 
 const GOALS = [
@@ -66,6 +65,11 @@ export default function OnboardingView() {
     if (isPersonal && profile && !profile.onboarding_done) {
       updateProfile({ onboarding_done: true }).then(() => navigate('/app'))
     }
+    // updateProfile vem do AuthContext e não é memoizada (nova referência a
+    // cada render do provider); incluí-la faria este efeito rodar de novo
+    // sempre que o contexto renderiza, disparando updateProfile()/
+    // navigate() em loop. navigate() do react-router já é estável.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPersonal, profile])
 
   if (isPersonal) return null // evita flash de conteúdo de aluno antes do redirect acima

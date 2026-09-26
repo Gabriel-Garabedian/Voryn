@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { PLANS } from '@/services/payment'
 import { useToast } from '@/components/ui/Toast'
@@ -13,7 +13,6 @@ export default function SubscriptionView() {
   const toast = useToast()
   const [cancelling, setCancelling] = React.useState(false)
   const [cancelDone, setCancelDone] = React.useState(false)
-  const navigate = useNavigate()
   const sub      = getSubscription(profile)
   const current  = PLANS[plan]
 

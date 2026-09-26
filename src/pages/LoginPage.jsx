@@ -82,13 +82,13 @@ export function LoginPage() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
           <label className="f-label">Email</label>
-          <input type="email" className="f-input" placeholder="seu@email.com"
+          <input type="email" className="f-input" placeholder="seu@email.com" autoComplete="email"
             value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} required/>
         </div>
         <div className="space-y-1.5">
           <label className="f-label">Senha</label>
           <div style={{ position: 'relative' }}>
-            <input type={showPw ? 'text' : 'password'} className="f-input"
+            <input type={showPw ? 'text' : 'password'} className="f-input" autoComplete="current-password"
               style={{ paddingRight: 48 }} placeholder="••••••••"
               value={form.password}
               onChange={e => setForm(p => ({ ...p, password: e.target.value }))} required/>
@@ -172,7 +172,7 @@ export function ResetPasswordPage() {
         <form onSubmit={handleUpdate} className="space-y-4">
           <div className="space-y-1.5">
             <label className="f-label">Nova senha</label>
-            <input type="password" className="f-input" placeholder="Mínimo 6 caracteres"
+            <input type="password" className="f-input" placeholder="Mínimo 6 caracteres" autoComplete="new-password"
               value={password} onChange={e => setPassword(e.target.value)} required/>
           </div>
           <ErrorBox msg={error}/>
@@ -185,7 +185,7 @@ export function ResetPasswordPage() {
         <form onSubmit={handleReset} className="space-y-4">
           <div className="space-y-1.5">
             <label className="f-label">Email</label>
-            <input type="email" className="f-input" placeholder="seu@email.com"
+            <input type="email" className="f-input" placeholder="seu@email.com" autoComplete="email"
               value={email} onChange={e => setEmail(e.target.value)} required/>
           </div>
           <ErrorBox msg={error}/>

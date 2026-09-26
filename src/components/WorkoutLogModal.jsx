@@ -38,7 +38,7 @@ export default function WorkoutLogModal({ userId, date, onClose }) {
     setTimeout(onClose, 250) // espera a animação de saída antes de desmontar
   }
 
-  const [y, m, d] = date.split('-').map(Number)
+  const [_y, m, d] = date.split('-').map(Number)
   const totalSets = log?.exercises?.reduce((a, ex) => a + (ex.sets?.length || 0), 0) || 0
   const doneSets  = log?.exercises?.reduce((a, ex) => a + (ex.sets?.filter(s => s.done)?.length || 0), 0) || 0
 

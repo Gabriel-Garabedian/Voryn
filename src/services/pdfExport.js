@@ -41,7 +41,6 @@ async function loadJsPDF() {
 // ── Helpers ──────────────────────────────────────────────────
 const PURPLE = [130, 10, 209]
 const DARK   = [13,  13,  13]
-const GRAY1  = [30,  30,  30]
 const GRAY3  = [100,100, 100]
 const WHITE  = [242,242, 247]
 

@@ -32,9 +32,8 @@ function formatLastWorkout(dateStr) {
 }
 
 function StudentCard({ student, onSelect, inactive, pendingAssessment, lastWorkoutDate }) {
-  // Após normalização, name/email estão direto no objeto student
+  // Após normalização, name está direto no objeto student
   const name  = student.name  || student.student?.name  || '?'
-  const email = student.email || student.student?.email || ''
   const lastWorkout = formatLastWorkout(lastWorkoutDate)
 
   return (
@@ -106,7 +105,12 @@ function StudentDetail({ student, trainerId, onBack }) {
     try {
       const { data: logs } = await workoutLogService.getAll(sid)
       const { data: prs  } = await prService.getAll(sid)
-      await exportProgressPDF({ studentName: name, workoutLogs: logs || [], prs: prs || {} })
+      // Mesmo bug do ProfileView do aluno: exportProgressPDF espera
+      // `metrics` para preencher o "Resumo Geral" (total de treinos,
+      // sequência, volume) e nunca recebia — o relatório gerado pelo
+      // personal saía com essa seção toda zerada.
+      const metrics = await workoutLogService.getMetrics(sid)
+      await exportProgressPDF({ studentName: name, metrics, workoutLogs: logs || [], prs: prs || {} })
       toast.dismiss(tid); toast.success('PDF gerado!')
     } catch (e) { captureError(e, { context: 'export_progress_pdf' }); toast.dismiss(tid); toast.error('Erro ao gerar PDF') }
   }
@@ -238,7 +242,7 @@ function ChatTrainer({ studentId, trainerId }) {
       messageService.markRead(trainerId, studentId, user.id).catch(() => {})
     })
     return () => sub?.unsubscribe?.()
-  }, [trainerId, studentId])
+  }, [trainerId, studentId, user?.id])
 
   // Scroll para última mensagem
   useEffect(() => {
@@ -256,7 +260,13 @@ function ChatTrainer({ studentId, trainerId }) {
   return (
     <div className="flex flex-col" style={{ height:'calc(100vh - 320px)' }}>
       <div className="flex-1 overflow-y-auto space-y-3 py-2">
-        {msgs.map(m => {
+        {loading ? (
+          <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>Carregando...</p>
+        ) : msgs.length === 0 ? (
+          <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>
+            Nenhuma mensagem ainda. Manda um &quot;oi&quot; pro aluno 👋
+          </p>
+        ) : msgs.map(m => {
           const isMe = m.sender_id === user.id
           return (
             <div key={m.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
@@ -367,7 +377,7 @@ function GoalsTrainer({ studentId }) {
       )}
       {goals?.notes && (
         <div className="f-card p-4">
-          <p className="text-sm italic" style={{ color: 'var(--text-2)' }}>"{goals.notes}"</p>
+          <p className="text-sm italic" style={{ color: 'var(--text-2)' }}>&ldquo;{goals.notes}&rdquo;</p>
         </div>
       )}
     </div>
@@ -404,7 +414,7 @@ function AssessmentsTrainer({ studentId, trainerId }) {
             {a.weight && <div className="text-center flex-1"><p className="font-display text-xl" style={{ color:'var(--accent)' }}>{a.weight}kg</p><p className="text-xs" style={{ color:'var(--text-3)' }}>Peso</p></div>}
             {a.body_fat && <div className="text-center flex-1"><p className="font-display text-xl" style={{ color:'var(--accent)' }}>{a.body_fat}%</p><p className="text-xs" style={{ color:'var(--text-3)' }}>Gordura</p></div>}
           </div>
-          {a.notes && <p className="text-sm mt-2 italic" style={{ color:'var(--text-3)' }}>"{a.notes}"</p>}
+          {a.notes && <p className="text-sm mt-2 italic" style={{ color:'var(--text-3)' }}>&ldquo;{a.notes}&rdquo;</p>}
         </div>
       ))}
     </div>
@@ -740,8 +750,6 @@ export default function PersonalDashboardView() {
       setLoading(false)
     })
   }, [user])
-
-  const toast = useToast()
 
   // Antes, isto era handleAddStudent — chamado pelo modal seco e isolado
   // de "Adicionar Aluno" (só um campo de email). Esse modal foi unificado

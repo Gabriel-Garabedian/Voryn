@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { workoutLogService } from '@/services'
-import { calcStreak, calcBestStreak } from '@/utils/helpers'
 import { SkeletonList } from '@/components/ui/Skeleton'
 
 const ACHIEVEMENTS = [
@@ -79,13 +78,11 @@ export default function AchievementsView() {
   const { user } = useAuth()
   const [metrics,       setMetrics]       = useState(null)
   const [loading,       setLoading]       = useState(true)
-  const [prevUnlocked,  setPrevUnlocked]  = useState(new Set())
   const [newlyUnlocked, setNewlyUnlocked] = useState(new Set())
 
   useEffect(() => {
     if (!user) return
     const stored = JSON.parse(localStorage.getItem(`voryn_ach_${user.id}`) || '[]')
-    setPrevUnlocked(new Set(stored))
     workoutLogService.getMetrics(user.id).then(m => {
       setMetrics(m)
       setLoading(false)
