@@ -49,6 +49,29 @@ describe('formatDuration', () => {
   })
 })
 
+describe('formatDate', () => {
+  it('formats a date string as dd de mês de aaaa (pt-BR)', () => {
+    const r = formatDate('2026-03-15')
+    expect(r).toContain('15')
+    expect(r).toContain('2026')
+  })
+  it('handles missing input', () => {
+    expect(formatDate(null)).toBe('—')
+    expect(formatDate('')).toBe('—')
+  })
+})
+
+describe('formatDateShort', () => {
+  it('formats a date string without the year', () => {
+    const r = formatDateShort('2026-03-15')
+    expect(r).toContain('15')
+    expect(r).not.toContain('2026')
+  })
+  it('handles missing input', () => {
+    expect(formatDateShort(null)).toBe('—')
+  })
+})
+
 describe('formatVolume', () => {
   it('formats kg under 1000', () => {
     const r = formatVolume(500)

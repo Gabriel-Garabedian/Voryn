@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { workoutLogService } from '@/services'
-import { formatDuration, formatDate, formatVolume, getPlanLimit } from '@/utils/helpers'
+import { formatDuration, formatVolume, getPlanLimit } from '@/utils/helpers'
 import { SkeletonList } from '@/components/ui/Skeleton'
 
 const MONTHS_PT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']

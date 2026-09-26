@@ -218,6 +218,21 @@ body::after {
   .lp-features-grid { grid-template-columns: repeat(2, 1fr) !important; }
   .lp-hero-grid { grid-template-columns: 1fr !important; }
   .lp-pricing-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .lp-steps-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+/* BUG: estas três grids (Funcionalidades, Depoimentos+Preços, Como
+   Funciona) antes só tinham empilhamento em telas pequenas via um
+   <style> injetado com seletores `div[style*="repeat(3,1fr)"]` que
+   nunca batia (o navegador serializa o atributo com espaço:
+   "repeat(3, 1fr)") — na prática ficavam sempre em 3/5 colunas
+   espremidas, mesmo no celular. */
+@media (max-width: 640px) {
+  .lp-features-grid,
+  .lp-pricing-grid,
+  .lp-steps-grid { grid-template-columns: 1fr !important; }
+  .lp-steps-grid > div:first-child { display: none; } /* linha conectando os passos, sem sentido empilhado */
+  .lp-steps-grid > div { padding: 0 0 28px !important; }
+  .lp-steps-grid > div:last-child { padding-bottom: 0 !important; }
 }
 @media (max-width: 390px) {
   .workout-set-row { grid-template-columns: 24px 1fr 1fr 34px !important; gap: 4px !important; }
@@ -578,6 +593,12 @@ body::after {
   background:
     radial-gradient(circle at 18% 15%, rgba(var(--accent-rgb), .22), transparent 38%),
     linear-gradient(180deg, #06090f, #0a1321) !important;
+  /* Antes, o formulário aparecia bem abaixo da primeira dobra da tela por
+     causa do bug do glow decorativo virando bloco (ver comentário na
+     regra `.auth-shell > *` abaixo) — não era este `justify-content`.
+     Com o glow de volta a não ocupar espaço, o conteúdo cabe numa tela
+     comum e centralizar de verdade fica bem.
+  */
 }
 .auth-shell .glass-panel {
   border: 1px solid rgba(255,255,255,.14);
@@ -931,6 +952,48 @@ body::after {
   .landing-shell .lp-float-card-bottom { right: -4px; bottom: 28px; }
   .landing-shell .lp-hero-stats { grid-template-columns: repeat(2, 1fr); gap: 18px 12px; }
   .landing-shell .lp-feature-card:nth-child(1) { grid-column: auto; }
+
+  /* Nav mobile — antes os links de desktop (Funcionalidades/Preços/FAQ/
+     Entrar/CTA) ficavam sempre visíveis e vazavam pra fora da tela em
+     qualquer viewport abaixo de ~760px, cortando "Entrar" e o botão
+     principal. Agora eles somem e dão lugar a um botão hamburger. */
+  .landing-shell .lp-nav-links { display: none !important; }
+  .landing-shell .lp-nav-toggle { display: inline-flex !important; align-items: center; justify-content: center; }
+}
+
+/* Painel do menu mobile — some por completo acima de 760px, mesmo que
+   `menuOpen` fique true (ex: usuário abre no celular e depois redimensiona
+   a janela sem o resize handler do componente rodar a tempo). */
+.landing-shell .lp-nav-mobile-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 24px 20px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  animation: lp-nav-panel-in .2s ease-out;
+}
+.landing-shell .lp-nav-mobile-panel a {
+  color: rgba(255,255,255,.7);
+  font-size: 15px;
+  text-decoration: none;
+  padding: 12px 4px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.landing-shell .lp-nav-mobile-panel a:last-child { border-bottom: none; margin-top: 6px; }
+@keyframes lp-nav-panel-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (min-width: 761px) {
+  .landing-shell .lp-nav-mobile-panel { display: none !important; }
+}
+
+/* Telas bem estreitas (a maioria dos celulares, 360–390px): o clamp()
+   acima ainda rendia ~68-70px de fonte no título do hero — largo o
+   bastante pra "EVOLUÇÃO"/"MELHOR." vazarem pra fora da tela em vez de
+   só quebrar linha. Reduzimos mais o piso do clamp só aqui. */
+@media (max-width: 420px) {
+  .landing-shell .lp-hero-title { font-size: clamp(40px, 13vw, 56px); }
 }
 
 /* Internal product surfaces — one visual language, tuned per job. */
@@ -1143,9 +1206,18 @@ body::after {
   background-size: 32px 32px;
   mask-image: linear-gradient(to bottom, black, transparent 78%);
 }
-.auth-shell > *,
-.onboarding-view > *,
-.admin-shell > * { position: relative; z-index: 1; }
+/* BUG: este seletor universal pegava TODOS os filhos diretos, inclusive o
+   glow decorativo (className "fixed ...", só um efeito de fundo, sem
+   conteúdo) — e como as duas regras têm a mesma especificidade, a que vem
+   depois no CSS final ganha e sobrescrevia position:fixed por
+   position:relative. O glow deixava de ser um elemento fora do fluxo
+   (como devia) e virava um bloco real de ~500px de altura, empurrando o
+   formulário de verdade (login, cadastro, onboarding) pra bem abaixo da
+   primeira dobra da tela — quem abrisse essas páginas via metade da tela
+   vazia antes de chegar no conteúdo. */
+.auth-shell > *:not(.fixed),
+.onboarding-view > *:not(.fixed),
+.admin-shell > *:not(.fixed) { position: relative; z-index: 1; }
 .auth-shell .glass-panel {
   border-color: rgba(var(--accent-rgb), .22) !important;
   background: linear-gradient(145deg, rgba(var(--card-rgb), .92), rgba(var(--surface-rgb), .82)) !important;

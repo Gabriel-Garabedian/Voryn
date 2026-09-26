@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react'
-import { searchExercises, MUSCLE_GROUPS, EXERCISE_LIBRARY } from '@/data/exercises'
+import { searchExercises, MUSCLE_GROUPS } from '@/data/exercises'
 import ExerciseDetail from '@/components/ExerciseDetail'
 
 const AC = 'var(--accent)'
@@ -99,7 +99,7 @@ export default function ExercisePicker({ onSelect, onClose, onCustom }) {
             </div>
             <div>
               <p className="text-sm font-semibold" style={{ color: AC }}>
-                Adicionar "{query.trim()}"
+                Adicionar &quot;{query.trim()}&quot;
               </p>
               <p className="text-xs" style={{ color: 'var(--text-3)' }}>Exercício personalizado</p>
             </div>

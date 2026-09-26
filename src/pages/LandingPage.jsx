@@ -19,17 +19,34 @@ function Check() {
 // ── NAV ────────────────────────────────────────────────────
 function Nav() {
   const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 40)
-    window.addEventListener('scroll', h)
-    return () => window.removeEventListener('scroll', h)
+    // BUG: o CSS global aplica `overflow-x: hidden` tanto em <html> quanto
+    // em <body> (pra evitar scroll horizontal indesejado); isso faz o
+    // navegador computar `overflow-y: auto` nos dois (regra do próprio
+    // CSS: se um eixo não é 'visible' e o outro é, o outro vira 'auto').
+    // Resultado: quem realmente rola o conteúdo é o <body> (scroll
+    // interno), não a window — então `window.scrollY`/'scroll' no window
+    // nunca mudam, e o fundo da nav nunca ficava sólido ao rolar a
+    // página. Escutamos o scroll do body, que é o que realmente rola.
+    const h = () => setScrolled(document.body.scrollTop > 40)
+    document.body.addEventListener('scroll', h)
+    return () => document.body.removeEventListener('scroll', h)
   }, [])
+  // Fecha o menu mobile automaticamente se a tela for redimensionada
+  // para o layout desktop (ex: girar o celular ou abrir devtools).
+  useEffect(() => {
+    const h = () => { if (window.innerWidth > 760) setMenuOpen(false) }
+    window.addEventListener('resize', h)
+    return () => window.removeEventListener('resize', h)
+  }, [])
+  const links = [['#features','Funcionalidades'],['#pricing','Preços'],['#faq','FAQ']]
   return (
     <nav style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-      background: scrolled ? 'rgba(8,8,8,.88)' : 'transparent',
-      backdropFilter: scrolled ? 'blur(20px)' : 'none',
-      borderBottom: scrolled ? '1px solid rgba(255,255,255,.06)' : 'none',
+      background: (scrolled || menuOpen) ? 'rgba(8,8,8,.88)' : 'transparent',
+      backdropFilter: (scrolled || menuOpen) ? 'blur(20px)' : 'none',
+      borderBottom: (scrolled || menuOpen) ? '1px solid rgba(255,255,255,.06)' : 'none',
       transition: 'all .3s',
     }}>
       <div style={{ maxWidth: 1140, margin: '0 auto', padding: '16px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -37,8 +54,10 @@ function Nav() {
           <img src="/voryn-icon-192.png" alt="Voryn" style={{ width: 32, height: 32, borderRadius: 8, boxShadow: '0 0 16px rgba(var(--accent-rgb),.5)' }} />
           Voryn
         </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-          {[['#features','Funcionalidades'],['#pricing','Preços'],['#faq','FAQ']].map(([h,l]) => (
+
+        {/* Links completos — some abaixo de 760px (ver .lp-nav-links no CSS) */}
+        <div className="lp-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+          {links.map(([h,l]) => (
             <a key={h} href={h} className="lp-nav-link" style={{ color: 'rgba(255,255,255,.5)', fontSize: 14, textDecoration: 'none', transition: 'color .2s' }}
               onMouseEnter={e => e.target.style.color='#fff'}
               onMouseLeave={e => e.target.style.color='rgba(255,255,255,.5)'}>
@@ -56,7 +75,39 @@ function Nav() {
             Começar grátis
           </Link>
         </div>
+
+        {/* Botão hamburger — só aparece abaixo de 760px (ver .lp-nav-toggle no CSS).
+            BUG: antes desta correção não existia NENHUMA versão mobile do menu — os
+            mesmos links de desktop ficavam sempre visíveis e vazavam pra fora da tela
+            em qualquer viewport estreito (ex: 390px), cortando "Entrar" e o CTA. */}
+        <button
+          className="lp-nav-toggle"
+          onClick={() => setMenuOpen(o => !o)}
+          aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
+          aria-expanded={menuOpen}
+          style={{ display: 'none', background: 'none', border: 'none', padding: 8, color: '#fff', cursor: 'pointer' }}>
+          {menuOpen ? (
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          ) : (
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+          )}
+        </button>
       </div>
+
+      {/* Painel mobile — só é renderizado quando aberto, e só fica visível
+          abaixo de 760px (o CSS força display:none acima disso). */}
+      {menuOpen && (
+        <div className="lp-nav-mobile-panel">
+          {links.map(([h,l]) => (
+            <a key={h} href={h} onClick={() => setMenuOpen(false)}>{l}</a>
+          ))}
+          <Link to="/login" onClick={() => setMenuOpen(false)}>Entrar</Link>
+          <Link to="/register" className="lp-primary-cta" onClick={() => setMenuOpen(false)}
+            style={{ background: 'var(--accent)', color: '#fff', fontWeight: 700, textAlign: 'center', borderRadius: 10, padding: '13px 20px' }}>
+            Começar grátis
+          </Link>
+        </div>
+      )}
     </nav>
   )
 }
@@ -187,7 +238,7 @@ function HowItWorks() {
             5 PASSOS PARA<br/>COMEÇAR HOJE.
           </h2>
         </div>
-        <div className="lp-reveal" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 0, position: 'relative' }}>
+        <div className="lp-reveal lp-steps-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 0, position: 'relative' }}>
           <div style={{ position: 'absolute', top: 38, left: '10%', right: '10%', height: 1, background: 'linear-gradient(90deg,transparent,rgba(var(--accent-rgb),.4),transparent)' }}/>
           {steps.map(s => (
             <div key={s.n} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '0 14px', position: 'relative', zIndex: 1 }}>
@@ -231,7 +282,7 @@ function Testimonials() {
                 ))}
               </div>
               <p style={{ fontSize: 15, color: 'rgba(255,255,255,.7)', lineHeight: 1.7, marginBottom: 20, fontWeight: 300, fontStyle: 'italic' }}>
-                "{t.text}"
+                &ldquo;{t.text}&rdquo;
               </p>
               <div>
                 <p style={{ fontSize: 14, fontWeight: 600, color: '#f2f2f7' }}>{t.name}</p>
@@ -436,31 +487,49 @@ export default function LandingPage() {
           ease: 'power3.out',
           scrollTrigger: {
             trigger: element,
+            // BUG CRÍTICO: o CSS global aplica overflow-x:hidden em <html>
+            // E em <body> (pra evitar scroll horizontal indesejado), e o
+            // navegador computa overflow-y:auto nos dois como consequência
+            // (regra do próprio CSS: eixo 'visible' ao lado de um eixo que
+            // não é 'visible' vira 'auto'). Resultado: quem rola o
+            // conteúdo de verdade é o <body>, não a window — sem apontar
+            // isso aqui, o ScrollTrigger calcula tudo relativo à window,
+            // que nunca se move, e a animação (que começa com opacity:0)
+            // nunca disparava: a partir do fim do hero, a landing inteira
+            // (Funcionalidades, Preços, FAQ, Depoimentos, CTA) ficava
+            // permanentemente invisível pra quem abrisse o site de verdade.
+            scroller: document.body,
             start: 'top 88%',
             once: true,
           },
         },
       )
     })
+
+    // BUG (continuação): mesmo apontando `scroller: document.body` acima,
+    // o ScrollTrigger não recalculava sozinho o progresso quando o body
+    // rolava — na prática ele só atualiza automaticamente puxando eventos
+    // de scroll da window (o "root scroller" que ele espera por padrão).
+    // Forçamos um ScrollTrigger.update() a cada scroll real do body, que é
+    // quem de fato rola o conteúdo aqui (ver comentário no Nav() sobre o
+    // overflow-y:auto "auto-computado" em html/body).
+    const onBodyScroll = () => ScrollTrigger.update()
+    document.body.addEventListener('scroll', onBodyScroll, { passive: true })
+
+    ScrollTrigger.refresh()
+
+    return () => document.body.removeEventListener('scroll', onBodyScroll)
   }, { scope: landingRef })
 
-  useEffect(() => {
-    const style = document.createElement('style')
-    style.textContent = `
-      @media(max-width:900px){
-        div[style*="repeat(3,1fr)"] { grid-template-columns:1fr!important; }
-        div[style*="repeat(5,1fr)"] { grid-template-columns:1fr 1fr!important; }
-      }
-      @media(max-width:600px){
-        div[style*="repeat(3,1fr)"] { grid-template-columns:1fr!important; }
-        nav > div > div[style*="gap: 28px"] { display:none; }
-        nav > div { padding-left: 18px!important; padding-right: 18px!important; }
-        section > div { padding-left: 20px!important; padding-right: 20px!important; }
-      }
-    `
-    document.head.appendChild(style)
-    return () => { try { document.head.removeChild(style) } catch {} }
-  }, [])
+  // Antes havia aqui um useEffect que injetava uma <style> com seletores
+  // como `div[style*="repeat(3,1fr)"]` pra tentar empilhar as grids em
+  // telas pequenas. BUG: o navegador serializa o atributo style com
+  // espaço depois da vírgula ("repeat(3, 1fr)"), então esse seletor nunca
+  // batia com nada — a regra inteira era morta desde o início, e as
+  // grids de Funcionalidades, Depoimentos e Preços (3 colunas) e a de
+  // Como Funciona (5 colunas) ficavam sempre espremidas em qualquer
+  // tamanho de tela, inclusive celular. Substituído por CSS de verdade
+  // em .lp-features-grid/.lp-pricing-grid/.lp-steps-grid (index.css).
 
   return (
     <div ref={landingRef} className="landing-shell" style={{ background: 'var(--bg)', color: 'var(--text-1)', fontFamily:"'Manrope',sans-serif", overflowX: 'hidden' }}>

@@ -30,9 +30,14 @@ export default function AdminShell() {
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="/voryn-icon-192.png" alt="Voryn" className="w-8 h-8 rounded-lg" />
-            <span className="font-display text-xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
-              VORYN ADMIN
-            </span>
+            <div>
+              <span className="font-display text-xl uppercase tracking-wide block leading-tight" style={{ color: 'var(--text-1)' }}>
+                VORYN ADMIN
+              </span>
+              {profile?.name && (
+                <span className="text-xs" style={{ color: 'var(--text-3)' }}>Olá, {profile.name}</span>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-3 sm:gap-6">
             {tabs.map(t => (

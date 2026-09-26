@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/context/AuthContext'
-import { trainerService, assessmentService, messageService, programService } from '@/services'
-import { Button, Badge, Card, Modal, EmptyState } from '@/components/ui'
+import { assessmentService, messageService, programService } from '@/services'
+import { Button, Badge, EmptyState } from '@/components/ui'
 import { useToast } from '@/components/ui/Toast'
 import { localDateKey } from '@/utils/helpers'
 
@@ -214,7 +214,7 @@ function Assessments({ studentId, trainerId }) {
             {a.weight && <div className="f-card px-4 py-2 text-center flex-1" style={{ background:'var(--surface)' }}><p className="font-display text-xl" style={{ color:'var(--accent)' }}>{a.weight}kg</p><p className="text-xs" style={{ color:'var(--text-3)' }}>Peso</p></div>}
             {a.body_fat && <div className="f-card px-4 py-2 text-center flex-1" style={{ background:'var(--surface)' }}><p className="font-display text-xl" style={{ color:'var(--accent)' }}>{a.body_fat}%</p><p className="text-xs" style={{ color:'var(--text-3)' }}>Gordura</p></div>}
           </div>
-          {a.notes && <p className="text-sm italic" style={{ color:'var(--text-3)' }}>"{a.notes}"</p>}
+          {a.notes && <p className="text-sm italic" style={{ color:'var(--text-3)' }}>&ldquo;{a.notes}&rdquo;</p>}
         </div>
       ))}
     </div>

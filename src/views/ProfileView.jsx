@@ -130,7 +130,6 @@ export default function ProfileView() {
 
   const [prs,         setPRs]         = useState({})
   const [logs,        setLogs]        = useState([])
-  const [metrics,     setMetrics]     = useState(null)
   const [editingPR,   setEditingPR]   = useState(null)
   const [prInput,     setPrInput]     = useState('')
   const [addingPR,    setAddingPR]    = useState(false)
@@ -154,7 +153,6 @@ export default function ProfileView() {
     // o plano paga para desbloquear.
     prService.getAll(user.id).then(({ data }) => setPRs(data || {})).catch(err => console.error('[Voryn] ProfileView (PRs) falhou:', err))
     workoutLogService.getAll(user.id).then(({ data }) => setLogs(data || [])).catch(err => console.error('[Voryn] ProfileView (logs) falhou:', err))
-    workoutLogService.getMetrics(user.id).then(m => setMetrics(m)).catch(err => console.error('[Voryn] ProfileView (metrics) falhou:', err))
   }, [user])
 
   async function savePR(key) {
@@ -604,9 +602,15 @@ export default function ProfileView() {
             }},
             { label: 'Meu Progresso (PDF)', fn: async () => {
               const t = toast.loading('Gerando relatório...')
-              const { data: logs } = await workoutLogService.getAll(user.id)
-              const { data: prs }  = await prService.getAll(user.id)
-              await exportProgressPDF({ studentName: profile?.name, workoutLogs: logs, prs: prs || {} })
+              const { data: logs }    = await workoutLogService.getAll(user.id)
+              const { data: prs }     = await prService.getAll(user.id)
+              // BUG: o relatório de progresso não recebia `metrics`, então a
+              // seção "Resumo Geral" do PDF (total de treinos, sequência,
+              // volume) saía sempre zerada, mesmo para quem tinha histórico
+              // real — a função exportProgressPDF espera esse campo, mas
+              // nunca era passado.
+              const metrics = await workoutLogService.getMetrics(user.id)
+              await exportProgressPDF({ studentName: profile?.name, metrics, workoutLogs: logs, prs: prs || {} })
               toast.dismiss(t); toast.success('PDF gerado!')
             }},
           ].map(btn => (

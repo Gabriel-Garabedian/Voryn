@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { supabase } from '@/lib/supabase'
@@ -380,17 +380,17 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
               <label className="f-label">Nome completo</label>
-              <input className="f-input" placeholder="Seu nome" value={form.name}
+              <input className="f-input" placeholder="Seu nome" autoComplete="name" value={form.name}
                 onChange={e => setForm(p => ({ ...p, name: e.target.value }))}/>
             </div>
             <div>
               <label className="f-label">Email</label>
-              <input type="email" className="f-input" placeholder="email@exemplo.com" value={form.email}
+              <input type="email" className="f-input" placeholder="email@exemplo.com" autoComplete="email" value={form.email}
                 onChange={e => setForm(p => ({ ...p, email: e.target.value }))}/>
             </div>
             <div>
               <label className="f-label">Senha</label>
-              <input type="password" className="f-input" placeholder="Mínimo 6 caracteres" value={form.password}
+              <input type="password" className="f-input" placeholder="Mínimo 6 caracteres" autoComplete="new-password" value={form.password}
                 onChange={e => setForm(p => ({ ...p, password: e.target.value }))}/>
             </div>
 
