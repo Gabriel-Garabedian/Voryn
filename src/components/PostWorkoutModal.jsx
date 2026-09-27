@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { formatDuration, formatVolume, parseWeight } from '@/utils/helpers'
+import { summarizeCardio } from '@/data/cardio'
 
 function StatBox({ label, value, highlight }) {
   return (
@@ -68,6 +69,13 @@ export default function PostWorkoutModal({ workout, elapsed, onClose }) {
               style={{ width: `${pct}%`, background: 'var(--accent)', boxShadow: '0 0 8px rgba(var(--accent-rgb),.5)', transitionDelay: '.3s' }}/>
           </div>
         </div>
+
+        {workout.cardio && (
+          <div className="mb-6 text-center text-xs px-3 py-2 rounded-lg"
+            style={{ background: 'rgba(var(--accent-rgb),.08)', color: 'var(--accent)', border: '1px solid rgba(var(--accent-rgb),.2)' }}>
+            {summarizeCardio(workout.cardio)} registrado ✓
+          </div>
+        )}
 
         {/* Exercises summary */}
         <div className="space-y-1.5 mb-6 max-h-32 overflow-y-auto">

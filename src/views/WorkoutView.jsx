@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext'
 import { routineService, workoutLogService, activeWorkoutService } from '@/services'
 import { Button } from '@/components/ui'
 import PostWorkoutModal from '@/components/PostWorkoutModal'
+import CardioModal from '@/components/CardioModal'
 import ExercisePicker from '@/components/ExercisePicker'
 import ExerciseDetail from '@/components/ExerciseDetail'
 import { EXERCISE_LIBRARY } from '@/data/exercises'
@@ -265,6 +266,7 @@ export default function WorkoutView() {
   const [confirm,      setConfirm]      = useState(false)
   const [showSummary,  setShowSummary]  = useState(false)
   const [finishedData, setFinishedData] = useState(null)
+  const [showCardio,   setShowCardio]   = useState(false)
   const [saving,       setSaving]       = useState(false)
   const [lastSeriesDone, setLastSeriesDone] = useState(0)
   const [showExPicker,  setShowExPicker]  = useState(false)
@@ -443,7 +445,7 @@ export default function WorkoutView() {
 
   const skipRest = useCallback(() => setShowRest(false), [])
 
-  async function finishWorkout() {
+  async function finishWorkout(cardio) {
     if (!workout) return
     setSaving(true)
     const duration = Math.floor((Date.now() - workout.startTime) / 1000)
@@ -462,6 +464,7 @@ export default function WorkoutView() {
       dayIndex: workout.dayIndex,
       duration,
       exercises: workout.exercises,
+      cardio: cardio || null,
     })
 
     // Se o save falhar (rede, RLS, etc.), NÃO limpamos o treino do
@@ -473,6 +476,7 @@ export default function WorkoutView() {
       captureError(error, { context: 'finish_workout', userId: user?.id })
       setSaving(false)
       setConfirm(false)
+      setShowCardio(false)
       toast.error('Não foi possível salvar o treino. Verifique sua conexão e tente novamente — seus dados não foram perdidos.')
       return
     }
@@ -484,9 +488,10 @@ export default function WorkoutView() {
     // o resumo (ou qualquer re-render acontecesse nesse meio tempo), o tempo
     // exibido continuava subindo, ficando diferente da duração que já tinha
     // sido salva no histórico.
-    setFinishedData({ ...workout, duration })
+    setFinishedData({ ...workout, duration, cardio: cardio || null })
     activeWorkoutService.clear()
     setWorkout(null)
+    setShowCardio(false)
     setShowSummary(true)
     setSaving(false)
     setConfirm(false)
@@ -542,6 +547,18 @@ export default function WorkoutView() {
           setShowExPicker(false)
           toast.success(`${name} adicionado!`)
         }}
+      />
+    )
+  }
+
+  // Cardio pós-treino — perguntado depois de confirmar "Finalizar", antes
+  // de salvar o log (pra já ir tudo junto no mesmo registro).
+  if (showCardio) {
+    return (
+      <CardioModal
+        onSkip={() => finishWorkout(null)}
+        onSave={(cardio) => finishWorkout(cardio)}
+        saving={saving}
       />
     )
   }
@@ -863,7 +880,8 @@ export default function WorkoutView() {
               {doneSets}/{totalSets} séries concluídas · {fmt(elapsed)}
             </p>
             <div className="flex gap-2">
-              <Button className="flex-1 py-3 text-sm" loading={saving} onClick={finishWorkout}>
+              <Button className="flex-1 py-3 text-sm" loading={saving}
+                onClick={() => { setConfirm(false); setShowCardio(true) }}>
                 Finalizar ✓
               </Button>
               <Button variant="ghost" className="px-5" onClick={() => setConfirm(false)}>
