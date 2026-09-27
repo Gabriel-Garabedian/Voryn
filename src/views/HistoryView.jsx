@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { workoutLogService } from '@/services'
 import { formatDuration, formatVolume, getPlanLimit } from '@/utils/helpers'
+import { summarizeCardio, getCardioType } from '@/data/cardio'
 import { SkeletonList } from '@/components/ui/Skeleton'
 
 const MONTHS_PT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
@@ -45,6 +46,12 @@ function LogCard({ log }) {
               </span>
             </>}
           </div>
+          {log.cardio && (
+            <div className="mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs max-w-full truncate"
+              style={{ background: 'rgba(var(--accent-rgb),.1)', color: 'var(--accent)', border: '1px solid rgba(var(--accent-rgb),.2)' }}>
+              {summarizeCardio(log.cardio)}
+            </div>
+          )}
         </div>
 
         {/* Chevron */}
@@ -100,6 +107,34 @@ function LogCard({ log }) {
               )}
             </div>
           ))}
+
+          {/* Cardio pós-treino */}
+          {log.cardio && (() => {
+            const def = getCardioType(log.cardio.type)
+            if (!def) return null
+            return (
+              <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
+                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-3)' }}>
+                  {def.icon} Cardio · {def.label}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {def.fields.map(f => {
+                    const v = log.cardio[f.key]
+                    if (v === null || v === undefined || v === '') return null
+                    const display = f.type === 'select'
+                      ? (f.options.find(o => o.value === v)?.label || v)
+                      : `${v}${f.unit ? f.unit : ''}`
+                    return (
+                      <div key={f.key} className="text-xs px-2 py-1 rounded-lg"
+                        style={{ background: 'var(--surface)', color: 'var(--text-2)' }}>
+                        {f.label}: <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{display}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })()}
         </div>
       )}
     </div>

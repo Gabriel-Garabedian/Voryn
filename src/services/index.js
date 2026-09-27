@@ -84,6 +84,7 @@ export const workoutLogService = {
         total_sets:   totalSets,
         total_reps:   totalReps,
         total_volume: totalVol,
+        cardio:       log.cardio || null,
       })
       .select().single()
     return { data, error }

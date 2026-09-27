@@ -204,6 +204,16 @@ create table if not exists public.workout_logs (
   exercises    jsonb default '[]',
   created_at   timestamptz default now()
 );
+-- Cardio pós-treino (esteira, bike, escada, elíptico, remo, corrida/
+-- caminhada ou cardio livre/HIIT), opcional e por treino. Guardado como
+-- jsonb — igual a `exercises` acima — em vez de uma tabela separada com
+-- uma coluna por métrica, porque cada modalidade usa um conjunto
+-- diferente de campos (ex: esteira tem inclinação, remo tem split pace,
+-- a maioria não tem nada disso), e a maior parte ficaria sempre nula
+-- numa tabela rígida. Formato: { type, duration_minutes, e daí os campos
+-- específicos do tipo — ver src/data/cardio.js, que é a fonte da verdade
+-- de quais campos cada tipo tem. }
+alter table public.workout_logs add column if not exists cardio jsonb;
 
 -- ── PERSONAL RECORDS ──────────────────────────────────────
 create table if not exists public.prs (
