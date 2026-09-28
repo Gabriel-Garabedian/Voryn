@@ -668,7 +668,7 @@ export default function WorkoutView() {
         </div>
 
         {/* Rest timer config */}
-        <div className="flex items-center gap-2 mt-3">
+        <div className="flex items-center flex-wrap gap-2 mt-3">
           <span className="text-xs" style={{ color: 'var(--text-3)' }}>Descanso:</span>
           {[30, 60, 90, 120, 180].map(s => (
             <button key={s} onClick={() => setRestSecs(s)}
@@ -787,7 +787,7 @@ export default function WorkoutView() {
               {/* Sets */}
               <div className="px-4 pt-2 pb-3">
                 {/* Header row */}
-                <div className="grid grid-cols-[28px_1fr_1fr_36px_24px] gap-2 mb-2">
+                <div className="workout-set-row grid grid-cols-[28px_1fr_1fr_36px_24px] gap-2 mb-2">
                   {['S', 'Reps', 'kg', '✓', ''].map((h, i) => (
                     <div key={i} className="text-xs font-semibold uppercase tracking-wider text-center"
                       style={{ color: 'var(--text-3)' }}>{h}</div>

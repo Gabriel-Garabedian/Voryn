@@ -22,12 +22,16 @@ import NotificationPrompt    from '@/components/ui/NotificationPrompt'
 import TrialEndingBanner     from '@/components/ui/TrialEndingBanner'
 import { pushService }       from '@/services/pushNotifications'
 
+// Barra de baixo do aluno: Início, Histórico, Treinar (botão central em
+// destaque), Evolução e Perfil. As demais telas (Rotina, Metas, Conquistas,
+// Progresso, Comunidade, Personal) ficam no menu "Mais" do cabeçalho
+// (MORE_EXTRAS) e nos atalhos da Home — nenhuma deixou de existir.
 const STUDENT_NAV = [
-  { path: '',        label: 'Home',    icon: 'home' },
-  { path: 'routine', label: 'Rotina',  icon: 'routine' },
-  { path: 'workout', label: 'Treinar', icon: 'workout' },
-  { path: 'more',    label: 'Mais',    icon: 'more' },
-  { path: 'profile', label: 'Perfil',  icon: 'profile' },
+  { path: '',          label: 'Início',    icon: 'home' },
+  { path: 'history',   label: 'Histórico', icon: 'history' },
+  { path: 'workout',   label: 'Treinar',   icon: 'workout', raised: true },
+  { path: 'evolution', label: 'Evolução',  icon: 'evolution' },
+  { path: 'profile',   label: 'Perfil',    icon: 'profile' },
 ]
 
 const PERSONAL_NAV = [
@@ -38,8 +42,7 @@ const PERSONAL_NAV = [
 ]
 
 const MORE_EXTRAS = [
-  { path: 'evolution',    icon: 'evolution',    label: 'Evolução'  },
-  { path: 'history',      icon: 'history',      label: 'Histórico' },
+  { path: 'routine',      icon: 'routine',      label: 'Rotina'    },
   { path: 'goals',        icon: 'goals',        label: 'Metas'     },
   { path: 'achievements', icon: 'achievements', label: 'Conquistas'},
   { path: 'photos',       icon: 'photos',       label: 'Progresso' },
@@ -52,7 +55,9 @@ function NavIcon({ type, active }) {
   const icons = {
     home:     <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w}><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
     routine:  <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w}><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg>,
-    workout:  <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w}><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>,
+    workout:  <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w} strokeLinecap="round"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg>,
+    history:  <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w} strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>,
+    evolution: <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w} strokeLinecap="round" strokeLinejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg>,
     more:     <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w}><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/></svg>,
     profile:  <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w}><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
     students: <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w}><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>,
@@ -62,6 +67,7 @@ function NavIcon({ type, active }) {
 
 function MoreIcon({ type }) {
   const paths = {
+    routine: <><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></>,
     evolution: <><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></>,
     history: <><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h6M8 17h4"/></>,
     goals: <><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M22 12h-3"/></>,
@@ -172,12 +178,13 @@ export default function AppShell() {
 
   function isActive(path) {
     if (path === '') return location.pathname === base || location.pathname === `${base}/`
-    if (path === 'more') return MORE_EXTRAS.some(e => location.pathname.includes(`${base}/${e.path}`))
     return location.pathname.startsWith(`${base}/${path}`)
   }
 
+  // Alguma tela do menu "Mais" está aberta? (deixa o botão do menu em destaque)
+  const onMoreScreen = MORE_EXTRAS.some(e => location.pathname.includes(`${base}/${e.path}`))
+
   function handleNav(path) {
-    if (path === 'more') { setMoreOpen(true); return }
     navigate(path === '' ? base : `${base}/${path}`)
   }
 
@@ -219,6 +226,20 @@ export default function AppShell() {
             <span className="hidden sm:block text-xs text-right" style={{ color: 'var(--text-3)' }}>
               Olá, <strong style={{ color: 'var(--text-2)' }}>{displayName}</strong>
             </span>
+            {!isPersonal && (
+              <button onClick={() => setMoreOpen(true)} aria-label="Mais opções"
+                className="w-10 h-10 rounded-full flex items-center justify-center border cursor-pointer"
+                style={{
+                  background: onMoreScreen ? 'rgba(var(--accent-rgb),.16)' : 'transparent',
+                  color: onMoreScreen ? 'var(--accent-2)' : 'var(--text-2)',
+                  borderColor: onMoreScreen ? 'rgba(var(--accent-rgb),.35)' : 'var(--border)',
+                }}>
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round">
+                  <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+                  <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+                </svg>
+              </button>
+            )}
             <button onClick={() => navigate(`${base}/profile`)} className="profile-chip w-10 h-10 rounded-full flex items-center justify-center border cursor-pointer font-display text-lg" style={{ background: 'rgba(var(--accent-rgb),.16)', color: 'var(--accent-2)', borderColor: 'rgba(var(--accent-rgb),.35)' }} aria-label="Abrir perfil">
               {displayName.charAt(0).toUpperCase()}
             </button>
@@ -254,6 +275,27 @@ export default function AppShell() {
         <div className="glass-panel native-dock flex items-center justify-around px-2 pt-2 max-w-2xl mx-auto shadow-2xl" style={{ paddingBottom: 'max(10px, env(safe-area-inset-bottom))', borderColor: 'rgba(255,255,255,.12)' }}>
           {navItems.map(item => {
             const active = isActive(item.path)
+            // Botão central "Treinar": círculo elevado em cor de destaque,
+            // é a ação principal do app.
+            if (item.raised) {
+              return (
+                <button key={item.path} onClick={() => handleNav(item.path)}
+                  className="flex flex-col items-center gap-1 px-2 active:scale-95 transition-transform min-w-[58px]"
+                  style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
+                  aria-label={item.label}>
+                  <span className="flex items-center justify-center rounded-full"
+                    style={{
+                      width: 50, height: 50, marginTop: -22, background: 'var(--accent)', color: '#fff',
+                      border: '4px solid var(--bg)',
+                      boxShadow: active ? '0 0 0 2px rgba(var(--accent-rgb),.5)' : 'none',
+                    }}>
+                    <NavIcon type={item.icon} active={true}/>
+                  </span>
+                  <span className="font-display uppercase tracking-wider"
+                    style={{ fontSize: 11, fontWeight: 800, color: active ? 'var(--accent-2)' : 'var(--muted)' }}>{item.label}</span>
+                </button>
+              )
+            }
             return (
               <button key={item.path} onClick={() => handleNav(item.path)}
                 className="dock-item flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all relative active:scale-95 min-w-[58px]"
