@@ -308,14 +308,38 @@ export default function WorkoutView() {
     const { data: rts } = await routineService.getAll(user.id)
     const plan = rts?.[dayIndex]
     if (!plan) return
+
+    // Referência "do treino passado" em cada série (peso/reps que a pessoa
+    // fez da última vez neste mesmo dia da rotina) — ajuda a decidir se
+    // mantém, aumenta ou reduz a carga na hora, sem precisar abrir o
+    // Histórico. Mostrado como placeholder discreto no próprio campo (ver
+    // grid de séries mais abaixo), não como coluna nova — assim não muda
+    // o layout, só preenche um contexto que antes não existia.
+    // Puramente um extra visual: se a busca falhar, o treino começa igual,
+    // só sem a referência.
+    let previousByExercise = {}
+    try {
+      const { data: logs } = await workoutLogService.getAll(user.id)
+      const lastSameDay = (logs || []).find(l => l.day_index === dayIndex)
+      if (lastSameDay?.exercises) {
+        lastSameDay.exercises.forEach(ex => { previousByExercise[ex.name] = ex.sets })
+      }
+    } catch (err) {
+      captureError(err, { context: 'fetch_previous_sets' })
+    }
+
     const w = {
       id: genId(), dayIndex, name: plan.name || DAYS_FULL[dayIndex],
       startTime: Date.now(),
       exercises: plan.exercises.map(ex => ({
         ...ex,
-        sets: Array.from({ length: ex.sets }, () => ({
-          id: genId(), reps: '', weight: '', done: false
-        }))
+        sets: Array.from({ length: ex.sets }, (_, si) => {
+          const prevSet = previousByExercise[ex.name]?.[si]
+          return {
+            id: genId(), reps: '', weight: '', done: false,
+            prev: (prevSet?.reps || prevSet?.weight) ? { reps: prevSet.reps, weight: prevSet.weight } : null,
+          }
+        })
       }))
     }
     activeWorkoutService.save(w)
@@ -458,12 +482,21 @@ export default function WorkoutView() {
     // do dispositivo, sem passar por UTC.
     const dateKey = localDateKey(now)
 
+    // Tira o campo `prev` (referência do treino passado, só usada como
+    // placeholder em tela — ver startWorkout) antes de salvar; senão cada
+    // log salvo carregaria pra sempre uma cópia redundante do treino
+    // anterior dentro de cada série.
+    const exercisesToSave = workout.exercises.map(ex => ({
+      ...ex,
+      sets: ex.sets.map(({ prev: _prev, ...s }) => s),
+    }))
+
     const { error } = await workoutLogService.create(user.id, {
       name: workout.name,
       date: dateKey,
       dayIndex: workout.dayIndex,
       duration,
-      exercises: workout.exercises,
+      exercises: exercisesToSave,
       cardio: cardio || null,
     })
 
@@ -776,10 +809,10 @@ export default function WorkoutView() {
                         {si + 1}
                       </div>
                       <input type="text" inputMode="numeric" className="f-input py-2 text-center text-sm"
-                        placeholder="—" value={set.reps} disabled={set.done}
+                        placeholder={set.prev?.reps || '—'} value={set.reps} disabled={set.done}
                         onChange={e => updateSet(ei, si, 'reps', e.target.value)}/>
                       <input type="text" inputMode="decimal" className="f-input py-2 text-center text-sm"
-                        placeholder="—" value={set.weight} disabled={set.done}
+                        placeholder={set.prev?.weight || '—'} value={set.weight} disabled={set.done}
                         onChange={e => updateSet(ei, si, 'weight', e.target.value)}/>
                       <button onClick={() => toggleDone(ei, si)}
                         className="w-9 h-9 rounded-xl flex items-center justify-center mx-auto transition-all"
