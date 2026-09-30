@@ -50,7 +50,7 @@ function Nav() {
       transition: 'all .3s',
     }}>
       <div style={{ maxWidth: 1140, margin: '0 auto', padding: '16px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Link to="/" style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 28, letterSpacing: '.1em', color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <Link to="/" style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 28, letterSpacing: '.1em', color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
           <img src="/voryn-icon-192.png" alt="Voryn" style={{ width: 32, height: 32, borderRadius: 8, boxShadow: '0 0 16px rgba(var(--accent-rgb),.5)' }} />
           Voryn
         </Link>
@@ -199,7 +199,7 @@ function Features() {
       <div className="lp-container" style={{ maxWidth: 1180, margin: '0 auto', padding: '0 32px' }}>
         <div className="lp-reveal" style={{ textAlign: 'center', marginBottom: 72 }}>
           <p className="lp-section-kicker">O sistema por trás da consistência</p>
-          <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 'clamp(48px,7vw,88px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', marginBottom: 14, fontWeight: 800 }}>MENOS RUÍDO.<br/><span>MAIS EVOLUÇÃO.</span></h2>
+          <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(48px,7vw,88px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', marginBottom: 14, fontWeight: 800 }}>MENOS RUÍDO.<br/><span>MAIS EVOLUÇÃO.</span></h2>
           <p style={{ fontSize: 17, color: 'rgba(255,255,255,.4)', maxWidth: 480, margin: '0 auto', fontWeight: 300 }}>
             Tudo que você precisa para treinar com intenção, em uma experiência feita para o dia a dia.
           </p>
@@ -234,7 +234,7 @@ function HowItWorks() {
       <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px' }}>
         <div className="lp-reveal" style={{ textAlign: 'center', marginBottom: 64 }}>
           <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: 'var(--accent-2)', marginBottom: 12 }}>Como funciona</p>
-          <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 'clamp(44px,6vw,72px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', fontWeight: 800 }}>
+          <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(44px,6vw,72px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', fontWeight: 800 }}>
             5 PASSOS PARA<br/>COMEÇAR HOJE.
           </h2>
         </div>
@@ -242,7 +242,7 @@ function HowItWorks() {
           <div style={{ position: 'absolute', top: 38, left: '10%', right: '10%', height: 1, background: 'linear-gradient(90deg,transparent,rgba(var(--accent-rgb),.4),transparent)' }}/>
           {steps.map(s => (
             <div key={s.n} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '0 14px', position: 'relative', zIndex: 1 }}>
-              <div style={{ width: 76, height: 76, borderRadius: '50%', background: '#080a0b', border: '2px solid rgba(255,255,255,.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily:"'Barlow Condensed',sans-serif", fontSize: 30, color: 'rgba(255,255,255,.3)', marginBottom: 20, transition: 'all .3s', cursor: 'default' }}
+              <div style={{ width: 76, height: 76, borderRadius: '50%', background: '#080a0b', border: '2px solid rgba(255,255,255,.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily:"'Bebas Neue',sans-serif", fontSize: 30, color: 'rgba(255,255,255,.3)', marginBottom: 20, transition: 'all .3s', cursor: 'default' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor='var(--accent)'; e.currentTarget.style.color='var(--accent-2)'; e.currentTarget.style.boxShadow='0 0 24px rgba(var(--accent-rgb),.35)' }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,.08)'; e.currentTarget.style.color='rgba(255,255,255,.3)'; e.currentTarget.style.boxShadow='none' }}>
                 {s.n}
@@ -269,7 +269,7 @@ function Testimonials() {
       <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px' }}>
         <div className="lp-reveal" style={{ textAlign: 'center', marginBottom: 64 }}>
           <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: 'var(--accent-2)', marginBottom: 12 }}>Depoimentos</p>
-          <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 'clamp(44px,6vw,72px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', fontWeight: 800 }}>
+          <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(44px,6vw,72px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', fontWeight: 800 }}>
             QUEM USA,<br/>NÃO LARGA.
           </h2>
         </div>
@@ -304,7 +304,7 @@ function Pricing() {
       <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px' }}>
         <div className="lp-reveal" style={{ textAlign: 'center', marginBottom: 72 }}>
           <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: 'var(--accent-2)', marginBottom: 12 }}>Planos e Preços</p>
-          <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 'clamp(48px,7vw,88px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', marginBottom: 14, fontWeight: 800 }}>
+          <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(48px,7vw,88px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', marginBottom: 14, fontWeight: 800 }}>
             ESCOLHA SEU<br/>PLANO.
           </h2>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(74,222,128,.08)', border: '1px solid rgba(74,222,128,.2)', borderRadius: 99, padding: '8px 18px', fontSize: 13, color: '#4ade80', marginTop: 8 }}>
@@ -321,9 +321,9 @@ function Pricing() {
                 </div>
               )}
               <p style={{ fontSize: 11, color: 'rgba(255,255,255,.35)', letterSpacing: '.15em', textTransform: 'uppercase', marginBottom: 6 }}>{plan.description}</p>
-              <h3 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 28, letterSpacing: '.04em', color: '#fff', marginBottom: 12, fontWeight: 800 }}>{plan.name}</h3>
+              <h3 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 28, letterSpacing: '.04em', color: '#fff', marginBottom: 12, fontWeight: 800 }}>{plan.name}</h3>
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, marginBottom: plan.maxStudents ? 6 : 24 }}>
-                <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 52, color: plan.highlight ? 'var(--accent-2)' : '#fff', lineHeight: 1, fontWeight: 800 }}>
+                <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 52, color: plan.highlight ? 'var(--accent-2)' : '#fff', lineHeight: 1, fontWeight: 800 }}>
                   R${plan.price.toFixed(2).replace('.', ',')}
                 </span>
                 <span style={{ fontSize: 13, color: 'rgba(255,255,255,.35)', marginBottom: 8 }}>/mês</span>
@@ -371,7 +371,7 @@ function FAQ() {
       <div style={{ maxWidth: 800, margin: '0 auto', padding: '0 32px' }}>
         <div className="lp-reveal" style={{ textAlign: 'center', marginBottom: 64 }}>
           <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: 'var(--accent-2)', marginBottom: 12 }}>Dúvidas</p>
-          <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 'clamp(44px,6vw,72px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', fontWeight: 800 }}>PERGUNTAS<br/>FREQUENTES.</h2>
+          <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(44px,6vw,72px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', fontWeight: 800 }}>PERGUNTAS<br/>FREQUENTES.</h2>
         </div>
         <div className="lp-reveal">
           {faqs.map(([q, a], i) => (
@@ -402,7 +402,7 @@ function CTA() {
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,var(--accent),transparent)', opacity: .6 }}/>
       <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px', position: 'relative', zIndex: 1 }} className="lp-reveal">
         <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: 'var(--accent-2)', marginBottom: 16 }}>Pronto para começar?</p>
-        <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 'clamp(64px,10vw,130px)', lineHeight: .84, letterSpacing: '.04em', color: '#fff', marginBottom: 24, fontWeight: 800 }}>
+        <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(64px,10vw,130px)', lineHeight: .84, letterSpacing: '.04em', color: '#fff', marginBottom: 24, fontWeight: 800 }}>
           SEU APP.<br/>SEUS ALUNOS.<br/>
           <span style={{ background: 'linear-gradient(135deg,var(--accent-2),var(--accent))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
             SUA MARCA.
@@ -436,7 +436,7 @@ function Footer() {
       <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <img src="/voryn-icon-192.png" alt="Voryn" style={{ width: 24, height: 24, borderRadius: 6 }} />
-          <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize: 24, letterSpacing: '.1em', color: 'rgba(255,255,255,.3)' }}>Voryn</span>
+          <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 24, letterSpacing: '.1em', color: 'rgba(255,255,255,.3)' }}>Voryn</span>
         </div>
         <div style={{ textAlign: 'center' }}>
           <span style={{ fontSize: 13, color: 'rgba(255,255,255,.2)', display: 'block' }}>© 2025 Voryn App · Todos os direitos reservados</span>

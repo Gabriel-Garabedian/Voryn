@@ -21,7 +21,11 @@ export default {
         danger:   '#f87171',
       },
       fontFamily: {
-        display: ['Barlow Condensed', 'Arial Narrow', 'sans-serif'],
+        // Trocado de Barlow Condensed pra Bebas Neue nos títulos grandes
+        // (nomes de treino, números de destaque) — pedido do usuário.
+        // Bebas Neue só tem um peso (400), mas já é bem impactante por
+        // desenho (all-caps, bem condensada) — não precisa de variantes.
+        display: ['Bebas Neue', 'Arial Narrow', 'sans-serif'],
         body:    ['Manrope', 'system-ui', 'sans-serif'],
       },
       borderRadius: {

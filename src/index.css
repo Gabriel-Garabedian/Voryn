@@ -2,27 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Voryn Performance System — roxo como cor principal (confirmado). Um
-   segundo bloco :root mais abaixo no arquivo tinha trocado pra azul como
-   parte da passada "cleaner premium fitness look" — mantive o resto dessa
-   passada (raio de borda maior, sombra, glass no .f-card) mas revertido a
-   cor de volta pra roxo aqui. */
+/* Voryn Performance System — roxo #820AD1 como cor principal. Havia dois
+   blocos :root neste arquivo (este e outro, ~1300 linhas abaixo) definindo
+   valores DIFERENTES para as mesmas variáveis — CSS aplica :root duplicado
+   pela ordem de declaração quando a especificidade empata, então o
+   segundo bloco vencia silenciosamente boa parte das cores do primeiro. O
+   roxo que renderizava de verdade no app (#9b5cff) não era nem o roxo
+   documentado nos comentários, nem o usado no export de PDF (#820AD1) —
+   um bug puramente de CSS, não de intenção de design. Consolidado num
+   bloco só, com os valores do novo design system (fundo mais próximo de
+   preto OLED, superfícies grafite, cantos mais arredondados, sombras mais
+   discretas — "sem gradientes/sombras excessivas").
+*/
 :root {
-  --bg: #06090f;
-  --surface: #0e1522;
-  --card: #141d2d;
-  --border: #253248;
+  --bg: #0a0a0c;
+  --surface: #121218;
+  --card: #16161f;
+  --border: rgba(255,255,255,.08);
   --accent: #820ad1;
   --accent-dim: #5a0896;
   --accent-2: #b66bea;
-  --muted: #5f738f;
-  --text-1: #f3f7ff;
-  --text-2: #c5d1e6;
-  --text-3: #8ea2c0;
+  --muted: #8a93a3;
+  --text-1: #ffffff;
+  --text-2: #c8ccd6;
+  --text-3: #9ca3af;
   --accent-rgb: 130, 10, 209;
-  --surface-rgb: 14, 21, 34;
-  --card-rgb: 20, 29, 45;
-  --text-rgb: 243, 247, 255;
+  --surface-rgb: 18, 18, 24;
+  --card-rgb: 22, 22, 31;
+  --text-rgb: 255, 255, 255;
   --success: #3ddc97;
   --warning: #f4c95d;
   --danger: #ff6b6b;
@@ -31,8 +38,8 @@
   --radius-lg: 18px;
   --radius-xl: 24px;
   --radius-pill: 999px;
-  --shadow-card: 0 18px 42px rgba(3, 7, 15, .48);
-  --shadow-accent: 0 0 0 1px rgba(var(--accent-rgb), .22), 0 12px 34px rgba(var(--accent-rgb), .24);
+  --shadow-card: 0 8px 24px rgba(0,0,0,.35);
+  --shadow-accent: 0 0 0 1px rgba(var(--accent-rgb), .22), 0 10px 26px rgba(var(--accent-rgb), .2);
   --line-strong: rgba(255,255,255,.16);
 }
 
@@ -91,7 +98,7 @@
     padding: 28px 18px 18px;
   }
   .page-heading h1 {
-    margin: 0; font-family: 'Barlow Condensed', sans-serif; font-size: 2.45rem;
+    margin: 0; font-family: 'Bebas Neue', sans-serif; font-size: 2.45rem;
     line-height: .9; letter-spacing: .055em; text-transform: uppercase; font-weight: 800;
   }
   .page-heading::before {
@@ -144,7 +151,15 @@
   .f-badge-yellow { color: #f7d778; background: rgba(244,201,93,.11); border: 1px solid rgba(244,201,93,.25); }
   .f-badge-red { color: #ff9292; background: rgba(255,107,107,.11); border: 1px solid rgba(255,107,107,.25); }
   .f-label { display: block; margin-bottom: 7px; color: var(--text-3); font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
-  .font-display { font-family: 'Barlow Condensed', sans-serif; letter-spacing: .045em; font-weight: 800; }
+  /* Bebas Neue só tem o peso 400 (é uma display font já bem robusta por
+     desenho — all-caps, condensada). Muita coisa no app pedia peso 700/800
+     inline em cima da classe font-display (pra funcionar com a Barlow
+     Condensed antiga, que tinha essas variantes) — sem font-synthesis:none,
+     o navegador "fingiria" negrito nesses casos (faux-bold), distorcendo
+     as letras de um jeito irregular pelo app inteiro. Isso trava esse
+     comportamento: sempre usa o peso 400 de verdade, nunca inventa um.
+  */
+  .font-display { font-family: 'Bebas Neue', sans-serif; letter-spacing: .045em; font-weight: 400; font-synthesis: none; }
   .f-btn-accent { overflow: hidden; }
   .f-btn-accent::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 25%, rgba(255,255,255,.18), transparent 75%); transform: translateX(-120%); transition: transform .5s ease; }
   .f-btn-accent:hover::after { transform: translateX(120%); }
@@ -292,7 +307,7 @@ body::after {
 .summary-mark,
 .landing-feature-mark {
   border-radius: 3px !important;
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Bebas Neue', sans-serif;
   font-weight: 800;
   letter-spacing: .08em;
 }
@@ -335,7 +350,7 @@ body::after {
   border-radius: 3px !important;
   border-left: 3px solid var(--accent) !important;
   color: var(--accent-2);
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Bebas Neue', sans-serif;
 }
 
 .app-view {
@@ -759,7 +774,7 @@ body::after {
   max-width: 620px;
   margin: 20px 0 24px;
   color: #fff;
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Bebas Neue', sans-serif;
   font-size: clamp(68px, 8.5vw, 126px);
   font-weight: 800;
   letter-spacing: -.01em;
@@ -896,7 +911,7 @@ body::after {
   border-radius: 14px;
   background: rgba(255,255,255,.035);
 }
-.landing-shell .lp-product-metrics strong { display: block; margin: 5px 0 1px; color: #fff; font-family: 'Barlow Condensed', sans-serif; font-size: 34px; line-height: 1; }
+.landing-shell .lp-product-metrics strong { display: block; margin: 5px 0 1px; color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 34px; line-height: 1; }
 .landing-shell .lp-product-metrics strong span { margin-left: 2px; color: var(--accent-2); font-size: 17px; }
 .landing-shell .lp-product-chart { padding-bottom: 12px; }
 .landing-shell .lp-chart-head b { color: #6fe4ae; font-size: 11px; }
@@ -925,7 +940,7 @@ body::after {
 .landing-shell .lp-float-card-top { top: 112px; left: 0; }
 .landing-shell .lp-float-card-bottom { right: -8px; bottom: 74px; }
 .landing-shell .lp-float-card > span { color: #6fe4ae; font-size: 18px; }
-.landing-shell .lp-float-card strong { color: var(--accent-2); font-family: 'Barlow Condensed', sans-serif; font-size: 28px; line-height: 1; }
+.landing-shell .lp-float-card strong { color: var(--accent-2); font-family: 'Bebas Neue', sans-serif; font-size: 28px; line-height: 1; }
 .landing-shell .lp-float-card b { display: block; margin-top: 2px; color: #fff; font-size: 11px; }
 .landing-shell .lp-hero-stats {
   display: grid !important;
@@ -1306,28 +1321,10 @@ body::after {
   .admin-shell > header button,
   .admin-shell > header a { white-space: nowrap; font-size: 11px; }
 }
-:root {
-  --bg: #090a0f;
-  --surface: #11131a;
-  --card: #171a23;
-  --border: #292d3a;
-  --accent: #9b5cff;
-  --accent-dim: #7136c7;
-  --accent-2: #c7a7ff;
-  --muted: #7b8498;
-  --text-1: #f7f7fb;
-  --text-2: #d1d5e0;
-  --text-3: #929bad;
-  --accent-rgb: 155, 92, 255;
-  --surface-rgb: 17, 19, 26;
-  --card-rgb: 23, 26, 35;
-  --shadow-card: 0 14px 34px rgba(0, 0, 0, .24);
-  --shadow-accent: 0 0 0 1px rgba(var(--accent-rgb), .22), 0 12px 30px rgba(var(--accent-rgb), .16);
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 22px;
-}
+/* O segundo bloco :root que existia aqui (valores de cor/raio diferentes
+   do bloco principal no topo do arquivo) foi removido — era ele quem
+   sobrescrevia silenciosamente as cores corretas. Ver comentário no
+   bloco :root do topo. */
 
 body {
   background: var(--bg);

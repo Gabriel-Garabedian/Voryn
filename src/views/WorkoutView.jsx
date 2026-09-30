@@ -343,6 +343,7 @@ export default function WorkoutView() {
       }))
     }
     activeWorkoutService.save(w)
+    window.dispatchEvent(new Event('voryn:workout_active_change'))
     setWorkout(w)
   }
 
@@ -523,6 +524,7 @@ export default function WorkoutView() {
     // sido salva no histórico.
     setFinishedData({ ...workout, duration, cardio: cardio || null })
     activeWorkoutService.clear()
+    window.dispatchEvent(new Event('voryn:workout_active_change'))
     setWorkout(null)
     setShowCardio(false)
     setShowSummary(true)
@@ -625,25 +627,42 @@ export default function WorkoutView() {
         />
       )}
 
-      {/* Header */}
-      <div className="native-header px-4 pt-6 pb-4 glass-panel"
-        style={{ borderRadius: '0 0 var(--radius-xl) var(--radius-xl)' }}>
-        <div className="flex items-start justify-between mb-3">
-          <div>
-            <p className="view-kicker">Live session / 03</p>
-            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>
-              Em Treino
-            </p>
-            <h2 className="font-display text-2xl uppercase tracking-wide leading-tight"
-              style={{ color: 'var(--text-1)' }}>
-              {workout.name}
-            </h2>
-          </div>
-          <div className="text-right">
-            <div className="font-display text-3xl" style={{ color: AC }}>{fmt(elapsed)}</div>
-            <p className="text-xs uppercase tracking-wider" style={{ color: 'var(--text-3)' }}>duração</p>
-          </div>
+      {/* Header imersivo: sem a barra padrão do app (AppShell esconde
+          header/dock quando há treino ativo — ver inActiveWorkout). Voltar
+          / timer central / menu (cancelar treino), igual ao mockup. */}
+      <div className="flex items-center justify-between px-4 pt-4 pb-2">
+        <button onClick={() => navigate('/app')} aria-label="Voltar"
+          className="w-9 h-9 flex items-center justify-center rounded-full"
+          style={{ color: 'var(--text-1)' }}>
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+        <div className="flex items-center gap-1.5" aria-live="off">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke={AC} strokeWidth="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+          <span className="font-display text-lg tracking-wide" style={{ color: 'var(--text-2)' }}>{fmt(elapsed)}</span>
         </div>
+        <button
+          onClick={() => { if (window.confirm('Cancelar treino sem salvar?')) { activeWorkoutService.clear(); window.dispatchEvent(new Event('voryn:workout_active_change')); setWorkout(null); navigate('/app') } }}
+          aria-label="Mais opções do treino"
+          className="w-9 h-9 flex items-center justify-center rounded-full"
+          style={{ color: 'var(--text-1)' }}>
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
+          </svg>
+        </button>
+      </div>
+
+      {/* Header */}
+      <div className="native-header px-4 pt-2 pb-4 glass-panel"
+        style={{ borderRadius: '0 0 var(--radius-xl) var(--radius-xl)' }}>
+        <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: AC }}>
+          Treino de hoje
+        </p>
+        <h2 className="font-display text-2xl uppercase tracking-wide leading-tight mb-3"
+          style={{ color: 'var(--text-1)' }}>
+          {workout.name}
+        </h2>
 
         {/* Progress bar */}
         <div className="flex items-center gap-3">
@@ -657,6 +676,9 @@ export default function WorkoutView() {
           </div>
           <span className="text-xs whitespace-nowrap" style={{ color: 'var(--text-3)' }}>
             {doneSets}/{totalSets} séries
+          </span>
+          <span className="font-display text-sm whitespace-nowrap" style={{ color: AC }}>
+            {totalSets > 0 ? Math.round((doneSets / totalSets) * 100) : 0}%
           </span>
           {doneSets < totalSets && (
             <button onClick={completeAllWorkout}
@@ -788,7 +810,7 @@ export default function WorkoutView() {
               <div className="px-4 pt-2 pb-3">
                 {/* Header row */}
                 <div className="workout-set-row grid grid-cols-[28px_1fr_1fr_36px_24px] gap-2 mb-2">
-                  {['S', 'Reps', 'kg', '✓', ''].map((h, i) => (
+                  {['S', 'kg', 'Reps', '✓', ''].map((h, i) => (
                     <div key={i} className="text-xs font-semibold uppercase tracking-wider text-center"
                       style={{ color: 'var(--text-3)' }}>{h}</div>
                   ))}
@@ -808,12 +830,14 @@ export default function WorkoutView() {
                         }}>
                         {si + 1}
                       </div>
-                      <input type="text" inputMode="numeric" className="f-input py-2 text-center text-sm"
-                        placeholder={set.prev?.reps || '—'} value={set.reps} disabled={set.done}
-                        onChange={e => updateSet(ei, si, 'reps', e.target.value)}/>
                       <input type="text" inputMode="decimal" className="f-input py-2 text-center text-sm"
+                        aria-label={`Peso da série ${si + 1}`}
                         placeholder={set.prev?.weight || '—'} value={set.weight} disabled={set.done}
                         onChange={e => updateSet(ei, si, 'weight', e.target.value)}/>
+                      <input type="text" inputMode="numeric" className="f-input py-2 text-center text-sm"
+                        aria-label={`Repetições da série ${si + 1}`}
+                        placeholder={set.prev?.reps || '—'} value={set.reps} disabled={set.done}
+                        onChange={e => updateSet(ei, si, 'reps', e.target.value)}/>
                       <button onClick={() => toggleDone(ei, si)}
                         className="w-9 h-9 rounded-xl flex items-center justify-center mx-auto transition-all"
                         style={{
@@ -922,7 +946,7 @@ export default function WorkoutView() {
               </Button>
             </div>
             <button
-              onClick={() => { activeWorkoutService.clear(); setWorkout(null); navigate('/app') }}
+              onClick={() => { activeWorkoutService.clear(); window.dispatchEvent(new Event('voryn:workout_active_change')); setWorkout(null); navigate('/app') }}
               className="w-full text-center text-xs transition-colors"
               style={{ color: 'rgba(239,68,68,.4)' }}>
               Cancelar treino (sem salvar)

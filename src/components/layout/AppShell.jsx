@@ -21,6 +21,7 @@ import EmailConfirmGate      from '@/components/EmailConfirmGate'
 import NotificationPrompt    from '@/components/ui/NotificationPrompt'
 import TrialEndingBanner     from '@/components/ui/TrialEndingBanner'
 import { pushService }       from '@/services/pushNotifications'
+import { activeWorkoutService } from '@/services'
 
 // Barra de baixo do aluno: Início, Histórico, Treinar (botão central em
 // destaque), Evolução e Perfil. As demais telas (Rotina, Metas, Conquistas,
@@ -119,6 +120,20 @@ export default function AppShell() {
   // mais". Consulta leve, sem afetar o cálculo real de isActive (que já
   // vem corretamente combinado do AuthContext).
   const [hadTrainerLink, setHadTrainerLink] = useState(false)
+  // Sessão de treino ativa: escala full-screen imersiva (sem header/dock
+  // padrão) — o próprio WorkoutView desenha seu topo (voltar/timer/menu).
+  // AppShell e WorkoutView são irmãos (sem contexto entre eles), então só
+  // ler activeWorkoutService.get() no render não bastava: nada disparava
+  // um novo render aqui quando o treino começava/terminava. Reaproveita o
+  // mesmo padrão de CustomEvent que este arquivo já usa (voryn:payment_success).
+  // Precisa ficar ANTES do "return <PaywallGate/>" logo abaixo — hooks não
+  // podem ser chamados depois de um return condicional (Rules of Hooks).
+  const [workoutActive, setWorkoutActive] = useState(() => !!activeWorkoutService.get())
+  useEffect(() => {
+    const h = () => setWorkoutActive(!!activeWorkoutService.get())
+    window.addEventListener('voryn:workout_active_change', h)
+    return () => window.removeEventListener('voryn:workout_active_change', h)
+  }, [])
   const base = '/app'
 
   useEffect(() => {
@@ -194,6 +209,7 @@ export default function AppShell() {
     achievements: 'Conquistas', photos: 'Progresso', community: 'Comunidade',
     personal: 'Seu personal', subscription: 'Assinatura',
   }
+  const inActiveWorkout = location.pathname.includes(`${base}/workout`) && workoutActive
   const currentKey = Object.keys(screenLabels).find(key => location.pathname.includes(`${base}/${key}`))
   const screenLabel = currentKey ? screenLabels[currentKey] : (isPersonal ? 'Painel de alunos' : 'Visão geral')
   const displayName = profile?.name?.split(' ')[0] || (isPersonal ? 'Personal' : 'Atleta')
@@ -209,7 +225,7 @@ export default function AppShell() {
         </div>
       )}
 
-      <header className="app-header px-4 pt-4 pb-3 native-header">
+      <header className="app-header px-4 pt-4 pb-3 native-header" style={inActiveWorkout ? { display: 'none' } : undefined}>
         <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
           <button onClick={() => navigate(base)} className="brand-hub flex items-center gap-2.5 bg-transparent border-0 p-0 cursor-pointer" aria-label="Ir para início">
             <img src="/voryn-icon-192.png" alt="Voryn" className="w-9 h-9 rounded-xl" style={{ boxShadow: '0 0 18px rgba(var(--accent-rgb),.3)' }} />
@@ -271,7 +287,7 @@ export default function AppShell() {
       </div>
 
       {/* Bottom Nav */}
-      <nav className="px-3 pb-3" style={{ background: 'transparent', flexShrink: 0 }}>
+      <nav className="px-3 pb-3" style={{ background: 'transparent', flexShrink: 0, display: inActiveWorkout ? 'none' : undefined }}>
         <div className="glass-panel native-dock flex items-center justify-around px-2 pt-2 max-w-2xl mx-auto shadow-2xl" style={{ paddingBottom: 'max(10px, env(safe-area-inset-bottom))', borderColor: 'rgba(255,255,255,.12)' }}>
           {navItems.map(item => {
             const active = isActive(item.path)
