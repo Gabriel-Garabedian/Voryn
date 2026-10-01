@@ -218,11 +218,38 @@ export const MUSCLE_GROUPS = [
   ...allMuscles.filter(m => !MUSCLE_ORDER.includes(m)),
 ]
 
-export function searchExercises(query = '', muscle = '') {
+const SEARCH_SYNONYMS = {
+  peito: ['peitoral', 'chest'],
+  costas: ['dorsal', 'back'],
+  ombro: ['deltoide', 'shoulder'],
+  pernas: ['leg', 'quadriceps', 'quadríceps'],
+  gluteo: ['glúteo', 'glute'],
+  abdomen: ['abdômen', 'abdominal', 'core'],
+  braco: ['braço', 'biceps', 'bíceps', 'triceps', 'tríceps'],
+}
+
+function searchText(exercise) {
+  return [
+    exercise.name,
+    exercise.muscle,
+    ...(exercise.secondaryMuscles || []),
+    exercise.equipment,
+    exercise.type,
+  ].filter(Boolean).join(' ').toLowerCase()
+}
+
+export function searchExercises(query = '', muscle = '', equipment = '', difficulty = '', type = '') {
   const q = query.toLowerCase().trim()
+  const expandedQuery = q && Object.entries(SEARCH_SYNONYMS)
+    .find(([key, values]) => key === q || values.some(value => value === q))
+  const terms = expandedQuery ? [expandedQuery[0], ...expandedQuery[1]] : [q]
   return EXERCISE_LIBRARY.filter(e => {
-    const matchName   = !q || e.name.toLowerCase().includes(q)
+    const text = searchText(e)
+    const matchName   = !q || terms.some(term => text.includes(term))
     const matchMuscle = !muscle || e.muscle === muscle
-    return matchName && matchMuscle
+    const matchEquipment = !equipment || e.equipment === equipment
+    const matchDifficulty = !difficulty || (e.difficulty || 'intermediario') === difficulty
+    const matchType = !type || e.type === type
+    return matchName && matchMuscle && matchEquipment && matchDifficulty && matchType
   })
 }

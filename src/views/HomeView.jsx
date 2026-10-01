@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
-import { workoutLogService, routineService } from '@/services'
+import { workoutLogService, routineService, notificationService } from '@/services'
 import { calcStreak, calcBestStreak, localDateKey, getSubscription } from '@/utils/helpers'
 import { SkeletonHome } from '@/components/ui/Skeleton'
 import WorkoutLogModal from '@/components/WorkoutLogModal'
@@ -26,6 +26,54 @@ function StatMini({ label, value, accent, delta }) {
         </div>
       )}
     </div>
+  )
+}
+
+function NotificationPanel({ userId }) {
+  const [items, setItems] = useState([])
+  const [error, setError] = useState(false)
+
+  useEffect(() => {
+    if (!userId) return
+    notificationService.getRecent(userId).then(({ data, error: loadError }) => {
+      setItems(data || [])
+      setError(Boolean(loadError))
+    })
+  }, [userId])
+
+  const unread = items.filter(item => !item.read_at)
+  if (error || !items.length) return null
+
+  async function markAllRead() {
+    const { error: markError } = await notificationService.markRead(userId, unread.map(item => item.id))
+    if (!markError) setItems(current => current.map(item => ({ ...item, read_at: item.read_at || new Date().toISOString() })))
+  }
+
+  return (
+    <section className="f-card p-4" aria-label="Notificações">
+      <div className="flex items-center justify-between gap-3 mb-3">
+        <div>
+          <p className="text-xs uppercase tracking-widest" style={{ color: AC }}>Atualizações</p>
+          <h2 className="font-display text-xl uppercase" style={{ color: 'var(--text-1)' }}>Notificações</h2>
+        </div>
+        {unread.length > 0 && (
+          <button type="button" onClick={markAllRead} className="text-xs font-semibold" style={{ color: AC }}>
+            Marcar como lidas
+          </button>
+        )}
+      </div>
+      <div className="space-y-2">
+        {items.map(item => (
+          <div key={item.id} className="notification-row" style={{ opacity: item.read_at ? .65 : 1 }}>
+            <span className="notification-row__dot" aria-hidden="true" />
+            <div className="min-w-0">
+              <p className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>{item.title}</p>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>{item.body}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   )
 }
 
@@ -301,6 +349,29 @@ export default function HomeView() {
           </span>
         </button>
       </div>
+
+      <section className="home-action-card f-card p-4" aria-label="Próxima ação recomendada">
+        <div className="flex items-start gap-3">
+          <div className="home-action-card__mark" aria-hidden="true">→</div>
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: AC }}>
+              Próxima ação
+            </p>
+            <p className="text-sm font-semibold mt-1" style={{ color: 'var(--text-1)' }}>
+              {todayPlan?.exercises?.length
+                ? `Você tem ${todayPlan.exercises.length} exercícios prontos para hoje.`
+                : `Faltam ${Math.max(0, (profile?.weekly_goal || 3) - (lastWeek?.thisWeek || 0))} treino(s) para sua meta semanal.`}
+            </p>
+            <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
+              {metrics?.weeklyVolume > 0
+                ? `Volume desta semana: ${(metrics.weeklyVolume / 1000).toFixed(1)}t.`
+                : 'Comece um treino para criar seu primeiro marco da semana.'}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <NotificationPanel userId={user.id} />
 
       {/* Calendário mensal */}
       <section className="f-card p-4 animate-slide-up" aria-label="Calendário mensal de treinos">

@@ -28,6 +28,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
   const [routines,      setRoutines]      = useState({})
   const [selectedDay,   setSelectedDay]   = useState(new Date().getDay())
   const [showPicker,    setShowPicker]    = useState(false)
+  const [replacingEx,   setReplacingEx]   = useState(null)
   const [editName,      setEditName]      = useState(false)
   const [saving,        setSaving]        = useState(false)
   const [loading,       setLoading]       = useState(true)
@@ -87,6 +88,17 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
 
   function addExerciseFromLibrary(ex) {
     const current   = routines[selectedDay] || { name: '', exercises: [] }
+    if (replacingEx) {
+      const exercises = (current.exercises || []).map(item => item.id === replacingEx
+        ? { ...item, name: ex.name, muscle: ex.muscle, secondaryMuscles: ex.secondaryMuscles || [], equipment: ex.equipment }
+        : item)
+      const updated = { ...current, exercises }
+      setRoutines(r => ({ ...r, [selectedDay]: updated }))
+      persist(selectedDay, updated, `✅ ${ex.name} substituído!`)
+      setReplacingEx(null)
+      setShowPicker(false)
+      return
+    }
     const exercises = [...(current.exercises || []), {
       id: genId(), name: ex.name, sets: 3, reps: '10',
       muscle: ex.muscle, secondaryMuscles: ex.secondaryMuscles || [],
@@ -143,7 +155,8 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
     return (
       <ExercisePicker
         onSelect={addExerciseFromLibrary}
-        onClose={() => setShowPicker(false)}
+        onClose={() => { setShowPicker(false); setReplacingEx(null) }}
+        initialMuscle={replacingEx ? routines[selectedDay]?.exercises?.find(ex => ex.id === replacingEx)?.muscle || '' : ''}
         onCustom={name => addExerciseFromLibrary({ id: `custom_${Date.now()}`, name, muscle: 'Outro', equipment: 'Livre', type: 'compound' })}
       />
     )
@@ -323,6 +336,17 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                           <button onClick={() => removeExercise(selectedDay, ex.id)} className="p-1.5" style={{ color: 'rgba(239,68,68,.4)' }}>
                             <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => { setReplacingEx(ex.id); setShowPicker(true) }}
+                            className="p-1.5"
+                            style={{ color: AC }}
+                            aria-label={`Substituir ${ex.name}`}
+                            title="Sugerir substituição"
+                          >
+                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                              <path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/>
                             </svg>
                           </button>
                         </div>

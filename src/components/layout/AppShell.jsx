@@ -21,7 +21,7 @@ import EmailConfirmGate      from '@/components/EmailConfirmGate'
 import NotificationPrompt    from '@/components/ui/NotificationPrompt'
 import TrialEndingBanner     from '@/components/ui/TrialEndingBanner'
 import { pushService }       from '@/services/pushNotifications'
-import { activeWorkoutService } from '@/services'
+import { activeWorkoutService, offlineSyncService, syncPendingWorkouts } from '@/services'
 
 // Barra de baixo do aluno: Início, Histórico, Treinar (botão central em
 // destaque), Evolução e Perfil. As demais telas (Rotina, Metas, Conquistas,
@@ -129,11 +129,23 @@ export default function AppShell() {
   // Precisa ficar ANTES do "return <PaywallGate/>" logo abaixo — hooks não
   // podem ser chamados depois de um return condicional (Rules of Hooks).
   const [workoutActive, setWorkoutActive] = useState(() => !!activeWorkoutService.get())
+  const [pendingSync, setPendingSync] = useState(() => offlineSyncService.count(user?.id))
   useEffect(() => {
     const h = () => setWorkoutActive(!!activeWorkoutService.get())
     window.addEventListener('voryn:workout_active_change', h)
     return () => window.removeEventListener('voryn:workout_active_change', h)
   }, [])
+  useEffect(() => {
+    const refresh = () => setPendingSync(offlineSyncService.count(user?.id))
+    const sync = () => { syncPendingWorkouts(user?.id).then(refresh) }
+    window.addEventListener('voryn:sync_queue_change', refresh)
+    window.addEventListener('online', sync)
+    if (navigator.onLine) sync()
+    return () => {
+      window.removeEventListener('voryn:sync_queue_change', refresh)
+      window.removeEventListener('online', sync)
+    }
+  }, [user?.id])
   const base = '/app'
 
   useEffect(() => {
@@ -260,6 +272,11 @@ export default function AppShell() {
               {displayName.charAt(0).toUpperCase()}
             </button>
             <span className="w-2 h-2 rounded-full" title="Status online" style={{ background: 'var(--success)', boxShadow: '0 0 10px rgba(61,220,151,.7)' }} />
+            {pendingSync > 0 && (
+              <span className="app-sync-pill" title={`${pendingSync} treino(s) aguardando sincronização`}>
+                {pendingSync} pendente{pendingSync > 1 ? 's' : ''}
+              </span>
+            )}
           </div>
         </div>
       </header>

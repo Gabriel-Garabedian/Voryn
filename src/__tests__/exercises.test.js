@@ -103,4 +103,20 @@ describe('searchExercises', () => {
     const results = searchExercises('  supino  ')
     expect(results.length).toBeGreaterThan(0)
   })
+
+  it('supports common exercise synonyms', () => {
+    expect(searchExercises('dorsal').length).toBeGreaterThan(0)
+    expect(searchExercises('deltoide').length).toBeGreaterThan(0)
+    expect(searchExercises('core').length).toBeGreaterThan(0)
+  })
+
+  it('filters by equipment, difficulty, and type', () => {
+    const results = searchExercises('', '', 'Barra', 'intermediario', 'compound')
+    expect(results.length).toBeGreaterThan(0)
+    results.forEach(ex => {
+      expect(ex.equipment).toBe('Barra')
+      expect(ex.type).toBe('compound')
+      expect(ex.difficulty || 'intermediario').toBe('intermediario')
+    })
+  })
 })

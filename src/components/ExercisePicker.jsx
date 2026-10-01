@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react'
-import { searchExercises, MUSCLE_GROUPS } from '@/data/exercises'
+import { searchExercises, MUSCLE_GROUPS, EXERCISE_LIBRARY } from '@/data/exercises'
 import ExerciseDetail from '@/components/ExerciseDetail'
 import MuscleTargetImage from '@/components/MuscleTargetImage'
 
@@ -12,15 +12,22 @@ const TYPE_COLOR = {
   cardio:    { bg: 'rgba(248,113,113,.1)', color: '#f87171' },
 }
 
-export default function ExercisePicker({ onSelect, onClose, onCustom }) {
+export default function ExercisePicker({ onSelect, onClose, onCustom, initialMuscle = '' }) {
   const [query,  setQuery]  = useState('')
-  const [muscle, setMuscle] = useState('')
+  const [muscle, setMuscle] = useState(initialMuscle)
+  const [equipment, setEquipment] = useState('')
+  const [difficulty, setDifficulty] = useState('')
+  const [type, setType] = useState('')
   const [detailExercise, setDetailExercise] = useState(null) // exercício aberto no modal de instruções
   const inputRef = useRef(null)
 
   useEffect(() => { setTimeout(() => inputRef.current?.focus(), 120) }, [])
 
-  const results = useMemo(() => searchExercises(query, muscle), [query, muscle])
+  const equipments = useMemo(() => [...new Set(EXERCISE_LIBRARY.map(ex => ex.equipment).filter(Boolean))].sort(), [])
+  const results = useMemo(
+    () => searchExercises(query, muscle, equipment, difficulty, type),
+    [query, muscle, equipment, difficulty, type],
+  )
 
   function handleAddFromDetail(exercise) {
     setDetailExercise(null)
@@ -51,7 +58,7 @@ export default function ExercisePicker({ onSelect, onClose, onCustom }) {
           />
         </div>
         <span className="text-xs flex-shrink-0" style={{ color: 'var(--text-3)' }}>
-          {results.length}
+          {initialMuscle ? 'alternativas' : results.length}
         </span>
       </div>
 
@@ -79,6 +86,26 @@ export default function ExercisePicker({ onSelect, onClose, onCustom }) {
             }}>
             {m}
           </button>
+        ))}
+      </div>
+      <div className="grid grid-cols-3 gap-2 px-4 py-2" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+        {[
+          ['Equipamento', equipment, setEquipment, equipments],
+          ['Dificuldade', difficulty, setDifficulty, ['iniciante', 'intermediario', 'avancado']],
+          ['Tipo', type, setType, ['compound', 'isolation', 'cardio']],
+        ].map(([label, value, setter, options]) => (
+          <label key={label} className="min-w-0">
+            <span className="sr-only">{label}</span>
+            <select
+              className="f-input py-2 text-xs"
+              value={value}
+              onChange={event => setter(event.target.value)}
+              aria-label={label}
+            >
+              <option value="">{label}</option>
+              {options.map(option => <option key={option} value={option}>{option}</option>)}
+            </select>
+          </label>
         ))}
       </div>
 

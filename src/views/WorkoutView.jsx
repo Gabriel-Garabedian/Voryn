@@ -303,12 +303,24 @@ export default function WorkoutView() {
     // Puramente um extra visual: se a busca falhar, o treino começa igual,
     // só sem a referência.
     let previousByExercise = {}
+    let bestByExercise = {}
     try {
       const { data: logs } = await workoutLogService.getAll(user.id)
       const lastSameDay = (logs || []).find(l => l.day_index === dayIndex)
       if (lastSameDay?.exercises) {
         lastSameDay.exercises.forEach(ex => { previousByExercise[ex.name] = ex.sets })
       }
+      ;(logs || []).forEach(log => {
+        ;(log.exercises || []).forEach(ex => {
+          const best = (ex.sets || []).reduce((current, set) => {
+            const weight = Number.parseFloat(String(set.weight || '').replace(',', '.')) || 0
+            const reps = Number.parseInt(set.reps, 10) || 0
+            const score = weight * reps
+            return score > (current?.score || 0) ? { weight, reps, score } : current
+          }, null)
+          if (best && best.score > (bestByExercise[ex.name]?.score || 0)) bestByExercise[ex.name] = best
+        })
+      })
     } catch (err) {
       captureError(err, { context: 'fetch_previous_sets' })
     }
@@ -323,6 +335,7 @@ export default function WorkoutView() {
           return {
             id: genId(), reps: '', weight: '', done: false,
             prev: (prevSet?.reps || prevSet?.weight) ? { reps: prevSet.reps, weight: prevSet.weight } : null,
+            best: bestByExercise[ex.name] || null,
           }
         })
       }))
@@ -344,6 +357,25 @@ export default function WorkoutView() {
     }
     activeWorkoutService.save(updated)
     setWorkout(updated)
+  }
+
+  function fillPreviousSets(ei) {
+    const exercise = workout.exercises[ei]
+    if (!exercise) return
+    const updated = {
+      ...workout,
+      exercises: workout.exercises.map((ex, eii) => eii !== ei ? ex : {
+        ...ex,
+        sets: ex.sets.map(set => ({
+          ...set,
+          weight: set.weight || set.prev?.weight || '',
+          reps: set.reps || set.prev?.reps || '',
+        })),
+      }),
+    }
+    activeWorkoutService.save(updated)
+    setWorkout(updated)
+    toast.success('Últimos valores preenchidos.')
   }
 
   function toggleDone(ei, si) {
@@ -474,16 +506,15 @@ export default function WorkoutView() {
     // do dispositivo, sem passar por UTC.
     const dateKey = localDateKey(now)
 
-    // Tira o campo `prev` (referência do treino passado, só usada como
-    // placeholder em tela — ver startWorkout) antes de salvar; senão cada
-    // log salvo carregaria pra sempre uma cópia redundante do treino
-    // anterior dentro de cada série.
+    // Tira referências calculadas (`prev`/`best`) antes de salvar; elas só
+    // servem para orientar o treino atual e não pertencem ao histórico.
     const exercisesToSave = workout.exercises.map(ex => ({
       ...ex,
-      sets: ex.sets.map(({ prev: _prev, ...s }) => s),
+      sets: ex.sets.map(({ prev: _prev, best: _best, ...s }) => s),
     }))
 
-    const { error } = await workoutLogService.create(user.id, {
+    const { error, queued } = await workoutLogService.create(user.id, {
+      clientId: workout.clientId || workout.id,
       name: workout.name,
       date: dateKey,
       dayIndex: workout.dayIndex,
@@ -505,6 +536,7 @@ export default function WorkoutView() {
       toast.error('Não foi possível salvar o treino. Verifique sua conexão e tente novamente — seus dados não foram perdidos.')
       return
     }
+    if (queued) toast.info('Treino salvo no dispositivo e será sincronizado quando a conexão voltar.')
 
     clearInterval(timerRef.current)
     // Guardamos a duração calculada no momento em que o treino terminou.
@@ -810,6 +842,16 @@ export default function WorkoutView() {
 
               {/* Sets */}
               <div className="px-4 pt-2 pb-3">
+                {ex.sets[0]?.best && (
+                  <div className="workout-progression-hint">
+                    <span>
+                      Melhor referência: {ex.sets[0].best.weight || '—'} kg × {ex.sets[0].best.reps || '—'}
+                    </span>
+                    <span className="workout-progression-hint__action">
+                      {ex.sets.some(set => set.prev?.weight || set.prev?.reps) ? 'Tente igualar ou superar' : 'Histórico disponível'}
+                    </span>
+                  </div>
+                )}
                 {/* Header row */}
                 <div className="workout-set-row grid grid-cols-[28px_1fr_1fr_36px_24px] gap-2 mb-2">
                   {['S', 'kg', 'Reps', '✓', ''].map((h, i) => (
@@ -817,6 +859,21 @@ export default function WorkoutView() {
                       style={{ color: 'var(--text-3)' }}>{h}</div>
                   ))}
                 </div>
+
+                {ex.sets.some(set => set.prev?.weight || set.prev?.reps) &&
+                  ex.sets.some(set => !set.weight && !set.reps) && (
+                    <button
+                      type="button"
+                      onClick={() => fillPreviousSets(ei)}
+                      className="workout-previous-button"
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                        <path d="M3 12a9 9 0 1 0 3-6.7" />
+                        <polyline points="3 4 3 10 9 10" />
+                      </svg>
+                      preencher com o último treino
+                    </button>
+                  )}
 
                 {/* Set rows */}
                 <div className="space-y-2">
@@ -841,7 +898,7 @@ export default function WorkoutView() {
                         placeholder={set.prev?.reps || '—'} value={set.reps} disabled={set.done}
                         onChange={e => updateSet(ei, si, 'reps', e.target.value)}/>
                       <button onClick={() => toggleDone(ei, si)}
-                        className="w-9 h-9 rounded-xl flex items-center justify-center mx-auto transition-all"
+                        className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto transition-all"
                         style={{
                           background: set.done ? AC : 'transparent',
                           border: `2px solid ${set.done ? AC : 'var(--text-3)'}`,

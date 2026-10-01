@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
-import { prService, workoutLogService, routineService } from '@/services'
+import { prService, workoutLogService, routineService, dataExportService } from '@/services'
 import { Button, Badge } from '@/components/ui'
 import { useToast } from '@/components/ui/Toast'
 import { pushService } from '@/services/pushNotifications'
@@ -611,6 +611,11 @@ export default function ProfileView() {
         <p className="f-label mb-2">Exportar meus dados</p>
         <div className="space-y-2">
           {[
+            { label: 'Dados completos (JSON)', fn: async () => {
+              const t = toast.loading('Preparando seus dados...')
+              await dataExportService.downloadJson(user.id, profile)
+              toast.dismiss(t); toast.success('Dados exportados!')
+            }},
             { label: '📋 Ficha de Treino (PDF)', fn: async () => {
               const t = toast.loading('Gerando PDF...')
               const { data } = await routineService.getAll(user.id)

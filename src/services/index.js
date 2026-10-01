@@ -2,6 +2,25 @@ import { supabase } from '@/lib/supabase'
 import { PLANS } from '@/services/payment'
 import { parseWeight, localDateKey } from '@/utils/helpers'
 
+const SYNC_QUEUE_KEY = 'voryn_sync_queue'
+
+export const offlineSyncService = {
+  get() {
+    try { return JSON.parse(localStorage.getItem(SYNC_QUEUE_KEY) || '[]') } catch { return [] }
+  },
+  add(item) {
+    const queue = this.get()
+    queue.push({ ...item, id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`, queuedAt: Date.now() })
+    try { localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(queue)) } catch {}
+    window.dispatchEvent(new Event('voryn:sync_queue_change'))
+  },
+  remove(id) {
+    try { localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(this.get().filter(item => item.id !== id))) } catch {}
+    window.dispatchEvent(new Event('voryn:sync_queue_change'))
+  },
+  count(userId) { return this.get().filter(item => !userId || item.userId === userId).length },
+}
+
 // ── WORKOUT LOGS ───────────────────────────────────────────
 export const workoutLogService = {
   // sinceDate (opcional, formato 'YYYY-MM-DD'): quando informado, limita o
@@ -66,28 +85,37 @@ export const workoutLogService = {
     }
   },
 
-  async create(userId, log) {
+  async create(userId, log, { queueOnFailure = true } = {}) {
     const exercises  = log.exercises || []
     const totalSets  = exercises.reduce((a, ex) => a + (ex.sets?.length || 0), 0)
     const totalReps  = exercises.reduce((a, ex) => a + ex.sets.reduce((s, set) => s + (parseInt(set.reps) || 0), 0), 0)
     const totalVol   = exercises.reduce((a, ex) => a + ex.sets.reduce((s, set) => s + parseWeight(set.weight) * (parseInt(set.reps) || 0), 0), 0)
 
-    const { data, error } = await supabase
-      .from('workout_logs')
-      .insert({
-        user_id:      userId,
-        name:         log.name,
-        date:         log.date,
-        day_index:    log.dayIndex,
-        duration:     log.duration,
-        exercises:    log.exercises,
-        total_sets:   totalSets,
-        total_reps:   totalReps,
-        total_volume: totalVol,
-        cardio:       log.cardio || null,
-      })
-      .select().single()
-    return { data, error }
+    try {
+      const { data, error } = await supabase
+        .from('workout_logs')
+        .upsert({
+          user_id:      userId,
+          client_id:    log.clientId || null,
+          name:         log.name,
+          date:         log.date,
+          day_index:    log.dayIndex,
+          duration:     log.duration,
+          exercises:    log.exercises,
+          total_sets:   totalSets,
+          total_reps:   totalReps,
+          total_volume: totalVol,
+          cardio:       log.cardio || null,
+        }, { onConflict: 'user_id,client_id', ignoreDuplicates: false })
+        .select().single()
+      if (!error || !queueOnFailure || navigator.onLine) return { data, error, queued: false }
+      offlineSyncService.add({ kind: 'workout_log', userId, log })
+      return { data: null, error: null, queued: true }
+    } catch (error) {
+      if (!queueOnFailure) return { data: null, error, queued: false }
+      offlineSyncService.add({ kind: 'workout_log', userId, log })
+      return { data: null, error: null, queued: true }
+    }
   },
 
   // Não aplica o gate de historyDays aqui (ver getAll acima) de propósito:
@@ -145,6 +173,41 @@ export const workoutLogService = {
       return { total: 0, streak: 0, bestStreak: 0, weeklyCount: 0, weeklyVolume: 0, monthlyCount: 0, avgDuration: 0, totalVolume: 0 }
     }
   }
+}
+
+export async function syncPendingWorkouts(userId) {
+  const pending = offlineSyncService.get().filter(item => item.kind === 'workout_log' && (!userId || item.userId === userId))
+  for (const item of pending) {
+    const result = await workoutLogService.create(item.userId, item.log, { queueOnFailure: false })
+    if (!result.error) offlineSyncService.remove(item.id)
+  }
+  return offlineSyncService.count(userId)
+}
+
+export const notificationService = {
+  async getRecent(userId) {
+    try {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(5)
+      return { data: data || [], error }
+    } catch (error) {
+      console.error('[Voryn] notificationService.getRecent falhou:', error)
+      return { data: [], error }
+    }
+  },
+  async markRead(userId, ids) {
+    if (!ids?.length) return { error: null }
+    const { error } = await supabase
+      .from('notifications')
+      .update({ read_at: new Date().toISOString() })
+      .eq('user_id', userId)
+      .in('id', ids)
+    return { error }
+  },
 }
 
 // ── ROUTINES ───────────────────────────────────────────────
@@ -242,6 +305,32 @@ export const prService = {
       .eq('user_id', userId)
       .eq('exercise', exercise)
     return { error }
+  },
+}
+
+export const dataExportService = {
+  async downloadJson(userId, profile) {
+    const [{ data: logs }, { data: routines }, { data: prs }, metrics] = await Promise.all([
+      workoutLogService.getAll(userId),
+      routineService.getAll(userId),
+      prService.getAll(userId),
+      workoutLogService.getMetrics(userId),
+    ])
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      profile: profile || null,
+      routines: routines || {},
+      workoutLogs: logs || [],
+      personalRecords: prs || {},
+      metrics,
+    }
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `voryn-dados-${localDateKey()}.json`
+    link.click()
+    URL.revokeObjectURL(url)
   },
 }
 
