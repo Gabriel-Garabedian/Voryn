@@ -2,17 +2,17 @@ import React from 'react'
 
 const PRIMARY = 'var(--accent)'
 const SECONDARY = '#f59e0b'
-const BASE = 'rgba(148,163,184,.22)'
-const STROKE = 'rgba(226,232,240,.42)'
+const BASE = 'rgba(148,163,184,.18)'
+const LINE = 'rgba(226,232,240,.38)'
 
 const MUSCLE_LABELS = {
   Peito: 'Peitoral',
   Costas: 'Costas',
-  Ombro: 'Ombros',
+  Ombro: 'Deltoides',
   Bíceps: 'Bíceps',
   Tríceps: 'Tríceps',
   Pernas: 'Quadríceps',
-  Glúteo: 'Glúteos',
+  Glúteo: 'Glúteo máximo',
   Posterior: 'Posteriores',
   Panturrilha: 'Panturrilhas',
   Abdômen: 'Abdômen',
@@ -47,6 +47,53 @@ function fillFor(muscle, primary, secondary) {
   return BASE
 }
 
+function FrontBody({ primary, secondary }) {
+  return (
+    <g stroke={LINE} strokeWidth="1.2" strokeLinejoin="round">
+      <circle cx="80" cy="17" r="11" fill="#cbd5e1" />
+      <path d="M73 28h14l5 9-3 9H71l-3-9 5-9Z" fill={BASE} />
+      <path d="M69 38c-8 1-16 5-20 12l7 10 12-5 5-14Z" fill={fillFor('Ombro', primary, secondary)} />
+      <path d="M91 38c8 1 16 5 20 12l-7 10-12-5-5-14Z" fill={fillFor('Ombro', primary, secondary)} />
+      <path d="M55 50 43 83l9 4 17-27-6-13Z" fill={fillFor('Bíceps', primary, secondary)} />
+      <path d="M105 50 117 83l-9 4-17-27 6-13Z" fill={fillFor('Bíceps', primary, secondary)} />
+      <path d="M43 83 35 113l8 3 13-29-4-4Z" fill={fillFor('Antebraço', primary, secondary)} />
+      <path d="M117 83 125 113l-8 3-13-29 4-4Z" fill={fillFor('Antebraço', primary, secondary)} />
+      <path d="M68 39c4 5 20 5 24 0l5 17-7 12H70l-7-12 5-17Z" fill={fillFor('Peito', primary, secondary)} />
+      <path d="M70 68h20l3 38H67l3-38Z" fill={fillFor('Abdômen', primary, secondary)} />
+      <path d="M67 106h13v16l-5 45H57l7-45 3-16Z" fill={fillFor('Pernas', primary, secondary)} />
+      <path d="M80 106h13l3 16 7 45H90l-5-45v-16Z" fill={fillFor('Pernas', primary, secondary)} />
+      <path d="M57 167h18l-2 35H59l-5-29 3-6Z" fill={fillFor('Panturrilha', primary, secondary)} />
+      <path d="M103 167h-18l2 35h14l5-29-3-6Z" fill={fillFor('Panturrilha', primary, secondary)} />
+      <path d="M58 202h16l-1 5H54l4-5Z" fill={BASE} />
+      <path d="M102 202H86l1 5h19l-4-5Z" fill={BASE} />
+      <path d="M80 69v35M72 81h16M72 92h16" fill="none" opacity=".45" />
+    </g>
+  )
+}
+
+function BackBody({ primary, secondary }) {
+  return (
+    <g stroke={LINE} strokeWidth="1.2" strokeLinejoin="round">
+      <circle cx="80" cy="17" r="11" fill="#cbd5e1" />
+      <path d="M73 28h14l5 10-5 10H73l-5-10 5-10Z" fill={BASE} />
+      <path d="M70 38 51 48l-7 17 12 8 15-20Z" fill={fillFor('Costas', primary, secondary)} />
+      <path d="M90 38 109 48l7 17-12 8-15-20Z" fill={fillFor('Costas', primary, secondary)} />
+      <path d="M55 50 43 83l9 4 17-27-6-13Z" fill={fillFor('Tríceps', primary, secondary)} />
+      <path d="M105 50 117 83l-9 4-17-27 6-13Z" fill={fillFor('Tríceps', primary, secondary)} />
+      <path d="M43 83 35 113l8 3 13-29-4-4Z" fill={fillFor('Antebraço', primary, secondary)} />
+      <path d="M117 83 125 113l-8 3-13-29 4-4Z" fill={fillFor('Antebraço', primary, secondary)} />
+      <path d="M71 65h18l5 41H66l5-41Z" fill={fillFor('Lombar', primary, secondary)} />
+      <path d="M66 106h14v16l-5 45H57l7-45 3-16Z" fill={fillFor('Glúteo', primary, secondary)} />
+      <path d="M80 106h14l3 16 7 45H90l-5-45v-16Z" fill={fillFor('Glúteo', primary, secondary)} />
+      <path d="M57 167h18l-2 35H59l-5-29 3-6Z" fill={fillFor('Posterior', primary, secondary)} />
+      <path d="M103 167H85l2 35h14l5-29-3-6Z" fill={fillFor('Posterior', primary, secondary)} />
+      <path d="M58 202h16l-1 5H54l4-5Z" fill={fillFor('Panturrilha', primary, secondary)} />
+      <path d="M102 202H86l1 5h19l-4-5Z" fill={fillFor('Panturrilha', primary, secondary)} />
+      <path d="M80 42v61" fill="none" opacity=".45" />
+    </g>
+  )
+}
+
 export default function MuscleTargetImage({
   muscle,
   secondaryMuscles = [],
@@ -56,6 +103,7 @@ export default function MuscleTargetImage({
   const primary = normalizeMuscle(muscle)
   const secondary = secondaryMuscles.map(normalizeMuscle).filter(Boolean)
   const label = MUSCLE_LABELS[primary] || muscle || 'Músculo alvo'
+  const viewIsBack = ['Costas', 'Glúteo', 'Posterior', 'Lombar'].includes(primary)
   const aria = `Músculo alvo: ${label}${secondary.length ? `. Secundários: ${secondary.join(', ')}` : ''}`
 
   return (
@@ -64,42 +112,10 @@ export default function MuscleTargetImage({
       role="img"
       aria-label={aria}
       title={aria}
-      style={{
-        background: 'linear-gradient(145deg, rgba(var(--accent-rgb),.12), rgba(15,23,42,.22))',
-        border: '1px solid rgba(var(--accent-rgb),.2)',
-      }}
+      style={{ background: 'linear-gradient(145deg, rgba(var(--accent-rgb),.12), rgba(15,23,42,.22))', border: '1px solid rgba(var(--accent-rgb),.2)' }}
     >
-      <svg viewBox="0 0 120 150" aria-hidden="true">
-        <circle cx="60" cy="18" r="11" fill={BASE} stroke={STROKE} strokeWidth="1.4"/>
-        <path d="M51 31c-7 5-11 15-10 29l5 26h28l5-26c1-14-3-24-10-29-5 3-13 3-18 0Z"
-          fill={fillFor('Abdômen', primary, secondary)} stroke={STROKE} strokeWidth="1.4"/>
-        <path d="M48 34c-8 2-14 7-18 15l-10 24 9 4 15-18 6-13Z"
-          fill={fillFor('Ombro', primary, secondary)} stroke={STROKE} strokeWidth="1.4"/>
-        <path d="M72 34c8 2 14 7 18 15l10 24-9 4-15-18-6-13Z"
-          fill={fillFor('Ombro', primary, secondary)} stroke={STROKE} strokeWidth="1.4"/>
-        <path d="M29 73l-10 33 8 3 14-30-3-6Z"
-          fill={fillFor('Tríceps', primary, secondary)} stroke={STROKE} strokeWidth="1.4"/>
-        <path d="M91 73l10 33-8 3-14-30 3-6Z"
-          fill={fillFor('Tríceps', primary, secondary)} stroke={STROKE} strokeWidth="1.4"/>
-        <path d="M26 108l-5 27 8 1 9-27-4-4Z"
-          fill={fillFor('Antebraço', primary, secondary)} stroke={STROKE} strokeWidth="1.4"/>
-        <path d="M94 108l5 27-8 1-9-27 4-4Z"
-          fill={fillFor('Antebraço', primary, secondary)} stroke={STROKE} strokeWidth="1.4"/>
-        <path d="M46 35c4 7 24 7 28 0l-3 16c-7 5-15 5-22 0Z"
-          fill={fillFor('Peito', primary, secondary)} stroke={STROKE} strokeWidth="1.4"/>
-        <path d="M47 51h26l-3 34H50Z"
-          fill={fillFor('Abdômen', primary, secondary)} stroke={STROKE} strokeWidth="1.4"/>
-        <path d="M50 84l-4 33-2 29h13l4-29 4-33Z"
-          fill={fillFor('Pernas', primary, secondary)} stroke={STROKE} strokeWidth="1.4"/>
-        <path d="M70 84l4 33 2 29H63l-4-29-4-33Z"
-          fill={fillFor('Pernas', primary, secondary)} stroke={STROKE} strokeWidth="1.4"/>
-        <path d="M44 117l-3 27 8 1 8-27-1-6Z"
-          fill={fillFor('Posterior', primary, secondary)} opacity=".86" stroke={STROKE} strokeWidth="1.1"/>
-        <path d="M76 117l3 27-8 1-8-27 1-6Z"
-          fill={fillFor('Posterior', primary, secondary)} opacity=".86" stroke={STROKE} strokeWidth="1.1"/>
-        <path d="M44 144l-2 5h12l1-5Z" fill={fillFor('Panturrilha', primary, secondary)} stroke={STROKE} strokeWidth="1"/>
-        <path d="M76 144l2 5H66l-1-5Z" fill={fillFor('Panturrilha', primary, secondary)} stroke={STROKE} strokeWidth="1"/>
-        <path d="M51 39c-2 15-2 28 0 45M69 39c2 15 2 28 0 45" stroke="rgba(255,255,255,.16)" strokeWidth="1" fill="none"/>
+      <svg viewBox="0 0 160 215" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
+        {viewIsBack ? <BackBody primary={primary} secondary={secondary} /> : <FrontBody primary={primary} secondary={secondary} />}
       </svg>
       {showLabel && (
         <div className="muscle-target__label">

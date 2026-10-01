@@ -131,6 +131,7 @@ export default function ExercisePicker({ onSelect, onClose, onCustom }) {
                     <span style={{ color: 'var(--border)' }}>·</span>
                     <span className="text-xs" style={{ color: 'var(--text-3)' }}>{ex.equipment}</span>
                   </div>
+                  <span className="muscle-target-chip">Alvo: {ex.muscle || 'não informado'}</span>
                 </div>
               </button>
               <span className="text-xs px-2 py-1 rounded-full flex-shrink-0 hidden sm:inline-block"

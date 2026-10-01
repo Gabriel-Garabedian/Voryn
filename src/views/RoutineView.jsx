@@ -281,6 +281,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                             {ex.sets} séries × {ex.reps} reps
                             {ex.muscle && <span style={{ color: 'rgba(var(--accent-rgb),.5)' }}> · {ex.muscle}</span>}
                           </p>
+                          <span className="muscle-target-chip">Alvo: {ex.muscle || 'não informado'}</span>
                         </div>
                         <div className="flex items-center gap-0.5">
                           <button onClick={() => moveExercise(selectedDay, ex.id, -1)} disabled={idx === 0}

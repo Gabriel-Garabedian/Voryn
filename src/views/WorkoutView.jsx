@@ -733,6 +733,7 @@ export default function WorkoutView() {
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm truncate" style={{ color: exDone ? AC : 'var(--text-1)' }}>{ex.name}</p>
                     <p className="text-xs" style={{ color: 'var(--text-3)' }}>{doneCount} de {ex.sets.length} séries concluídas</p>
+                    <span className="muscle-target-chip">Alvo: {ex.muscle || 'não informado'}</span>
                   </div>
                   <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-3)" strokeWidth="2" style={{ flexShrink: 0 }}>
                     <polyline points="9 18 15 12 9 6"/>
@@ -781,6 +782,7 @@ export default function WorkoutView() {
                     <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
                   </svg>
                 </button>
+                <span className="muscle-target-chip muscle-target-chip--header">Alvo: {ex.muscle || 'não informado'}</span>
                 <span className="text-xs font-semibold" style={{ color: exDone ? AC : 'var(--text-3)' }}>
                   {exDone ? 'Concluído ✓' : `${doneCount}/${ex.sets.length}`}
                 </span>
