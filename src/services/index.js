@@ -110,7 +110,7 @@ export const workoutLogService = {
         .limit(365)
 
       if (!data?.length) {
-        return { total: 0, streak: 0, bestStreak: 0, weeklyCount: 0, monthlyCount: 0, avgDuration: 0, totalVolume: 0 }
+        return { total: 0, streak: 0, bestStreak: 0, weeklyCount: 0, weeklyVolume: 0, monthlyCount: 0, avgDuration: 0, totalVolume: 0 }
       }
 
       const dates   = data.map(r => r.date)
@@ -135,13 +135,14 @@ export const workoutLogService = {
         streak,
         bestStreak,
         weeklyCount:  data.filter(r => new Date(r.date) >= weekAgo).length,
+        weeklyVolume: data.filter(r => new Date(r.date) >= weekAgo).reduce((a, r) => a + (parseFloat(r.total_volume) || 0), 0),
         monthlyCount: data.filter(r => new Date(r.date) >= monAgo).length,
         avgDuration:  Math.round(data.reduce((a, r) => a + (r.duration || 0), 0) / data.length),
         totalVolume:  data.reduce((a, r) => a + (parseFloat(r.total_volume) || 0), 0),
       }
     } catch (err) {
       console.error('[Voryn] workoutLogService.getMetrics falhou (rede/parse):', err)
-      return { total: 0, streak: 0, bestStreak: 0, weeklyCount: 0, monthlyCount: 0, avgDuration: 0, totalVolume: 0 }
+      return { total: 0, streak: 0, bestStreak: 0, weeklyCount: 0, weeklyVolume: 0, monthlyCount: 0, avgDuration: 0, totalVolume: 0 }
     }
   }
 }

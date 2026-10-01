@@ -3,7 +3,7 @@ import { useAuth } from '@/context/AuthContext'
 import { workoutLogService } from '@/services'
 import { SkeletonList } from '@/components/ui/Skeleton'
 
-const ACHIEVEMENTS = [
+export const ACHIEVEMENTS = [
   { id:'first_workout', icon:'01', title:'Primeira Pedra',    desc:'Complete seu primeiro treino',               check: (m) => m.total >= 1 },
   { id:'streak3',       icon:'02', title:'Sequência de 3',    desc:'Treine 3 dias seguidos',                     check: (m) => m.bestStreak >= 3 },
   { id:'workouts10',    icon:'03', title:'10 Treinos',         desc:'Complete 10 treinos no total',               check: (m) => m.total >= 10 },

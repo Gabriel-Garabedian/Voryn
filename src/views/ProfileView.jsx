@@ -9,6 +9,7 @@ import { exportProgressPDF, exportRoutinePDF } from '@/services/pdfExport'
 import { PLANS } from '@/services/payment'
 import { formatDuration, formatVolume, calcStreak, calcBestStreak } from '@/utils/helpers'
 import { EXERCISE_LIBRARY } from '@/data/exercises'
+import { ACHIEVEMENTS } from '@/views/AchievementsView'
 
 // ANTES, esta lista era fixa — só esses 5 exercícios apareciam em Records
 // Pessoais, sem nenhuma forma de adicionar outro (ex: "Remada Curvada" não
@@ -236,39 +237,27 @@ export default function ProfileView() {
   const planInfo   = PLANS[plan]
 
   const totalVolume  = logs.reduce((a, l) => a + (parseFloat(l.total_volume) || 0), 0)
-  const avgDuration  = logs.length ? Math.round(logs.reduce((a,l) => a+(l.duration||0), 0) / logs.length) : 0
   const streak       = calcStreak(logs.map(l => l.date))
   const bestStreak   = calcBestStreak(logs.map(l => l.date))
+  const monthAgo     = new Date(); monthAgo.setDate(monthAgo.getDate() - 30)
+  const monthlyCount = logs.filter(l => new Date(l.date) >= monthAgo).length
+  const achMetrics   = { total: logs.length, bestStreak, totalVolume, monthlyCount }
+  const unlockedAch  = ACHIEVEMENTS.filter(a => a.check(achMetrics))
 
   return (
     <div className="app-view view-profile px-4 pt-6 pb-10 space-y-5">
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="view-kicker">Athlete file / 10</p>
-          <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
-            Perfil
-          </h1>
-          <p className="text-sm" style={{ color: 'var(--muted)' }}>{user?.email}</p>
-        </div>
-        <div className="w-14 h-14 rounded-2xl flex items-center justify-center"
-          style={{ background: 'rgba(var(--accent-rgb),.1)', border: '1.5px solid rgba(var(--accent-rgb),.25)' }}>
+      {/* Header: avatar + nome + plano, sem card ao redor (igual ao mockup —
+         o editor de nome/email continuam aqui, só sem a moldura/segundo
+         avatar que existiam antes). */}
+      <div className="flex items-center gap-4">
+        <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0"
+          style={{ background: 'rgba(var(--accent-rgb),.15)', border: '1.5px solid rgba(var(--accent-rgb),.35)' }}>
           <span className="font-display text-2xl" style={{ color: 'var(--accent)' }}>
             {profile?.name?.charAt(0)?.toUpperCase() || 'A'}
           </span>
         </div>
-      </div>
-
-      {/* User card */}
-      <div className="glass-card p-4 flex items-center gap-4">
-        <div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
-          style={{ background: 'linear-gradient(135deg,rgba(var(--accent-rgb),.2),rgba(var(--accent-rgb),.05))', border: '1.5px solid rgba(var(--accent-rgb),.2)' }}>
-          <span className="font-display text-3xl" style={{ color: 'var(--accent)' }}>
-            {profile?.name?.charAt(0)?.toUpperCase() || 'A'}
-          </span>
-        </div>
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           {editName
             ? <div className="flex items-center gap-2">
                 <input className="f-input py-1 text-sm flex-1" value={nameInput}
@@ -279,11 +268,11 @@ export default function ProfileView() {
                 <button onClick={() => setEditName(false)} className="text-xs" style={{ color: 'var(--text-3)' }}>✕</button>
               </div>
             : <div className="flex items-center gap-2">
-                <p className="font-display text-xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
+                <p className="font-display text-xl uppercase tracking-wide truncate" style={{ color: 'var(--text-1)' }}>
                   {profile?.name}
                 </p>
                 <button onClick={() => { setEditName(true); setNameInput(profile?.name || '') }}
-                  style={{ color: 'var(--text-3)' }}>
+                  style={{ color: 'var(--text-3)' }} aria-label="Editar nome">
                   <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
                     <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -291,8 +280,7 @@ export default function ProfileView() {
                 </button>
               </div>
           }
-          <p className="text-xs" style={{ color: 'var(--muted)' }}>{user?.email}</p>
-          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
             <Badge variant="accent">{planInfo?.name || 'Grátis'}</Badge>
             <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
             {profile?.goal && <Badge variant="green">{profile.goal}</Badge>}
@@ -303,16 +291,45 @@ export default function ProfileView() {
       {/* Stats */}
       <div className="grid grid-cols-4 gap-2">
         {[
-          { label: 'Treinos',   value: logs.length },
-          { label: 'Sequência', value: streak },
-          { label: 'Melhor',    value: bestStreak },
-          { label: 'Avg',       value: formatDuration(avgDuration) },
+          { label: 'Treinos',    value: logs.length },
+          { label: 'Sequência',  value: streak },
+          { label: 'Conquistas', value: `${unlockedAch.length}/${ACHIEVEMENTS.length}` },
+          { label: 'Melhor',     value: bestStreak },
         ].map(s => (
           <div key={s.label} className="glass-card p-3 text-center">
             <div className="font-display text-xl" style={{ color: 'var(--accent)' }}>{s.value}</div>
             <div className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>{s.label}</div>
           </div>
         ))}
+      </div>
+
+      {/* Conquistas recentes */}
+      <div>
+        <p className="f-label mb-2">Conquistas recentes</p>
+        <div className="flex gap-2.5">
+          {ACHIEVEMENTS.slice(0, 4).map(a => {
+            const unlocked = a.check(achMetrics)
+            return (
+              <button key={a.id} onClick={() => navigate('/app/achievements')}
+                aria-label={`${a.title}${unlocked ? ', desbloqueada' : ', bloqueada'}`}
+                className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{
+                  background: unlocked ? 'rgba(var(--accent-rgb),.15)' : 'var(--surface)',
+                  border: `1px solid ${unlocked ? 'rgba(var(--accent-rgb),.35)' : 'var(--border)'}`,
+                  filter: unlocked ? 'none' : 'grayscale(100%)',
+                  opacity: unlocked ? 1 : .5,
+                }}>
+                {unlocked ? (
+                  <span className="font-display text-sm" style={{ color: 'var(--accent)' }}>{a.icon}</span>
+                ) : (
+                  <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="var(--text-3)" strokeWidth="2" aria-hidden="true">
+                    <rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+                  </svg>
+                )}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       {totalVolume > 0 && (
