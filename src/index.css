@@ -783,6 +783,8 @@ body::after { display: none; }
   max-width: 608px;
   margin: 0 auto;
   pointer-events: none;
+  animation: none !important;
+  transform: none !important;
 }
 .workout-action-bar > * {
   pointer-events: auto;
