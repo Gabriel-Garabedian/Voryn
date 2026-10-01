@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest'
 import { EXERCISE_LIBRARY, MUSCLE_GROUPS, searchExercises } from '../data/exercises'
 
 describe('EXERCISE_LIBRARY', () => {
-  it('has at least 100 exercises', () => {
-    expect(EXERCISE_LIBRARY.length).toBeGreaterThanOrEqual(100)
+  it('has at least 400 exercises', () => {
+    expect(EXERCISE_LIBRARY.length).toBeGreaterThanOrEqual(400)
   })
 
   it('every exercise has required fields', () => {
@@ -33,6 +33,13 @@ describe('EXERCISE_LIBRARY', () => {
     EXERCISE_LIBRARY.forEach(ex => {
       expect(validTypes).toContain(ex.type)
     })
+  })
+
+  it('includes extended equipment and metadata', () => {
+    expect(EXERCISE_LIBRARY.some(ex => ex.equipment === 'TRX')).toBe(true)
+    expect(EXERCISE_LIBRARY.some(ex => ex.equipment === 'Barra EZ')).toBe(true)
+    expect(EXERCISE_LIBRARY.some(ex => ex.secondaryMuscles?.length > 0)).toBe(true)
+    expect(EXERCISE_LIBRARY.some(ex => ex.difficulty)).toBe(true)
   })
 
   it('contains key exercises (Supino Reto, Agachamento Livre)', () => {

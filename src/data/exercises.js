@@ -1,6 +1,8 @@
 // ──────────────────────────────────────────────────────────
-//  Voryn — Biblioteca de Exercícios (136 exercícios)
+//  Voryn — Biblioteca de Exercícios
 // ──────────────────────────────────────────────────────────
+
+import { ADDITIONAL_EXERCISES } from './exerciseCatalog.js'
 //
 //  CAMPO "media" — como preencher com fotos/vídeos reais depois:
 //
@@ -191,6 +193,7 @@ export const EXERCISE_LIBRARY = [
   { id:'e134', name:'Pressão Pallof',             muscle:'Abdômen',     equipment:'Cabo',         type:'isolation' , media:[] },
   { id:'e135', name:'Rolo Abdominal com Barra',   muscle:'Abdômen',     equipment:'Barra',        type:'isolation' , media:[] },
   { id:'e137', name:'Dead Bug',                   muscle:'Abdômen',     equipment:'Corpo',        type:'isolation' , media:[] },
+  ...ADDITIONAL_EXERCISES,
 ]
 
 // ANTES, MUSCLE_GROUPS vinha de [...new Set(...)].sort() — ordem
