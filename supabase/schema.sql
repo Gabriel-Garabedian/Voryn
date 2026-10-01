@@ -697,12 +697,13 @@ set search_path = public
 as $$
 declare
   v_student uuid;
+  v_actor uuid := auth.uid();
 begin
-  if new.created_by is null then return new; end if;
+  if v_actor is null then return new; end if;
   select ts.student_id into v_student
     from public.trainer_students ts
     join public.trainers t on t.id = ts.trainer_id
-   where t.user_id = new.created_by
+   where t.user_id = v_actor
      and ts.student_id = new.user_id
      and ts.status = 'active'
    limit 1;
