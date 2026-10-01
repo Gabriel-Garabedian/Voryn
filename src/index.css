@@ -773,7 +773,7 @@ body::after { display: none; }
   top: 0;
   z-index: 20;
 }
-.workout-action-bar {
+.workout-rest-active {
   position: fixed;
   left: 16px;
   right: 16px;
@@ -786,11 +786,8 @@ body::after { display: none; }
   animation: none !important;
   transform: none !important;
 }
-.workout-action-bar > * {
+.workout-rest-active > * {
   pointer-events: auto;
-}
-.workout-action-bar .f-btn {
-  width: 100%;
 }
 .workout-rest-timer {
   width: 100%;

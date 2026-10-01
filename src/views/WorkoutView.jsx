@@ -638,7 +638,7 @@ export default function WorkoutView() {
   const doneSets  = workout.exercises.reduce((a, ex) => a + ex.sets.filter(s => s.done).length, 0)
 
   return (
-    <div className="app-view workout-view pb-40">
+    <div className={`app-view workout-view ${showRest ? 'pb-40' : 'pb-8'}`}>
       {detailExercise && (
         <ExerciseDetail
           exercise={detailExercise}
@@ -980,7 +980,7 @@ export default function WorkoutView() {
       </div>
 
       {/* Finish */}
-      <div className="workout-action-bar px-4 space-y-2">
+      <div className={showRest ? 'workout-action-bar workout-rest-active px-4 space-y-2' : 'px-4 mt-6 space-y-2'}>
         {showRest ? (
           <RestTimer
             seconds={restSecs}
