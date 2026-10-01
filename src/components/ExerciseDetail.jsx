@@ -1,6 +1,7 @@
 import React from 'react'
 import { getExerciseInstructions, getExerciseVideoSearchUrl } from '@/data/exerciseInstructions'
 import ExerciseMediaCarousel from '@/components/ExerciseMediaCarousel'
+import MuscleTargetImage from '@/components/MuscleTargetImage'
 
 const AC = 'var(--accent)'
 
@@ -65,6 +66,27 @@ export default function ExerciseDetail({ exercise, onAdd, onClose, buttonLabel =
               popular). Mostra estado vazio elegante enquanto não houver
               media cadastrada, sem quebrar o layout. */}
           <ExerciseMediaCarousel media={exercise.media || []} title={exercise.name} subtitle={exercise.equipment} />
+
+          <div className="f-card p-3.5 flex items-center gap-3">
+            <MuscleTargetImage
+              muscle={exercise.muscle}
+              secondaryMuscles={exercise.secondaryMuscles || []}
+              compact
+            />
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: AC }}>
+                Músculo alvo
+              </p>
+              <p className="text-sm font-semibold mt-1" style={{ color: 'var(--text-1)' }}>
+                {exercise.muscle || 'Não informado'}
+              </p>
+              {exercise.secondaryMuscles?.length > 0 && (
+                <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
+                  Também envolve {exercise.secondaryMuscles.join(', ')}
+                </p>
+              )}
+            </div>
+          </div>
 
           {/* Vídeo — link de busca no YouTube (sempre atualizado) */}
           <a href={videoUrl} target="_blank" rel="noopener noreferrer"

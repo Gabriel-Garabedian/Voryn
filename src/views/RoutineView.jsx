@@ -5,6 +5,7 @@ import { Button } from '@/components/ui'
 import { useToast } from '@/components/ui/Toast'
 import { SkeletonList } from '@/components/ui/Skeleton'
 import ExercisePicker from '@/components/ExercisePicker'
+import MuscleTargetImage from '@/components/MuscleTargetImage'
 
 const DAYS_FULL  = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
 const DAYS_SHORT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
@@ -86,7 +87,8 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
     const current   = routines[selectedDay] || { name: '', exercises: [] }
     const exercises = [...(current.exercises || []), {
       id: genId(), name: ex.name, sets: 3, reps: '10',
-      muscle: ex.muscle, equipment: ex.equipment, notes: ''
+      muscle: ex.muscle, secondaryMuscles: ex.secondaryMuscles || [],
+      equipment: ex.equipment, notes: ''
     }]
     const updated = { ...current, exercises }
     setRoutines(r => ({ ...r, [selectedDay]: updated }))
@@ -272,6 +274,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                           style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
                           <span className="font-display font-bold text-sm" style={{ color: AC }}>{idx + 1}</span>
                         </div>
+                        <MuscleTargetImage muscle={ex.muscle} secondaryMuscles={ex.secondaryMuscles} compact showLabel={false} />
                         <div className="flex-1 min-w-0" onClick={() => setEditingEx(editingEx?.exId === ex.id ? null : { exId: ex.id, sets: String(ex.sets), reps: ex.reps, notes: ex.notes || '' })}>
                           <p className="font-semibold text-sm truncate" style={{ color: 'var(--text-1)' }}>{ex.name}</p>
                           <p className="text-xs" style={{ color: 'var(--text-3)' }}>

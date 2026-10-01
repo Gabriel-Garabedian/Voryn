@@ -11,6 +11,7 @@ import { EXERCISE_LIBRARY } from '@/data/exercises'
 import { useToast } from '@/components/ui/Toast'
 import { localDateKey } from '@/utils/helpers'
 import { captureError } from '@/lib/sentry'
+import MuscleTargetImage from '@/components/MuscleTargetImage'
 
 const DAYS_FULL = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
 const AC = 'var(--accent)'
@@ -545,6 +546,8 @@ export default function WorkoutView() {
             id:      `ex_${Date.now()}`,
             name:    ex.name,
             muscle:  ex.muscle || '',
+            secondaryMuscles: ex.secondaryMuscles || [],
+            equipment: ex.equipment || '',
             sets:    [{ id: `s_${Date.now()}`, reps: '', weight: '', done: false }],
           }
           setWorkout(w => {
@@ -561,6 +564,7 @@ export default function WorkoutView() {
           const newEx = {
             id:   `ex_${Date.now()}`,
             name, muscle: '',
+            secondaryMuscles: [],
             sets: [{ id: `s_${Date.now()}`, reps: '', weight: '', done: false }],
           }
           setWorkout(w => {
@@ -725,6 +729,7 @@ export default function WorkoutView() {
                       : <span className="font-display text-xs" style={{ color: 'var(--text-3)' }}>{ei + 1}</span>
                     }
                   </div>
+                  <MuscleTargetImage muscle={ex.muscle} secondaryMuscles={ex.secondaryMuscles} compact showLabel={false} />
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm truncate" style={{ color: exDone ? AC : 'var(--text-1)' }}>{ex.name}</p>
                     <p className="text-xs" style={{ color: 'var(--text-3)' }}>{doneCount} de {ex.sets.length} séries concluídas</p>
@@ -764,6 +769,7 @@ export default function WorkoutView() {
                     : <span className="font-display text-xs" style={{ color: 'var(--text-3)' }}>{ei + 1}</span>
                   }
                 </div>
+                <MuscleTargetImage muscle={ex.muscle} secondaryMuscles={ex.secondaryMuscles} compact showLabel={false} />
                 <button onClick={() => {
                     const libMatch = EXERCISE_LIBRARY.find(le => le.name === ex.name)
                     setDetailExercise(libMatch || { name: ex.name, muscle: ex.muscle || 'Outro', equipment: 'Livre', type: 'compound' })

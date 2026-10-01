@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react'
 import { searchExercises, MUSCLE_GROUPS } from '@/data/exercises'
 import ExerciseDetail from '@/components/ExerciseDetail'
+import MuscleTargetImage from '@/components/MuscleTargetImage'
 
 const AC = 'var(--accent)'
 
@@ -120,16 +121,7 @@ export default function ExercisePicker({ onSelect, onClose, onCustom }) {
               onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(var(--accent-rgb),.4)'}
               onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
               <button onClick={() => setDetailExercise(ex)} className="flex items-center gap-3 flex-1 min-w-0 text-left">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                  style={{ background: 'rgba(var(--accent-rgb),.08)', border: '1px solid rgba(var(--accent-rgb),.15)' }}>
-                  <span className="text-lg">
-                    {ex.muscle === 'Peito' ? '🫀' : ex.muscle === 'Costas' ? '🏋️' :
-                     ex.muscle === 'Pernas' ? '🦵' : ex.muscle === 'Ombro' ? '💪' :
-                     ex.muscle === 'Bíceps' ? '💪' : ex.muscle === 'Tríceps' ? '💪' :
-                     ex.muscle === 'Abdômen' ? '⚡' : ex.muscle === 'Glúteo' ? '🍑' :
-                     ex.muscle === 'Cardio' ? '❤️' : ex.muscle === 'Funcional' ? '⚙️' : '🏃'}
-                  </span>
-                </div>
+                <MuscleTargetImage muscle={ex.muscle} secondaryMuscles={ex.secondaryMuscles} compact showLabel={false} />
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-sm truncate" style={{ color: 'var(--text-1)' }}>
                     {ex.name}
