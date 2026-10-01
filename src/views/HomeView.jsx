@@ -161,6 +161,15 @@ export default function HomeView() {
 
   const isStreakMilestone = STREAK_MILESTONES.includes(streak)
 
+  const weekStart = new Date(today)
+  weekStart.setDate(today.getDate() - today.getDay())
+  const weekDays = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(weekStart)
+    date.setDate(weekStart.getDate() + i)
+    const key = localDateKey(date)
+    return { date, key, isToday: key === todayKey, trained: trainedDates.includes(key) }
+  })
+
   const monthStart = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1)
   const monthDays = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate()
   const calendarOffset = monthStart.getDay()
@@ -239,8 +248,62 @@ export default function HomeView() {
         </button>
       </div>
 
+      {/* Semana em círculos */}
+      <div className="f-card px-4 py-3 animate-slide-up" aria-label="Semana de treinos">
+        <div className="flex justify-between">
+          {weekDays.map(({ isToday, trained, date, key }) => (
+            <div key={key} className="flex flex-col items-center gap-1.5">
+              <span className="text-[10px] uppercase" style={{ color: isToday ? AC : 'var(--text-3)', fontWeight: isToday ? 700 : 500 }}>
+                {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'][date.getDay()]}
+              </span>
+              <button
+                type="button"
+                onClick={trained ? () => setOpenLogDate(key) : undefined}
+                aria-label={trained ? `Ver treino de ${date.getDate()}` : `${date.getDate()} sem treino`}
+                className="w-8 h-8 rounded-full flex items-center justify-center"
+                style={{
+                  background: trained ? AC : isToday ? 'rgba(var(--accent-rgb),.14)' : 'var(--surface)',
+                  border: isToday && !trained ? `1.5px solid ${AC}` : '1px solid transparent',
+                  cursor: trained ? 'pointer' : 'default',
+                }}>
+                {trained ? (
+                  <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                ) : (
+                  <span className="font-display text-sm" style={{ color: isToday ? AC : 'var(--text-3)' }}>{date.getDate()}</span>
+                )}
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Foco de hoje */}
+      <div>
+        <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-3)' }}>Foco de hoje</p>
+        <button onClick={() => navigate('/app/workout')}
+          className="f-card w-full p-4 flex items-center justify-between text-left animate-slide-up glow-primary"
+          style={{ borderColor: 'rgba(var(--accent-rgb),.35)', background: 'rgba(var(--accent-rgb),.06)' }}>
+          <div className="min-w-0">
+            <p className="font-display text-2xl uppercase tracking-wide truncate" style={{ color: 'var(--text-1)' }}>
+              {todayPlan?.name || 'Descanso'}
+            </p>
+            <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
+              {todayPlan?.exercises?.length
+                ? `${todayPlan.exercises.length} exercício${todayPlan.exercises.length === 1 ? '' : 's'}`
+                : 'Dia de descanso'}
+            </p>
+          </div>
+          <span className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ml-3"
+            style={{ background: AC, boxShadow: '0 0 16px rgba(var(--accent-rgb),.5)' }}>
+            <svg width="18" height="18" fill="#fff" viewBox="0 0 24 24" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </span>
+        </button>
+      </div>
+
       {/* Calendário mensal */}
-      <section className="f-card p-4 animate-slide-up" aria-label="Calendário de treinos">
+      <section className="f-card p-4 animate-slide-up" aria-label="Calendário mensal de treinos">
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>Sua consistência</p>
@@ -299,29 +362,6 @@ export default function HomeView() {
         <p className="text-sm" style={{ color: 'var(--text-2)' }}>
           <strong style={{ color: AC }}>{streak} dia{streak === 1 ? '' : 's'}</strong> de sequência — seu recorde é {bestStreak}
         </p>
-      </div>
-
-      {/* Foco de hoje */}
-      <div>
-        <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-3)' }}>Foco de hoje</p>
-        <button onClick={() => navigate('/app/workout')}
-          className="f-card w-full p-4 flex items-center justify-between text-left animate-slide-up glow-primary"
-          style={{ borderColor: 'rgba(var(--accent-rgb),.35)', background: 'rgba(var(--accent-rgb),.06)' }}>
-          <div className="min-w-0">
-            <p className="font-display text-2xl uppercase tracking-wide truncate" style={{ color: 'var(--text-1)' }}>
-              {todayPlan?.name || 'Descanso'}
-            </p>
-            <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
-              {todayPlan?.exercises?.length
-                ? `${todayPlan.exercises.length} exercício${todayPlan.exercises.length === 1 ? '' : 's'}`
-                : 'Dia de descanso'}
-            </p>
-          </div>
-          <span className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ml-3"
-            style={{ background: AC, boxShadow: '0 0 16px rgba(var(--accent-rgb),.5)' }}>
-            <svg width="18" height="18" fill="#fff" viewBox="0 0 24 24" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          </span>
-        </button>
       </div>
 
       {/* 3 métricas */}
