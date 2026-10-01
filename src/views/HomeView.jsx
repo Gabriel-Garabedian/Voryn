@@ -119,6 +119,7 @@ export default function HomeView() {
   const [loadError,    setLoadError]    = useState(false)
   const [reloadKey,    setReloadKey]    = useState(0)
   const [openLogDate,  setOpenLogDate]  = useState(null)
+  const [calendarMonth, setCalendarMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1))
 
   const todayKey = localDateKey(today)
 
@@ -160,14 +161,17 @@ export default function HomeView() {
 
   const isStreakMilestone = STREAK_MILESTONES.includes(streak)
 
-  const weekStart = new Date(today)
-  weekStart.setDate(today.getDate() - today.getDay())
-  const weekDays = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(weekStart)
-    d.setDate(weekStart.getDate() + i)
-    const k = localDateKey(d)
-    return { date: d, dayIndex: i, key: k, plan: routines[i], isToday: k === todayKey, trained: trainedDates.includes(k) }
+  const monthStart = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1)
+  const monthDays = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate()
+  const calendarOffset = monthStart.getDay()
+  const calendarCells = Array.from({ length: calendarOffset + monthDays }, (_, index) => {
+    if (index < calendarOffset) return null
+    const date = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), index - calendarOffset + 1)
+    const key = localDateKey(date)
+    return { date, key, isToday: key === todayKey, trained: trainedDates.includes(key) }
   })
+  const monthLabel = calendarMonth.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+  const moveCalendar = (amount) => setCalendarMonth(current => new Date(current.getFullYear(), current.getMonth() + amount, 1))
 
   const homeSub     = getSubscription(profile)
   const isTrial     = homeSub?.status === 'trialing'
@@ -235,34 +239,56 @@ export default function HomeView() {
         </button>
       </div>
 
-      {/* Semana em círculos */}
-      <div className="flex justify-between animate-slide-up">
-        {weekDays.map(({ dayIndex, isToday, trained, date, key }) => (
-          <div key={dayIndex} className="flex flex-col items-center gap-1.5">
-            <span className="text-xs uppercase" style={{ color: isToday ? AC : 'var(--text-3)', fontWeight: isToday ? 700 : 500 }}>
-              {['D','S','T','Q','Q','S','S'][dayIndex]}
-            </span>
-            <button
-              type="button"
-              onClick={trained ? () => setOpenLogDate(key) : undefined}
-              aria-label={trained ? `Ver treino de ${date.getDate()}` : undefined}
-              className="w-8 h-8 rounded-full flex items-center justify-center"
-              style={{
-                background: trained ? AC : isToday ? 'rgba(var(--accent-rgb),.14)' : 'var(--surface)',
-                border: isToday && !trained ? `1.5px solid ${AC}` : '1px solid transparent',
-                cursor: trained ? 'pointer' : 'default',
-              }}>
-              {trained ? (
-                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              ) : (
-                <span className="font-display text-sm" style={{ color: isToday ? AC : 'var(--text-3)' }}>{date.getDate()}</span>
-              )}
+      {/* Calendário mensal */}
+      <section className="f-card p-4 animate-slide-up" aria-label="Calendário de treinos">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <p className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>Sua consistência</p>
+            <h2 className="font-display text-xl uppercase tracking-wide capitalize" style={{ color: 'var(--text-1)' }}>
+              {monthLabel}
+            </h2>
+          </div>
+          <div className="flex items-center gap-1">
+            <button type="button" onClick={() => moveCalendar(-1)} aria-label="Mês anterior"
+              className="w-9 h-9 rounded-lg flex items-center justify-center"
+              style={{ color: 'var(--text-2)', border: '1px solid var(--border)' }}>
+              <span aria-hidden="true">‹</span>
+            </button>
+            <button type="button" onClick={() => moveCalendar(1)} aria-label="Próximo mês"
+              className="w-9 h-9 rounded-lg flex items-center justify-center"
+              style={{ color: 'var(--text-2)', border: '1px solid var(--border)' }}>
+              <span aria-hidden="true">›</span>
             </button>
           </div>
-        ))}
-      </div>
+        </div>
+        <div className="grid grid-cols-7 gap-y-2 text-center">
+          {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((day, index) => (
+            <span key={`${day}-${index}`} className="text-[10px] font-semibold uppercase" style={{ color: 'var(--text-3)' }}>{day}</span>
+          ))}
+          {calendarCells.map((cell, index) => cell ? (
+            <button key={cell.key} type="button"
+              onClick={cell.trained ? () => setOpenLogDate(cell.key) : undefined}
+              aria-label={`${cell.trained ? 'Ver treino de ' : ''}${cell.date.getDate()} de ${monthLabel}`}
+              className="mx-auto w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold transition-colors"
+              style={{
+                color: cell.trained ? '#fff' : cell.isToday ? AC : 'var(--text-2)',
+                background: cell.trained ? AC : cell.isToday ? 'rgba(var(--accent-rgb),.12)' : 'transparent',
+                border: cell.isToday && !cell.trained ? `1px solid ${AC}` : '1px solid transparent',
+                cursor: cell.trained ? 'pointer' : 'default',
+              }}>
+              {cell.date.getDate()}
+            </button>
+          ) : <span key={`empty-${index}`} aria-hidden="true" />)}
+        </div>
+        <div className="flex items-center justify-center gap-4 mt-4 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
+          <span className="flex items-center gap-1.5 text-[10px]" style={{ color: 'var(--text-3)' }}>
+            <span className="w-2 h-2 rounded-full" style={{ background: AC }} /> Treino concluído
+          </span>
+          <span className="flex items-center gap-1.5 text-[10px]" style={{ color: 'var(--text-3)' }}>
+            <span className="w-2 h-2 rounded-full" style={{ border: `1px solid ${AC}` }} /> Hoje
+          </span>
+        </div>
+      </section>
 
       {/* Sequência */}
       <div className={`f-card px-4 py-3 flex items-center gap-2.5 animate-slide-up ${isStreakMilestone ? 'streak-milestone' : ''}`}
