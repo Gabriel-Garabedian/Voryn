@@ -246,7 +246,6 @@ export default function WorkoutView() {
   const [workout,      setWorkout]      = useState(() => activeWorkoutService.get())
   const [restSecs,     setRestSecs]     = useState(60)
   const [showRest,     setShowRest]     = useState(false)
-  const [restExercise, setRestExercise] = useState(null)
   const [elapsed,      setElapsed]      = useState(0)
   const [confirm,      setConfirm]      = useState(false)
   const [showSummary,  setShowSummary]  = useState(false)
@@ -393,7 +392,6 @@ export default function WorkoutView() {
     setWorkout(updated)
     if (!wasDone) setLastSeriesDone((prev) => prev + 1)
     if (!wasDone) {
-      setRestExercise(ei)
       setShowRest(true)
     }
 
@@ -490,7 +488,6 @@ export default function WorkoutView() {
 
   const skipRest = useCallback(() => {
     setShowRest(false)
-    setRestExercise(null)
   }, [])
 
   async function finishWorkout(cardio) {
@@ -771,9 +768,6 @@ export default function WorkoutView() {
                     <polyline points="9 18 15 12 9 6"/>
                   </svg>
                 </button>
-                {showRest && restExercise === ei && (
-                  <RestTimer seconds={restSecs} onSkip={skipRest} seriesDone={lastSeriesDone || 1}/>
-                )}
               </React.Fragment>
             )
           }
@@ -966,9 +960,6 @@ export default function WorkoutView() {
                 )}
               </div>
             </div>
-            {showRest && restExercise === ei && (
-              <RestTimer seconds={restSecs} onSkip={skipRest} seriesDone={lastSeriesDone || 1}/>
-            )}
             </React.Fragment>
           )
         })}
@@ -990,7 +981,13 @@ export default function WorkoutView() {
 
       {/* Finish */}
       <div className="px-4 mt-6 space-y-2">
-        {confirm ? (
+        {showRest ? (
+          <RestTimer
+            seconds={restSecs}
+            onSkip={skipRest}
+            seriesDone={lastSeriesDone || 1}
+          />
+        ) : confirm ? (
           <div className="f-card p-4 space-y-3 scale-in"
             style={{ borderColor: 'rgba(var(--accent-rgb),.35)' }}>
             <p className="text-sm font-semibold text-center" style={{ color: 'var(--text-1)' }}>
