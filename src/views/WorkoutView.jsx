@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { routineService, workoutLogService, activeWorkoutService } from '@/services'
@@ -18,10 +19,8 @@ const AC = 'var(--accent)'
 const genId = () => Math.random().toString(36).slice(2, 9)
 
 // ── Rest Timer Overlay ─────────────────────────────────────
-function RestTimer({ seconds, onSkip, seriesDone }) {
+function RestTimer({ seconds, onSkip }) {
   const [rem,     setRem]     = useState(seconds)
-  const circ = 2 * Math.PI * 44
-  const prog = (rem / seconds) * circ
   const warn = rem <= 10
   // Timestamp-alvo, não um contador que vai descendo. Guardado em ref e
   // calculado só na primeira renderização (lazy init), para não chamar
@@ -104,37 +103,20 @@ function RestTimer({ seconds, onSkip, seriesDone }) {
     return () => clearTimeout(notifId)
   }, [])
 
-  return (
-    <div className="f-card workout-rest-timer p-3 flex items-center gap-3"
-      style={{
-        borderColor: warn ? 'rgba(239,68,68,.35)' : 'rgba(var(--accent-rgb),.35)',
-        background: warn ? 'rgba(239,68,68,.06)' : 'rgba(var(--accent-rgb),.06)',
-      }}>
-      <div className="relative w-16 h-16 flex-shrink-0">
-        <svg className="w-full h-full" style={{ transform: 'rotate(-90deg)' }} viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="44" fill="none" stroke="var(--border)" strokeWidth="6"/>
-          <circle cx="50" cy="50" r="44" fill="none"
-            stroke={warn ? '#ef4444' : AC}
-            strokeWidth="6" strokeLinecap="round"
-            strokeDasharray={circ}
-            strokeDashoffset={circ - prog}
-            style={{ transition: 'stroke-dashoffset 1s linear, stroke .3s' }}/>
-        </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-display text-xl leading-none" style={{ color: warn ? '#ef4444' : AC }}>{rem}</span>
-          <span className="text-[9px] uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>seg</span>
-        </div>
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: warn ? '#ef4444' : AC }}>
-          {rem > 0 ? `Descanso · série ${seriesDone}` : 'Pronto para a próxima'}
-        </p>
-        <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
-          Você pode continuar anotando enquanto descansa.
-        </p>
-      </div>
-      <Button size="sm" variant="ghost" onClick={onSkip}>Pular</Button>
-    </div>
+  return createPortal(
+    <button
+      type="button"
+      className="workout-rest-timer"
+      onClick={onSkip}
+      aria-label={`Descanso, ${rem} segundos. Toque para pular`}
+      style={{ borderColor: warn ? '#ef4444' : 'var(--accent)' }}>
+      <span className="workout-rest-timer__icon" aria-hidden="true">⌛</span>
+      <span>
+        <strong>{rem > 0 ? `DESCANSO ${rem}S` : 'PRÓXIMA SÉRIE'}</strong>
+        <small>{rem > 0 ? 'TOQUE P/ PULAR' : 'TOQUE PARA CONTINUAR'}</small>
+      </span>
+    </button>,
+    document.body,
   )
 }
 
@@ -252,7 +234,6 @@ export default function WorkoutView() {
   const [finishedData, setFinishedData] = useState(null)
   const [showCardio,   setShowCardio]   = useState(false)
   const [saving,       setSaving]       = useState(false)
-  const [lastSeriesDone, setLastSeriesDone] = useState(0)
   const [showExPicker,  setShowExPicker]  = useState(false)
   const [detailExercise, setDetailExercise] = useState(null) // instruções durante o treino
   const [openNotes,     setOpenNotes]     = useState({}) // { [exerciseIndex]: boolean } — bloco de anotação expandido ou não
@@ -390,7 +371,6 @@ export default function WorkoutView() {
     }
     activeWorkoutService.save(updated)
     setWorkout(updated)
-    if (!wasDone) setLastSeriesDone((prev) => prev + 1)
     if (!wasDone) {
       setShowRest(true)
     }
@@ -980,12 +960,11 @@ export default function WorkoutView() {
       </div>
 
       {/* Finish */}
-      <div className={showRest ? 'workout-action-bar workout-rest-active px-4 space-y-2' : 'px-4 mt-6 space-y-2'}>
+      <div className="px-4 mt-6 space-y-2">
         {showRest ? (
           <RestTimer
             seconds={restSecs}
             onSkip={skipRest}
-            seriesDone={lastSeriesDone || 1}
           />
         ) : confirm ? (
           <div className="f-card p-4 space-y-3 scale-in"
