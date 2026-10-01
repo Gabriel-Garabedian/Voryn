@@ -19,7 +19,6 @@ const genId = () => Math.random().toString(36).slice(2, 9)
 // ── Rest Timer Overlay ─────────────────────────────────────
 function RestTimer({ seconds, onSkip, seriesDone }) {
   const [rem,     setRem]     = useState(seconds)
-  const [visible, setVisible] = useState(false)
   const circ = 2 * Math.PI * 44
   const prog = (rem / seconds) * circ
   const warn = rem <= 10
@@ -29,12 +28,6 @@ function RestTimer({ seconds, onSkip, seriesDone }) {
   const endsAtRef = useRef(null)
   if (endsAtRef.current === null) endsAtRef.current = Date.now() + seconds * 1000
   const firedRef  = useRef(false)
-
-  // Smooth entrance after 300ms
-  useEffect(() => {
-    const t = setTimeout(() => setVisible(true), 80)
-    return () => clearTimeout(t)
-  }, [])
 
   // BUG REPORTADO: o timer antigo fazia setTimeout(() => setRem(r => r-1),
   // 1000) — ou seja, "conta -1 daqui a 1 segundo", encadeado. Quando o
@@ -111,24 +104,14 @@ function RestTimer({ seconds, onSkip, seriesDone }) {
   }, [])
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center"
+    <div className="f-card mt-3 p-3 flex items-center gap-3"
       style={{
-        background: 'rgba(8,8,8,.97)', backdropFilter: 'blur(20px)',
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'opacity .3s ease, transform .35s cubic-bezier(.34,1.2,.64,1)',
+        borderColor: warn ? 'rgba(239,68,68,.35)' : 'rgba(var(--accent-rgb),.35)',
+        background: warn ? 'rgba(239,68,68,.06)' : 'rgba(var(--accent-rgb),.06)',
       }}>
-      {/* "Série concluída!" badge */}
-      <div className="mb-6 px-4 py-2 rounded-full text-xs font-semibold animate-slide-up"
-        style={{ background: 'rgba(74,222,128,.12)', border: '1px solid rgba(74,222,128,.3)', color: '#4ade80' }}>
-        Série {seriesDone} concluída
-      </div>
-      <p className="font-display text-lg uppercase tracking-widest mb-6" style={{ color: 'var(--text-3)' }}>
-        Descansando
-      </p>
-      <div className="relative w-44 h-44">
+      <div className="relative w-16 h-16 flex-shrink-0">
         <svg className="w-full h-full" style={{ transform: 'rotate(-90deg)' }} viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="44" fill="none" stroke="var(--card)" strokeWidth="6"/>
+          <circle cx="50" cy="50" r="44" fill="none" stroke="var(--border)" strokeWidth="6"/>
           <circle cx="50" cy="50" r="44" fill="none"
             stroke={warn ? '#ef4444' : AC}
             strokeWidth="6" strokeLinecap="round"
@@ -137,19 +120,19 @@ function RestTimer({ seconds, onSkip, seriesDone }) {
             style={{ transition: 'stroke-dashoffset 1s linear, stroke .3s' }}/>
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-display text-5xl" style={{ color: warn ? '#ef4444' : AC }}>{rem}</span>
-          <span className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>seg</span>
+          <span className="font-display text-xl leading-none" style={{ color: warn ? '#ef4444' : AC }}>{rem}</span>
+          <span className="text-[9px] uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>seg</span>
         </div>
       </div>
-      {warn && (
-        <p className="text-sm font-semibold mt-4 animate-pulse" style={{ color: '#ef4444' }}>
-          Prepare-se!
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: warn ? '#ef4444' : AC }}>
+          {rem > 0 ? `Descanso · série ${seriesDone}` : 'Pronto para a próxima'}
         </p>
-      )}
-      <Button className="mt-6 px-10" onClick={onSkip}>Pular descanso</Button>
-      <p className="text-xs mt-3" style={{ color: 'var(--text-3)' }}>
-        {rem > 0 ? `Próxima série em ${rem}s...` : 'Pronto!'}
-      </p>
+        <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
+          Você pode continuar anotando enquanto descansa.
+        </p>
+      </div>
+      <Button size="sm" variant="ghost" onClick={onSkip}>Pular</Button>
     </div>
   )
 }
@@ -262,6 +245,7 @@ export default function WorkoutView() {
   const [workout,      setWorkout]      = useState(() => activeWorkoutService.get())
   const [restSecs,     setRestSecs]     = useState(60)
   const [showRest,     setShowRest]     = useState(false)
+  const [restExercise, setRestExercise] = useState(null)
   const [elapsed,      setElapsed]      = useState(0)
   const [confirm,      setConfirm]      = useState(false)
   const [showSummary,  setShowSummary]  = useState(false)
@@ -375,7 +359,10 @@ export default function WorkoutView() {
     activeWorkoutService.save(updated)
     setWorkout(updated)
     if (!wasDone) setLastSeriesDone((prev) => prev + 1)
-    if (!wasDone) setShowRest(true)
+    if (!wasDone) {
+      setRestExercise(ei)
+      setShowRest(true)
+    }
 
     // Avança pro próximo exercício não concluído automaticamente — só
     // quando é o exercício que estava expandido que acabou de ser
@@ -468,7 +455,10 @@ export default function WorkoutView() {
     setWorkout(updated)
   }
 
-  const skipRest = useCallback(() => setShowRest(false), [])
+  const skipRest = useCallback(() => {
+    setShowRest(false)
+    setRestExercise(null)
+  }, [])
 
   async function finishWorkout(cardio) {
     if (!workout) return
@@ -616,8 +606,6 @@ export default function WorkoutView() {
 
   return (
     <div className="app-view workout-view pb-8">
-      {showRest && <RestTimer seconds={restSecs} onSkip={skipRest} seriesDone={lastSeriesDone || 1} />}
-
       {detailExercise && (
         <ExerciseDetail
           exercise={detailExercise}
@@ -721,35 +709,41 @@ export default function WorkoutView() {
           // que expande ao tocar.
           if (!isExpanded) {
             return (
-              <button key={ex.id} onClick={() => setExpandedEx(ei)}
-                className="f-card w-full overflow-hidden flex items-center gap-3 px-4 py-3 text-left transition-all"
-                style={exDone ? { borderColor: 'rgba(var(--accent-rgb),.4)', background: 'rgba(var(--accent-rgb),.05)' } : {}}>
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                  style={{
-                    background: exDone ? AC : 'var(--card)',
-                    border: `1px solid ${exDone ? AC : 'var(--border)'}`,
-                  }}>
-                  {exDone
-                    ? <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="3">
-                        <polyline points="20 6 9 17 4 12"/>
-                      </svg>
-                    : <span className="font-display text-xs" style={{ color: 'var(--text-3)' }}>{ei + 1}</span>
-                  }
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm truncate" style={{ color: exDone ? AC : 'var(--text-1)' }}>{ex.name}</p>
-                  <p className="text-xs" style={{ color: 'var(--text-3)' }}>{doneCount} de {ex.sets.length} séries concluídas</p>
-                </div>
-                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-3)" strokeWidth="2" style={{ flexShrink: 0 }}>
-                  <polyline points="9 18 15 12 9 6"/>
-                </svg>
-              </button>
+              <React.Fragment key={ex.id}>
+                <button onClick={() => setExpandedEx(ei)}
+                  className="f-card w-full overflow-hidden flex items-center gap-3 px-4 py-3 text-left transition-all"
+                  style={exDone ? { borderColor: 'rgba(var(--accent-rgb),.4)', background: 'rgba(var(--accent-rgb),.05)' } : {}}>
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{
+                      background: exDone ? AC : 'var(--card)',
+                      border: `1px solid ${exDone ? AC : 'var(--border)'}`,
+                    }}>
+                    {exDone
+                      ? <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="3">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      : <span className="font-display text-xs" style={{ color: 'var(--text-3)' }}>{ei + 1}</span>
+                    }
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm truncate" style={{ color: exDone ? AC : 'var(--text-1)' }}>{ex.name}</p>
+                    <p className="text-xs" style={{ color: 'var(--text-3)' }}>{doneCount} de {ex.sets.length} séries concluídas</p>
+                  </div>
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-3)" strokeWidth="2" style={{ flexShrink: 0 }}>
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </button>
+                {showRest && restExercise === ei && (
+                  <RestTimer seconds={restSecs} onSkip={skipRest} seriesDone={lastSeriesDone || 1}/>
+                )}
+              </React.Fragment>
             )
           }
 
           // ── Expandido: card completo (comportamento de sempre) ───────
           return (
-            <div key={ex.id} className="glass-card overflow-hidden"
+            <React.Fragment key={ex.id}>
+            <div className="glass-card overflow-hidden"
               style={exDone ? { borderColor: 'rgba(var(--accent-rgb),.4)' } : {}}>
 
               {/* Exercise header */}
@@ -907,6 +901,10 @@ export default function WorkoutView() {
                 )}
               </div>
             </div>
+            {showRest && restExercise === ei && (
+              <RestTimer seconds={restSecs} onSkip={skipRest} seriesDone={lastSeriesDone || 1}/>
+            )}
+            </React.Fragment>
           )
         })}
       </div>
