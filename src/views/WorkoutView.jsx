@@ -19,14 +19,9 @@ const AC = 'var(--accent)'
 const genId = () => Math.random().toString(36).slice(2, 9)
 
 // ── Rest Timer Overlay ─────────────────────────────────────
-function RestTimer({ seconds, onSkip }) {
-  const [rem,     setRem]     = useState(seconds)
+function RestTimer({ seconds, endsAt, onSkip }) {
+  const [rem,     setRem]     = useState(() => Math.max(0, Math.ceil((endsAt - Date.now()) / 1000)))
   const warn = rem <= 10
-  // Timestamp-alvo, não um contador que vai descendo. Guardado em ref e
-  // calculado só na primeira renderização (lazy init), para não chamar
-  // Date.now() de novo a cada re-render nem recalcular o alvo.
-  const endsAtRef = useRef(null)
-  if (endsAtRef.current === null) endsAtRef.current = Date.now() + seconds * 1000
   const firedRef  = useRef(false)
 
   // BUG REPORTADO: o timer antigo fazia setTimeout(() => setRem(r => r-1),
@@ -44,7 +39,7 @@ function RestTimer({ seconds, onSkip }) {
   // vem certo — não fica arrastando o atraso acumulado.
   useEffect(() => {
     function tick() {
-      const remaining = Math.max(0, Math.ceil((endsAtRef.current - Date.now()) / 1000))
+      const remaining = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000))
       setRem(remaining)
       if (remaining <= 0 && !firedRef.current) {
         firedRef.current = true
@@ -61,7 +56,7 @@ function RestTimer({ seconds, onSkip }) {
       clearInterval(interval)
       document.removeEventListener('visibilitychange', onVisibility)
     }
-  }, [onSkip])
+  }, [endsAt, onSkip])
 
   useEffect(() => {
     if (rem === 0 && navigator.vibrate) navigator.vibrate([200, 100, 200])
@@ -84,7 +79,7 @@ function RestTimer({ seconds, onSkip }) {
   useEffect(() => {
     if (!('Notification' in window) || Notification.permission !== 'granted') return
     if (!('serviceWorker' in navigator)) return
-    const ms = Math.max(0, endsAtRef.current - Date.now())
+    const ms = Math.max(0, endsAt - Date.now())
     const notifId = setTimeout(() => {
       navigator.serviceWorker.ready.then(reg => {
         reg.showNotification('Descanso acabou', {
@@ -101,7 +96,9 @@ function RestTimer({ seconds, onSkip }) {
     // sem isso, uma notificação "descanso acabou" poderia disparar depois
     // que a pessoa já pulou o descanso e seguiu pra próxima série.
     return () => clearTimeout(notifId)
-  }, [])
+  }, [endsAt])
+
+  const progress = Math.min(100, Math.max(0, (rem / seconds) * 100))
 
   return createPortal(
     <button
@@ -110,11 +107,15 @@ function RestTimer({ seconds, onSkip }) {
       onClick={onSkip}
       aria-label={`Descanso, ${rem} segundos. Toque para pular`}
       style={{ borderColor: warn ? '#ef4444' : 'var(--accent)' }}>
-      <span className="workout-rest-timer__icon" aria-hidden="true">⌛</span>
-      <span>
+      <span className="workout-rest-timer__icon" aria-hidden="true">◷</span>
+      <span className="workout-rest-timer__copy">
         <strong>{rem > 0 ? `DESCANSO ${rem}S` : 'PRÓXIMA SÉRIE'}</strong>
         <small>{rem > 0 ? 'TOQUE P/ PULAR' : 'TOQUE PARA CONTINUAR'}</small>
       </span>
+      <span className="workout-rest-timer__progress" aria-hidden="true">
+        <span style={{ width: `${progress}%` }} />
+      </span>
+      <span className="workout-rest-timer__skip" aria-hidden="true">PULAR</span>
     </button>,
     document.body,
   )
@@ -226,8 +227,8 @@ export default function WorkoutView() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [workout,      setWorkout]      = useState(() => activeWorkoutService.get())
-  const [restSecs,     setRestSecs]     = useState(60)
-  const [showRest,     setShowRest]     = useState(false)
+  const [restSecs,     setRestSecs]     = useState(() => activeWorkoutService.get()?.restDuration || 60)
+  const [restEndsAt,   setRestEndsAt]   = useState(() => activeWorkoutService.get()?.restEndsAt || null)
   const [elapsed,      setElapsed]      = useState(0)
   const [confirm,      setConfirm]      = useState(false)
   const [showSummary,  setShowSummary]  = useState(false)
@@ -372,7 +373,11 @@ export default function WorkoutView() {
     activeWorkoutService.save(updated)
     setWorkout(updated)
     if (!wasDone) {
-      setShowRest(true)
+      const nextRestEndsAt = Date.now() + restSecs * 1000
+      const withRest = { ...updated, restEndsAt: nextRestEndsAt, restDuration: restSecs }
+      activeWorkoutService.save(withRest)
+      setWorkout(withRest)
+      setRestEndsAt(nextRestEndsAt)
     }
 
     // Avança pro próximo exercício não concluído automaticamente — só
@@ -467,8 +472,13 @@ export default function WorkoutView() {
   }
 
   const skipRest = useCallback(() => {
-    setShowRest(false)
-  }, [])
+    setRestEndsAt(null)
+    if (workout) {
+      const { restEndsAt: _restEndsAt, restDuration: _restDuration, ...withoutRest } = workout
+      activeWorkoutService.save(withoutRest)
+      setWorkout(withoutRest)
+    }
+  }, [workout])
 
   async function finishWorkout(cardio) {
     if (!workout) return
@@ -618,7 +628,7 @@ export default function WorkoutView() {
   const doneSets  = workout.exercises.reduce((a, ex) => a + ex.sets.filter(s => s.done).length, 0)
 
   return (
-    <div className={`app-view workout-view ${showRest ? 'pb-40' : 'pb-8'}`}>
+    <div className={`app-view workout-view ${restEndsAt ? 'pb-40' : 'pb-8'}`}>
       {detailExercise && (
         <ExerciseDetail
           exercise={detailExercise}
@@ -961,9 +971,11 @@ export default function WorkoutView() {
 
       {/* Finish */}
       <div className="px-4 mt-6 space-y-2">
-        {showRest ? (
+        {restEndsAt ? (
           <RestTimer
+            key={restEndsAt}
             seconds={restSecs}
+            endsAt={restEndsAt}
             onSkip={skipRest}
           />
         ) : confirm ? (

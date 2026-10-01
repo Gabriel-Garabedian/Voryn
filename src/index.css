@@ -780,11 +780,11 @@ body::after { display: none; }
   z-index: 100;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 10px;
   width: min(calc(100vw - 32px), 608px);
   min-height: 48px;
-  padding: 10px 18px;
+  padding: 9px 12px;
   transform: translateX(-50%);
   border: 1px solid var(--accent);
   border-radius: 14px;
@@ -798,8 +798,18 @@ body::after { display: none; }
   background: var(--accent-dim);
 }
 .workout-rest-timer__icon {
-  font-size: 16px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 9px;
+  font-size: 18px;
   line-height: 1;
+}
+.workout-rest-timer__copy {
+  min-width: 0;
+  flex: 1;
 }
 .workout-rest-timer strong,
 .workout-rest-timer small {
@@ -815,6 +825,28 @@ body::after { display: none; }
   font-size: 10px;
   letter-spacing: .08em;
   opacity: .8;
+}
+.workout-rest-timer__progress {
+  width: 72px;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255,255,255,.28);
+}
+.workout-rest-timer__progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #fff;
+  transition: width .3s linear;
+}
+.workout-rest-timer__skip {
+  padding: 7px 9px;
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
 }
 .native-dock {
   border-radius: 20px !important;
