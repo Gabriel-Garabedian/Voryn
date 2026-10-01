@@ -775,24 +775,25 @@ body::after { display: none; }
 }
 .workout-action-bar {
   position: fixed;
-  left: 50%;
+  left: 16px;
+  right: 16px;
   bottom: max(12px, env(safe-area-inset-bottom));
   z-index: 30;
-  width: min(100%, 640px);
-  transform: translateX(-50%);
+  width: auto;
+  max-width: 608px;
+  margin: 0 auto;
   pointer-events: none;
 }
 .workout-action-bar > * {
   pointer-events: auto;
 }
-.workout-action-bar::before {
-  content: '';
-  position: absolute;
-  inset: -10px 0 -12px;
-  z-index: -1;
-  border-radius: 20px;
-  background: linear-gradient(180deg, transparent, rgba(8, 8, 12, .92) 28%);
-  pointer-events: none;
+.workout-action-bar .f-btn {
+  width: 100%;
+}
+.workout-rest-timer {
+  width: 100%;
+  margin-top: 0;
+  box-sizing: border-box;
 }
 .native-dock {
   border-radius: 20px !important;

@@ -105,7 +105,7 @@ function RestTimer({ seconds, onSkip, seriesDone }) {
   }, [])
 
   return (
-    <div className="f-card mt-3 p-3 flex items-center gap-3"
+    <div className="f-card workout-rest-timer p-3 flex items-center gap-3"
       style={{
         borderColor: warn ? 'rgba(239,68,68,.35)' : 'rgba(var(--accent-rgb),.35)',
         background: warn ? 'rgba(239,68,68,.06)' : 'rgba(var(--accent-rgb),.06)',
