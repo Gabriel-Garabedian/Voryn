@@ -773,6 +773,27 @@ body::after { display: none; }
   top: 0;
   z-index: 20;
 }
+.workout-action-bar {
+  position: fixed;
+  left: 50%;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  z-index: 30;
+  width: min(100%, 640px);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.workout-action-bar > * {
+  pointer-events: auto;
+}
+.workout-action-bar::before {
+  content: '';
+  position: absolute;
+  inset: -10px 0 -12px;
+  z-index: -1;
+  border-radius: 20px;
+  background: linear-gradient(180deg, transparent, rgba(8, 8, 12, .92) 28%);
+  pointer-events: none;
+}
 .native-dock {
   border-radius: 20px !important;
   border: 1px solid rgba(255,255,255,.14) !important;
