@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
+import { useNavigate } from 'react-router-dom'
 import { routineService } from '@/services'
 import { Button } from '@/components/ui'
 import { useToast } from '@/components/ui/Toast'
@@ -20,6 +21,7 @@ function genId() { return Math.random().toString(36).slice(2,9) }
 // de "Minha Rotina" para deixar claro que é a ficha de outra pessoa.
 export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const targetUserId = embeddedUserId || user?.id
   const isEmbedded = Boolean(embeddedUserId)
   const toast = useToast()
@@ -134,6 +136,8 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
   }
 
   const day = routines[selectedDay]
+  const exerciseCount = day?.exercises?.length || 0
+  const totalSets = (day?.exercises || []).reduce((total, exercise) => total + (Number(exercise.sets) || 0), 0)
 
   if (showPicker) {
     return (
@@ -257,6 +261,30 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                   </button>
                 )}
               </div>
+              {exerciseCount > 0 && (
+                <div className="routine-overview mt-4 pt-3 flex items-center gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>
+                      Resumo da sessão
+                    </p>
+                    <p className="text-sm mt-1" style={{ color: 'var(--text-2)' }}>
+                      {exerciseCount} exercício{exerciseCount === 1 ? '' : 's'} · {totalSets} séries
+                    </p>
+                  </div>
+                  {!isEmbedded && (
+                    <button
+                      type="button"
+                      onClick={() => navigate('/app/workout')}
+                      className="routine-start-button"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                      Iniciar treino
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Exercise list */}
