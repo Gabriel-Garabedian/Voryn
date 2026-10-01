@@ -59,7 +59,7 @@ function WeeklySummaryBanner({ lastWeek, metrics, streak }) {
             Resumo da semana passada
           </p>
         </div>
-        <button onClick={dismiss} style={{ color:'var(--text-3)', marginTop:2 }}>
+        <button type="button" aria-label="Fechar resumo semanal" onClick={dismiss} style={{ color:'var(--text-3)', marginTop:2 }}>
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
@@ -116,34 +116,43 @@ export default function HomeView() {
   const [metrics,      setMetrics]      = useState(null)
   const [lastWeek,     setLastWeek]     = useState(null)
   const [loading,      setLoading]      = useState(true)
+  const [loadError,    setLoadError]    = useState(false)
+  const [reloadKey,    setReloadKey]    = useState(0)
   const [openLogDate,  setOpenLogDate]  = useState(null)
 
   const todayKey = localDateKey(today)
 
   useEffect(() => {
     if (!user) return
+    let cancelled = false
+    setLoading(true)
+    setLoadError(false)
     Promise.all([
       workoutLogService.getTrainedDates(user.id),
       routineService.getAll(user.id),
       workoutLogService.getMetrics(user.id),
     ]).then(([dates, { data: rts }, m]) => {
+      if (cancelled) return
       setTrainedDates(dates || [])
       setRoutines(rts || {})
       setMetrics(m)
 
-      // Calculate last week count for delta
       const oneWeekAgo  = new Date(today); oneWeekAgo.setDate(today.getDate() - 7)
       const twoWeeksAgo = new Date(today); twoWeeksAgo.setDate(today.getDate() - 14)
       const thisWeekCount = (dates || []).filter(d => new Date(d) >= oneWeekAgo).length
       const prevWeekCount = (dates || []).filter(d => new Date(d) >= twoWeeksAgo && new Date(d) < oneWeekAgo).length
       setLastWeek({ thisWeek: thisWeekCount, prevWeek: prevWeekCount, delta: thisWeekCount - prevWeekCount })
-      setLoading(false)
+    }).catch(() => {
+      if (!cancelled) setLoadError(true)
+    }).finally(() => {
+      if (!cancelled) setLoading(false)
     })
+    return () => { cancelled = true }
     // 'today' é `new Date()` recém-criado a cada render (não memoizado);
     // incluí-lo aqui faria esse fetch rodar de novo em toda renderização,
     // não só quando o usuário muda.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user])
+  }, [user, reloadKey])
 
   const streak     = calcStreak(trainedDates)
   const bestStreak = calcBestStreak(trainedDates)
@@ -168,6 +177,16 @@ export default function HomeView() {
     : 0
 
   if (loading) return <SkeletonHome/>
+  if (loadError) return (
+    <div className="app-view px-4 pt-10 pb-8">
+      <div className="f-card p-8 text-center space-y-4">
+        <div className="section-index">OFFLINE / ERROR</div>
+        <h1 className="font-display text-2xl uppercase" style={{ color: 'var(--text-1)' }}>Não foi possível carregar</h1>
+        <p className="text-sm" style={{ color: 'var(--text-3)' }}>Verifique sua conexão e tente novamente.</p>
+        <button type="button" onClick={() => setReloadKey(key => key + 1)} className="f-btn f-btn-accent mx-auto">Tentar novamente</button>
+      </div>
+    </div>
+  )
 
   return (
     <>
@@ -223,9 +242,9 @@ export default function HomeView() {
             <span className="text-xs uppercase" style={{ color: isToday ? AC : 'var(--text-3)', fontWeight: isToday ? 700 : 500 }}>
               {['D','S','T','Q','Q','S','S'][dayIndex]}
             </span>
-            <div
+            <button
+              type="button"
               onClick={trained ? () => setOpenLogDate(key) : undefined}
-              role={trained ? 'button' : undefined}
               aria-label={trained ? `Ver treino de ${date.getDate()}` : undefined}
               className="w-8 h-8 rounded-full flex items-center justify-center"
               style={{
@@ -240,7 +259,7 @@ export default function HomeView() {
               ) : (
                 <span className="font-display text-sm" style={{ color: isToday ? AC : 'var(--text-3)' }}>{date.getDate()}</span>
               )}
-            </div>
+            </button>
           </div>
         ))}
       </div>

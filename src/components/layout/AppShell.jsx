@@ -85,11 +85,11 @@ function MoreSheet({ open, onClose, navigate, base }) {
   return (
     <div className="fixed inset-0 z-50" onClick={onClose}>
       <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,.65)', backdropFilter: 'blur(6px)' }}/>
-      <div className="absolute bottom-0 left-0 right-0 max-w-2xl mx-auto slide-in-bottom glass-panel"
+      <div role="dialog" aria-modal="true" aria-labelledby="more-options-title" className="absolute bottom-0 left-0 right-0 max-w-2xl mx-auto slide-in-bottom glass-panel"
         style={{ borderRadius: '24px 24px 0 0', borderBottom: 'none', padding: '12px 20px 40px' }}
         onClick={e => e.stopPropagation()}>
         <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: 'var(--border)' }}/>
-        <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--text-3)' }}>Mais opções</p>
+        <p id="more-options-title" className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--text-3)' }}>Mais opções</p>
         <div className="grid grid-cols-3 gap-3">
           {MORE_EXTRAS.map(e => (
             <button key={e.path}
@@ -287,7 +287,7 @@ export default function AppShell() {
       </div>
 
       {/* Bottom Nav */}
-      <nav className="px-3 pb-3" style={{ background: 'transparent', flexShrink: 0, display: inActiveWorkout ? 'none' : undefined }}>
+      <nav aria-label="Navegação principal" className="px-3 pb-3" style={{ background: 'transparent', flexShrink: 0, display: inActiveWorkout ? 'none' : undefined }}>
         <div className="glass-panel native-dock flex items-center justify-around px-2 pt-2 max-w-2xl mx-auto shadow-2xl" style={{ paddingBottom: 'max(10px, env(safe-area-inset-bottom))', borderColor: 'rgba(255,255,255,.12)' }}>
           {navItems.map(item => {
             const active = isActive(item.path)
@@ -298,7 +298,8 @@ export default function AppShell() {
                 <button key={item.path} onClick={() => handleNav(item.path)}
                   className="flex flex-col items-center gap-1 px-2 active:scale-95 transition-transform min-w-[58px]"
                   style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
-                  aria-label={item.label}>
+                  aria-label={item.label}
+                  aria-current={active ? 'page' : undefined}>
                   <span className="flex items-center justify-center rounded-full"
                     style={{
                       width: 50, height: 50, marginTop: -22, background: 'var(--accent)', color: '#fff',
@@ -315,6 +316,8 @@ export default function AppShell() {
             return (
               <button key={item.path} onClick={() => handleNav(item.path)}
                 className="dock-item flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all relative active:scale-95 min-w-[58px]"
+                aria-label={item.label}
+                aria-current={active ? 'page' : undefined}
                 style={{ color: active ? 'var(--accent-2)' : 'var(--muted)', border: 'none', background: active ? 'rgba(var(--accent-rgb),.1)' : 'transparent', cursor: 'pointer' }}>
                 {active && (
                   <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-7 h-1 rounded-full"

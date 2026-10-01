@@ -47,7 +47,8 @@ function ToastItem({ toast, onRemove }) {
 
   return (
     <div
-      onClick={() => { setVisible(false); setTimeout(() => onRemove(toast.id), 300) }}
+      role={toast.type === 'error' ? 'alert' : 'status'}
+      aria-live={toast.type === 'error' ? 'assertive' : 'polite'}
       style={{
         display: 'flex', alignItems: 'center', gap: 10,
         background: s.bg,
@@ -56,7 +57,6 @@ function ToastItem({ toast, onRemove }) {
         padding: '12px 16px',
         minWidth: 240, maxWidth: 340,
         backdropFilter: 'blur(12px)',
-        cursor: 'pointer',
         transform: visible ? 'translateY(0) scale(1)' : 'translateY(12px) scale(.95)',
         opacity: visible ? 1 : 0,
         transition: 'all .28s cubic-bezier(.34,1.56,.64,1)',
@@ -67,6 +67,21 @@ function ToastItem({ toast, onRemove }) {
       <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-1)', flex: 1, lineHeight: 1.4 }}>
         {toast.message}
       </span>
+      {toast.type !== 'loading' && (
+        <button
+          type="button"
+          aria-label="Fechar notificação"
+          onClick={() => { setVisible(false); setTimeout(() => onRemove(toast.id), 300) }}
+          style={{
+            width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            border: 0, borderRadius: 8, color: 'var(--text-3)', background: 'transparent', cursor: 'pointer',
+          }}
+        >
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      )}
     </div>
   )
 }
@@ -95,7 +110,7 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={api}>
       {children}
-      <div style={{
+      <div role="region" aria-label="Notificações" style={{
         position: 'fixed', bottom: 80, left: '50%', transform: 'translateX(-50%)',
         display: 'flex', flexDirection: 'column', gap: 8, zIndex: 9999,
         pointerEvents: 'none', alignItems: 'center',

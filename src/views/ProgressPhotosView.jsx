@@ -92,6 +92,8 @@ function UploadCard({ studentId, onUploaded }) {
         )}
         {preview && (
           <button
+            type="button"
+            aria-label="Remover foto selecionada"
             onClick={e => { e.stopPropagation(); setPreview(null); setFile(null) }}
             className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center"
             style={{ background: 'rgba(0,0,0,.6)' }}>
@@ -111,6 +113,8 @@ function UploadCard({ studentId, onUploaded }) {
           {CATEGORIES.map(c => (
             <button key={c.key} type="button"
               onClick={() => setForm(f => ({ ...f, category: c.key }))}
+              aria-pressed={form.category === c.key}
+              aria-label={`Selecionar ângulo ${c.label}`}
               className="f-card py-2 text-center text-xs font-semibold transition-all"
               style={{
                 borderColor: form.category === c.key ? AC : 'var(--border)',

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useId, useRef } from 'react'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'motion/react'
 
@@ -36,11 +36,20 @@ export function Button({ children, variant='accent', size='md', className, loadi
 
 // ── Input ──────────────────────────────────────────────────
 export function Input({ label, error, className, ...props }) {
+  const generatedId = useId()
+  const inputId = props.id || `input-${generatedId.replace(/:/g, '')}`
+  const errorId = error ? `${inputId}-error` : undefined
   return (
     <div className="space-y-1.5">
-      {label && <label className="f-label">{label}</label>}
-      <input className={clsx('f-input', error && 'border-red-400 focus:border-red-400', className)} {...props} />
-      {error && <p className="text-xs" style={{ color: 'var(--danger)' }}>{error}</p>}
+      {label && <label className="f-label" htmlFor={inputId}>{label}</label>}
+      <input
+        id={inputId}
+        aria-invalid={error ? 'true' : undefined}
+        aria-describedby={errorId}
+        className={clsx('f-input', error && 'border-red-400 focus:border-red-400', className)}
+        {...props}
+      />
+      {error && <p id={errorId} role="alert" className="text-xs" style={{ color: 'var(--danger)' }}>{error}</p>}
     </div>
   )
 }
@@ -58,6 +67,26 @@ export function Badge({ children, variant='accent', className }) {
 // ── Modal ──────────────────────────────────────────────────
 export function Modal({ open, onClose, title, children, size = 'md' }) {
   const sizes = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-lg', xl: 'max-w-2xl' }
+  const titleId = useId().replace(/:/g, '')
+  const dialogRef = useRef(null)
+  const restoreFocusRef = useRef(null)
+
+  useEffect(() => {
+    if (!open) return
+    restoreFocusRef.current = document.activeElement
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const onKeyDown = event => {
+      if (event.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKeyDown)
+    requestAnimationFrame(() => dialogRef.current?.querySelector('button, input, select, textarea, [tabindex="0"]')?.focus())
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      document.body.style.overflow = previousOverflow
+      restoreFocusRef.current?.focus?.()
+    }
+  }, [open, onClose])
   return (
     <AnimatePresence>
       {open && (
@@ -73,6 +102,8 @@ export function Modal({ open, onClose, title, children, size = 'md' }) {
           <motion.div
             role="dialog"
             aria-modal="true"
+            aria-labelledby={title ? titleId : undefined}
+            ref={dialogRef}
             className={clsx('glass-panel w-full p-6', sizes[size])}
             initial={{ opacity: 0, y: 16, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -82,8 +113,8 @@ export function Modal({ open, onClose, title, children, size = 'md' }) {
             {title && (
               <div className="flex items-center justify-between mb-5 pb-4"
                 style={{ borderBottom: '1px solid var(--border)' }}>
-                <h3 className="font-display text-2xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>{title}</h3>
-                <button aria-label="Fechar" onClick={onClose} className="f-btn f-btn-ghost p-2 min-h-0">
+                <h3 id={titleId} className="font-display text-2xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>{title}</h3>
+                <button type="button" aria-label="Fechar janela" onClick={onClose} className="f-btn f-btn-ghost p-2 min-h-0">
                   <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                   </svg>

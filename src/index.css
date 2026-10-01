@@ -358,6 +358,37 @@ body::after {
   padding-top: 10px;
   letter-spacing: .005em;
 }
+
+/* Surface treatment: keep the premium dark language without making every
+   screen depend on blur, gradients, or glow to establish hierarchy. */
+body::before {
+  background-image: radial-gradient(circle at 50% 0%, rgba(var(--accent-rgb), .1), transparent 42%);
+  background-size: auto;
+  opacity: .7;
+}
+body::after { display: none; }
+.f-card, .glass-card, .glass-panel {
+  background: var(--card);
+  backdrop-filter: none;
+}
+.f-card::before, .glass-card::before, .glass-panel::before { display: none; }
+.f-card:hover, .glass-card:hover {
+  transform: none;
+  box-shadow: var(--shadow-card);
+}
+.f-btn-accent {
+  background: var(--accent);
+  box-shadow: 0 8px 18px rgba(var(--accent-rgb), .2);
+}
+.f-btn-accent:hover:not(:disabled) {
+  background: var(--accent-dim);
+  filter: none;
+  box-shadow: 0 10px 22px rgba(var(--accent-rgb), .26);
+}
+:where(button, a, input, select, textarea):focus-visible {
+  outline: 3px solid rgba(var(--accent-rgb), .55);
+  outline-offset: 2px;
+}
 .app-view > * {
   animation: slideUp .3s ease-out both;
 }
