@@ -2179,3 +2179,206 @@ body::after {
    sobe acima do painel — mas .glass-panel tem overflow:hidden (pro brilho
    interno), o que cortava o topo do círculo. */
 .native-dock { overflow: visible !important; }
+
+/* Desktop workspace: mobile keeps the bottom dock and single-column rhythm.
+   On larger screens the same routes become a proper dashboard shell instead
+   of leaving a phone layout centered in a wide, empty viewport. */
+@media (min-width: 1024px) {
+  .app-shell {
+    --desktop-sidebar: 236px;
+    display: grid !important;
+    grid-template-columns: var(--desktop-sidebar) minmax(0, 1fr);
+    grid-template-rows: 82px minmax(0, 1fr);
+    min-height: 100vh;
+  }
+
+  .app-shell .app-header {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 18px 42px 16px !important;
+  }
+
+  .app-shell .app-header > div {
+    max-width: 1360px !important;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .app-shell .app-header .brand-hub {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .app-shell .app-content {
+    grid-column: 2;
+    grid-row: 2;
+    min-width: 0;
+  }
+
+  .app-shell .app-content__inner {
+    max-width: 1360px !important;
+    padding: 0 42px 48px;
+  }
+
+  .app-shell .app-nav {
+    position: fixed;
+    z-index: 30;
+    inset: 0 auto 0 0;
+    display: flex !important;
+    width: var(--desktop-sidebar);
+    padding: 24px 14px !important;
+    background: rgba(var(--surface-rgb), .72) !important;
+    border-right: 1px solid rgba(255,255,255,.08);
+    backdrop-filter: blur(22px);
+  }
+
+  .app-shell .native-dock {
+    width: 100%;
+    max-width: none !important;
+    align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    padding: 74px 8px 12px !important;
+    border: 0;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .app-shell .native-dock::before {
+    content: 'VORYN';
+    position: absolute;
+    top: 24px;
+    left: 22px;
+    color: var(--text-1);
+    font: 400 25px/1 'Bebas Neue', sans-serif;
+    letter-spacing: .16em;
+  }
+
+  .app-shell .native-dock button,
+  .app-shell .native-dock .dock-item {
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 11px 14px !important;
+    border-radius: 12px !important;
+    text-align: left;
+  }
+
+  .app-shell .native-dock button[aria-current="page"] {
+    color: var(--text-1) !important;
+    background: rgba(var(--accent-rgb), .14) !important;
+    box-shadow: inset 3px 0 var(--accent);
+  }
+
+  .app-shell .native-dock button[aria-current="page"] span:first-child {
+    color: var(--accent-2) !important;
+  }
+
+  .app-shell .native-dock button > span:first-child {
+    width: 22px !important;
+    height: 22px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .app-shell .native-dock button > span:first-child svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .app-shell .native-dock button > span:last-child {
+    font: 700 12px/1.2 'Manrope', sans-serif !important;
+    letter-spacing: .02em !important;
+  }
+
+  .app-shell .native-dock button > span.absolute {
+    display: none;
+  }
+
+  .app-shell .native-dock button:nth-child(3) {
+    order: 5;
+    margin-top: 16px;
+    color: #fff !important;
+    background: var(--accent) !important;
+    box-shadow: 0 12px 28px rgba(var(--accent-rgb), .28) !important;
+  }
+
+  .app-shell .native-dock button:nth-child(3) > span:first-child {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .app-shell .app-view {
+    max-width: 100%;
+  }
+
+  .app-shell .home-view {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(300px, .75fr);
+    grid-template-areas:
+      'trial trial'
+      'summary summary'
+      'welcome week'
+      'focus calendar'
+      'next calendar'
+      'notifications calendar'
+      'streak streak'
+      'metrics metrics';
+    gap: 18px 22px;
+    padding: 34px 0 48px !important;
+  }
+
+  .app-shell .home-view > * {
+    min-width: 0;
+    margin: 0 !important;
+  }
+
+  .app-shell .home-trial-banner { grid-area: trial; }
+  .app-shell .home-weekly-summary { grid-area: summary; }
+  .app-shell .home-welcome { grid-area: welcome; align-self: center; }
+  .app-shell .home-week { grid-area: week; align-self: center; }
+  .app-shell .home-focus { grid-area: focus; }
+  .app-shell .home-next { grid-area: next; }
+  .app-shell .home-notifications { grid-area: notifications; }
+  .app-shell .home-calendar { grid-area: calendar; grid-row: span 3; }
+  .app-shell .home-streak { grid-area: streak; align-self: start; }
+  .app-shell .home-metrics { grid-area: metrics; }
+
+  .app-shell .home-calendar {
+    height: fit-content;
+  }
+
+  .app-shell .home-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .app-shell .home-focus button {
+    min-height: 142px;
+    padding: 24px !important;
+  }
+}
+
+@media (min-width: 1400px) {
+  .app-shell {
+    --desktop-sidebar: 260px;
+  }
+
+  .app-shell .app-content__inner {
+    padding-right: 64px;
+    padding-left: 64px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .app-view {
+    animation: none;
+  }
+}

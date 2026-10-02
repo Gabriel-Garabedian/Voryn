@@ -98,7 +98,7 @@ function WeeklySummaryBanner({ lastWeek, metrics, streak }) {
   }
 
   return (
-    <div className="f-card p-4 animate-slide-up"
+    <div className="home-weekly-summary f-card p-4 animate-slide-up"
       style={{ borderColor:'rgba(var(--accent-rgb),.3)', background:'rgba(var(--accent-rgb),.05)' }}>
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
@@ -255,7 +255,7 @@ export default function HomeView() {
 
       {/* Trial banner */}
       {isTrial && (
-        <div className="f-card px-4 py-3 flex items-center justify-between animate-slide-up"
+        <div className="home-trial-banner f-card px-4 py-3 flex items-center justify-between animate-slide-up"
           style={{ borderColor: 'rgba(250,204,21,.3)', background: 'rgba(250,204,21,.05)' }}>
           <div className="flex items-center gap-2">
             <span className="summary-mark">TRIAL</span>
@@ -279,7 +279,7 @@ export default function HomeView() {
       {/* Header: saudação + sino (leva pros lembretes de treino, no Perfil —
           não existe central de notificação própria, então reaproveita a
           tela que já tem esse toggle em vez de criar uma nova). */}
-      <div className="flex items-start justify-between animate-slide-up">
+      <div className="home-welcome flex items-start justify-between animate-slide-up">
         <div>
           <p className="text-sm" style={{ color: 'var(--text-3)' }}>{greeting()},</p>
           <h1 className="font-display text-3xl uppercase tracking-wide leading-tight"
@@ -297,7 +297,7 @@ export default function HomeView() {
       </div>
 
       {/* Semana em círculos */}
-      <div className="f-card px-4 py-3 animate-slide-up" aria-label="Semana de treinos">
+      <div className="home-week f-card px-4 py-3 animate-slide-up" aria-label="Semana de treinos">
         <div className="flex justify-between">
           {weekDays.map(({ isToday, trained, date, key }) => (
             <div key={key} className="flex flex-col items-center gap-1.5">
@@ -328,7 +328,7 @@ export default function HomeView() {
       </div>
 
       {/* Foco de hoje */}
-      <div>
+      <div className="home-focus">
         <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-3)' }}>Foco de hoje</p>
         <button onClick={() => navigate('/app/workout')}
           className="f-card w-full p-4 flex items-center justify-between text-left animate-slide-up glow-primary"
@@ -350,7 +350,7 @@ export default function HomeView() {
         </button>
       </div>
 
-      <section className="home-action-card f-card p-4" aria-label="Próxima ação recomendada">
+      <section className="home-next home-action-card f-card p-4" aria-label="Próxima ação recomendada">
         <div className="flex items-start gap-3">
           <div className="home-action-card__mark" aria-hidden="true">→</div>
           <div className="min-w-0">
@@ -371,10 +371,10 @@ export default function HomeView() {
         </div>
       </section>
 
-      <NotificationPanel userId={user.id} />
+      <div className="home-notifications"><NotificationPanel userId={user.id} /></div>
 
       {/* Calendário mensal */}
-      <section className="f-card p-4 animate-slide-up" aria-label="Calendário mensal de treinos">
+      <section className="home-calendar f-card p-4 animate-slide-up" aria-label="Calendário mensal de treinos">
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>Sua consistência</p>
@@ -425,7 +425,7 @@ export default function HomeView() {
       </section>
 
       {/* Sequência */}
-      <div className={`f-card px-4 py-3 flex items-center gap-2.5 animate-slide-up ${isStreakMilestone ? 'streak-milestone' : ''}`}
+      <div className={`home-streak f-card px-4 py-3 flex items-center gap-2.5 animate-slide-up ${isStreakMilestone ? 'streak-milestone' : ''}`}
         style={{ borderColor: 'rgba(var(--accent-rgb),.3)', background: 'rgba(var(--accent-rgb),.06)' }}>
         <svg width="18" height="18" fill={AC} viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 2c1 3-2 4-2 7a3 3 0 006 0c1.5 1.5 2 3.5 2 5a6 6 0 11-12 0c0-4 3-6 3-9 1 0 2.5.5 3 3z"/>
@@ -436,7 +436,7 @@ export default function HomeView() {
       </div>
 
       {/* 3 métricas */}
-      <div className="grid grid-cols-3 gap-2">
+      <div className="home-metrics grid grid-cols-3 gap-2">
         <StatMini label="treinos/sem" value={lastWeek?.thisWeek ?? 0} accent/>
         <StatMini label="volume/sem" value={metrics?.weeklyVolume ? `${(metrics.weeklyVolume / 1000).toFixed(1)}t` : '0t'} accent/>
         <StatMini label="vs. sem. passada"

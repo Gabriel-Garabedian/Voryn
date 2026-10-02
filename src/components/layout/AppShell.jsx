@@ -282,8 +282,8 @@ export default function AppShell() {
       </header>
 
       {/* Main content */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden">
-        <div className="max-w-2xl mx-auto">
+      <div className="app-content flex-1 overflow-y-auto overflow-x-hidden">
+        <div className="app-content__inner max-w-2xl mx-auto">
           <TrialEndingBanner hidden={onSubscriptionPage} />
           <Routes>
             <Route index              element={isPersonal ? <PersonalDashboardView /> : <HomeView />} />
@@ -304,7 +304,7 @@ export default function AppShell() {
       </div>
 
       {/* Bottom Nav */}
-      <nav aria-label="Navegação principal" className="px-3 pb-3" style={{ background: 'transparent', flexShrink: 0, display: inActiveWorkout ? 'none' : undefined }}>
+      <nav aria-label="Navegação principal" className="app-nav px-3 pb-3" style={{ background: 'transparent', flexShrink: 0, display: inActiveWorkout ? 'none' : undefined }}>
         <div className="glass-panel native-dock flex items-center justify-around px-2 pt-2 max-w-2xl mx-auto shadow-2xl" style={{ paddingBottom: 'max(10px, env(safe-area-inset-bottom))', borderColor: 'rgba(255,255,255,.12)' }}>
           {navItems.map(item => {
             const active = isActive(item.path)
