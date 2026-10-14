@@ -2675,6 +2675,10 @@ body::after {
     grid-area: recovery;
   }
 
+  .app-shell .home-calendar {
+    grid-row: auto;
+  }
+
   .app-shell .home-view {
     grid-template-areas:
       'trial trial'
@@ -2682,9 +2686,9 @@ body::after {
       'welcome week'
       'focus calendar'
       'next calendar'
-      'recovery calendar'
       'quick calendar'
       'notifications calendar'
+      'recovery recovery'
       'streak streak'
       'metrics metrics';
   }

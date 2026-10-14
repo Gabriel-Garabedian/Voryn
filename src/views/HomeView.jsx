@@ -470,8 +470,6 @@ export default function HomeView() {
 
       <QuickActions navigate={navigate} />
 
-      <RecoveryPanel logs={recentLogs} navigate={navigate} />
-
       <div className="home-notifications"><NotificationPanel userId={user.id} /></div>
 
       {/* Calendário mensal */}
@@ -524,6 +522,8 @@ export default function HomeView() {
           </span>
         </div>
       </section>
+
+      <RecoveryPanel logs={recentLogs} navigate={navigate} />
 
       {/* Sequência */}
       <div className={`home-streak f-card px-4 py-3 flex items-center gap-2.5 animate-slide-up ${isStreakMilestone ? 'streak-milestone' : ''}`}
