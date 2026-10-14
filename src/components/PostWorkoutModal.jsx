@@ -77,6 +77,18 @@ export default function PostWorkoutModal({ workout, elapsed, onClose }) {
           </div>
         )}
 
+        {workout.personalRecords?.length > 0 && (
+          <div className="mb-6 p-3 rounded-xl text-center"
+            style={{ background: 'rgba(var(--accent-rgb),.1)', border: '1px solid rgba(var(--accent-rgb),.3)' }}>
+            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--accent)' }}>Recordes pessoais</p>
+            {workout.personalRecords.map(record => (
+              <p key={record.exercise} className="text-sm font-semibold mt-1" style={{ color: 'var(--text-1)' }}>
+                🏆 {record.exercise}: {record.weight || '0'} kg × {record.reps || '0'}
+              </p>
+            ))}
+          </div>
+        )}
+
         {/* Exercises summary */}
         <div className="space-y-1.5 mb-6 max-h-32 overflow-y-auto">
           {workout.exercises.map(ex => {

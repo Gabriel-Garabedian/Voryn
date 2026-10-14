@@ -13,10 +13,17 @@ import { useToast } from '@/components/ui/Toast'
 import { localDateKey } from '@/utils/helpers'
 import { captureError } from '@/lib/sentry'
 import MuscleTargetImage from '@/components/MuscleTargetImage'
+import PlateCalculator from '@/components/PlateCalculator'
 
 const DAYS_FULL = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
 const AC = 'var(--accent)'
 const genId = () => Math.random().toString(36).slice(2, 9)
+const SET_TYPES = [
+  { value: 'working', label: 'Efetiva' },
+  { value: 'warmup', label: 'Aquec.' },
+  { value: 'drop', label: 'Drop' },
+  { value: 'failure', label: 'Falha' },
+]
 
 // ── Rest Timer Overlay ─────────────────────────────────────
 function RestTimer({ seconds, endsAt, onSkip }) {
@@ -236,8 +243,10 @@ export default function WorkoutView() {
   const [showCardio,   setShowCardio]   = useState(false)
   const [saving,       setSaving]       = useState(false)
   const [showExPicker,  setShowExPicker]  = useState(false)
+  const [showPlateCalculator, setShowPlateCalculator] = useState(false)
   const [detailExercise, setDetailExercise] = useState(null) // instruções durante o treino
   const [openNotes,     setOpenNotes]     = useState({}) // { [exerciseIndex]: boolean } — bloco de anotação expandido ou não
+  const [openSetMeta,   setOpenSetMeta]   = useState({}) // detalhes opcionais da série
   // Índice do exercício atualmente expandido (mostrando as séries pra
   // preencher). Os demais ficam recolhidos numa linha-resumo — antes,
   // TODOS os exercícios apareciam sempre abertos ao mesmo tempo, o que
@@ -314,7 +323,7 @@ export default function WorkoutView() {
         sets: Array.from({ length: ex.sets }, (_, si) => {
           const prevSet = previousByExercise[ex.name]?.[si]
           return {
-            id: genId(), reps: '', weight: '', done: false,
+            id: genId(), reps: '', weight: '', done: false, type: 'working', rpe: '', rir: '',
             prev: (prevSet?.reps || prevSet?.weight) ? { reps: prevSet.reps, weight: prevSet.weight } : null,
             best: bestByExercise[ex.name] || null,
           }
@@ -429,7 +438,7 @@ export default function WorkoutView() {
       exercises: workout.exercises.map((ex, eii) =>
         eii !== ei ? ex : {
           ...ex,
-          sets: [...ex.sets, { id: genId(), reps: '', weight: '', done: false }]
+          sets: [...ex.sets, { id: genId(), reps: '', weight: '', done: false, type: 'working' }]
         }
       )
     }
@@ -499,6 +508,14 @@ export default function WorkoutView() {
       ...ex,
       sets: ex.sets.map(({ prev: _prev, best: _best, ...s }) => s),
     }))
+    const personalRecords = workout.exercises.flatMap(ex => {
+      const record = ex.sets.reduce((best, set) => {
+        const score = (Number.parseFloat(String(set.weight || '').replace(',', '.')) || 0) * (Number.parseInt(set.reps, 10) || 0)
+        const previous = set.best?.score || 0
+        return score > previous && score > (best?.score || 0) ? { exercise: ex.name, weight: set.weight, reps: set.reps, score } : best
+      }, null)
+      return record ? [record] : []
+    })
 
     const { error, queued } = await workoutLogService.create(user.id, {
       clientId: workout.clientId || workout.id,
@@ -532,7 +549,7 @@ export default function WorkoutView() {
     // o resumo (ou qualquer re-render acontecesse nesse meio tempo), o tempo
     // exibido continuava subindo, ficando diferente da duração que já tinha
     // sido salva no histórico.
-    setFinishedData({ ...workout, duration, cardio: cardio || null })
+    setFinishedData({ ...workout, duration, cardio: cardio || null, personalRecords })
     activeWorkoutService.clear()
     window.dispatchEvent(new Event('voryn:workout_active_change'))
     setWorkout(null)
@@ -567,7 +584,7 @@ export default function WorkoutView() {
             muscle:  ex.muscle || '',
             secondaryMuscles: ex.secondaryMuscles || [],
             equipment: ex.equipment || '',
-            sets:    [{ id: `s_${Date.now()}`, reps: '', weight: '', done: false }],
+            sets:    [{ id: `s_${Date.now()}`, reps: '', weight: '', done: false, type: 'working', rpe: '', rir: '' }],
           }
           setWorkout(w => {
             const updated = { ...w, exercises: [...w.exercises, newEx] }
@@ -584,7 +601,7 @@ export default function WorkoutView() {
             id:   `ex_${Date.now()}`,
             name, muscle: '',
             secondaryMuscles: [],
-            sets: [{ id: `s_${Date.now()}`, reps: '', weight: '', done: false }],
+            sets: [{ id: `s_${Date.now()}`, reps: '', weight: '', done: false, type: 'working', rpe: '', rir: '' }],
           }
           setWorkout(w => {
             const updated = { ...w, exercises: [...w.exercises, newEx] }
@@ -629,6 +646,7 @@ export default function WorkoutView() {
 
   return (
     <div className={`app-view workout-view ${restEndsAt ? 'pb-40' : 'pb-8'}`}>
+      {showPlateCalculator && <PlateCalculator onClose={() => setShowPlateCalculator(false)} />}
       {detailExercise && (
         <ExerciseDetail
           exercise={detailExercise}
@@ -714,6 +732,11 @@ export default function WorkoutView() {
               {s >= 60 ? `${s/60}min` : `${s}s`}
             </button>
           ))}
+          <button type="button" onClick={() => setShowPlateCalculator(true)}
+            className="ml-auto px-3 py-1 rounded-lg text-xs font-semibold"
+            style={{ color: AC, border: '1px solid rgba(var(--accent-rgb),.35)', background: 'rgba(var(--accent-rgb),.06)' }}>
+            anilhas
+          </button>
         </div>
       </div>
 
@@ -837,8 +860,8 @@ export default function WorkoutView() {
                   </div>
                 )}
                 {/* Header row */}
-                <div className="workout-set-row grid grid-cols-[28px_1fr_1fr_36px_24px] gap-2 mb-2">
-                  {['S', 'kg', 'Reps', '✓', ''].map((h, i) => (
+                <div className="workout-set-row workout-set-header grid grid-cols-[28px_1fr_1fr_44px_36px_24px] gap-2 mb-2">
+                  {['S', 'kg', 'Reps', '', '✓', ''].map((h, i) => (
                     <div key={i} className="text-xs font-semibold uppercase tracking-wider text-center"
                       style={{ color: 'var(--text-3)' }}>{h}</div>
                   ))}
@@ -862,8 +885,9 @@ export default function WorkoutView() {
                 {/* Set rows */}
                 <div className="space-y-2">
                   {ex.sets.map((set, si) => (
-                    <div key={set.id}
-                      className="workout-set-row grid grid-cols-[28px_1fr_1fr_36px_24px] gap-2 items-center"
+                    <div key={set.id} className="space-y-1">
+                    <div
+                      className="workout-set-row grid grid-cols-[28px_1fr_1fr_44px_36px_24px] gap-2 items-center"
                       style={{ opacity: set.done ? .55 : 1 }}>
                       <div className="w-7 h-7 rounded-lg flex items-center justify-center mx-auto font-display text-xs"
                         style={{
@@ -881,6 +905,14 @@ export default function WorkoutView() {
                         aria-label={`Repetições da série ${si + 1}`}
                         placeholder={set.prev?.reps || '—'} value={set.reps} disabled={set.done}
                         onChange={e => updateSet(ei, si, 'reps', e.target.value)}/>
+                      <button type="button"
+                        className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto"
+                        aria-label={`Detalhes da série ${si + 1}`}
+                        aria-expanded={Boolean(openSetMeta[`${ei}-${si}`])}
+                        onClick={() => setOpenSetMeta(current => ({ ...current, [`${ei}-${si}`]: !current[`${ei}-${si}`] }))}
+                        style={{ color: set.type !== 'working' || set.rpe || set.rir ? AC : 'var(--text-3)', border: '1px solid var(--border)' }}>
+                        <span className="text-xs font-bold" aria-hidden="true">⋯</span>
+                      </button>
                       <button onClick={() => toggleDone(ei, si)}
                         className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto transition-all"
                         style={{
@@ -908,6 +940,26 @@ export default function WorkoutView() {
                           </svg>
                         </button>
                       ) : <div/>}
+                    </div>
+                    {openSetMeta[`${ei}-${si}`] && <div className="workout-set-meta flex flex-wrap items-center justify-end gap-2 pr-8 pt-1">
+                      <label className="text-[10px]" style={{ color: 'var(--text-3)' }}>Tipo
+                        <select className="f-input py-1 px-1 text-xs ml-1" aria-label={`Tipo da série ${si + 1}`}
+                          value={set.type || 'working'} disabled={set.done}
+                          onChange={e => updateSet(ei, si, 'type', e.target.value)}>
+                          {SET_TYPES.map(type => <option key={type.value} value={type.value}>{type.label}</option>)}
+                        </select>
+                      </label>
+                      <label className="text-[10px]" style={{ color: 'var(--text-3)' }}>RPE
+                        <input className="f-input py-1 px-1 w-12 text-center text-xs ml-1" inputMode="decimal"
+                          aria-label={`RPE da série ${si + 1}`} placeholder="—" value={set.rpe || ''} disabled={set.done}
+                          onChange={e => updateSet(ei, si, 'rpe', e.target.value)} />
+                      </label>
+                      <label className="text-[10px]" style={{ color: 'var(--text-3)' }}>RIR
+                        <input className="f-input py-1 px-1 w-12 text-center text-xs ml-1" inputMode="numeric"
+                          aria-label={`RIR da série ${si + 1}`} placeholder="—" value={set.rir || ''} disabled={set.done}
+                          onChange={e => updateSet(ei, si, 'rir', e.target.value)} />
+                      </label>
+                    </div>}
                     </div>
                   ))}
                 </div>
