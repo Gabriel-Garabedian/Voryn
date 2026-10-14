@@ -140,6 +140,44 @@ export function formatVolume(kg) {
   return `${Math.round(kg).toLocaleString('pt-BR')}kg`
 }
 
+export function estimateOneRepMax(weight, reps) {
+  const load = parseWeight(weight)
+  const count = Number.parseInt(reps, 10) || 0
+  if (load <= 0 || count <= 0) return 0
+  if (count === 1) return load
+  return Math.round(load * (1 + count / 30) * 10) / 10
+}
+
+export function getRecoverySnapshot(logs = [], now = new Date(), days = 4) {
+  const cutoff = new Date(now)
+  cutoff.setDate(cutoff.getDate() - days)
+  const muscles = {}
+  const sessions = (logs || []).filter(log => new Date(`${log.date}T12:00:00`) >= cutoff)
+
+  sessions.forEach(log => {
+    const ageDays = Math.max(0, (now - new Date(`${log.date}T12:00:00`)) / 86400000)
+    const freshness = Math.max(0.25, 1 - ageDays / (days + 1))
+    ;(log.exercises || []).forEach(exercise => {
+      const muscle = exercise.muscle || exercise.target || 'Geral'
+      const sets = (exercise.sets || []).filter(set => set.done !== false)
+      if (!muscles[muscle]) muscles[muscle] = { muscle, sets: 0, volume: 0, freshness: 0 }
+      muscles[muscle].sets += sets.length
+      muscles[muscle].volume += sets.reduce((total, set) => (
+        total + parseWeight(set.weight) * (Number.parseInt(set.reps, 10) || 0)
+      ), 0)
+      muscles[muscle].freshness = Math.max(muscles[muscle].freshness, freshness)
+    })
+  })
+
+  return Object.values(muscles)
+    .map(item => ({
+      ...item,
+      readiness: Math.round((1 - item.freshness) * 100),
+      status: item.freshness >= 0.75 ? 'recuperando' : item.freshness >= 0.45 ? 'quase pronto' : 'pronto',
+    }))
+    .sort((a, b) => b.freshness - a.freshness || b.volume - a.volume)
+}
+
 export function getRoutineDates(routines, fromDate, toDate = new Date()) {
   if (!routines || !fromDate) return []
   const dates = []
