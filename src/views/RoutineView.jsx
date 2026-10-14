@@ -273,7 +273,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
         </div>
       </div>
 
-      <div className="px-4 space-y-3">
+      <div className="routine-content px-4 space-y-3">
         {loading ? (
           <SkeletonList count={3}/>
         ) : (

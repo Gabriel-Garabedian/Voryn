@@ -741,7 +741,7 @@ export default function WorkoutView() {
       </div>
 
       {/* Exercises */}
-      <div className="px-4 pt-4 space-y-4">
+      <div className="workout-exercises px-4 pt-4 space-y-4">
         {workout.exercises.map((ex, ei) => {
           const exDone = ex.sets.every(s => s.done)
           const doneCount = ex.sets.filter(s => s.done).length
