@@ -2557,3 +2557,150 @@ body::after {
     min-height: 104px;
   }
 }
+
+/* Final application pass: a quieter information hierarchy for repeated use.
+   The landing page can be expressive; the logged-in workspace should be
+   calmer, denser, and easier to scan between sets. */
+.app-shell .f-card,
+.app-shell .glass-card {
+  border-radius: 14px;
+  border-color: rgba(255,255,255,.075);
+}
+
+.app-shell .f-card:hover,
+.app-shell .glass-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(var(--accent-rgb), .34);
+  box-shadow: 0 10px 24px rgba(0,0,0,.24);
+}
+
+.app-shell :is(button, a, input, textarea, select):focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 3px;
+}
+
+.app-shell .home-quick-action {
+  min-height: 70px;
+  background: var(--surface);
+  box-shadow: none;
+}
+
+.app-shell .home-quick-action:hover {
+  background: color-mix(in srgb, var(--surface) 88%, var(--accent) 12%);
+}
+
+.app-shell .home-quick-action__icon {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--accent-2);
+  background: rgba(var(--accent-rgb), .12);
+  border: 1px solid rgba(var(--accent-rgb), .22);
+  border-radius: 10px;
+}
+
+.app-shell .home-recovery {
+  background: color-mix(in srgb, var(--card) 92%, var(--accent) 8%);
+  border-color: rgba(var(--accent-rgb), .2);
+}
+
+.app-shell .home-recovery button {
+  min-height: 44px;
+}
+
+.app-shell .home-calendar,
+.app-shell .home-week {
+  background: var(--surface);
+}
+
+.app-shell .app-header {
+  box-shadow: 0 1px 0 rgba(255,255,255,.025);
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .app-shell .app-content__inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px 36px;
+  }
+
+  .app-shell .home-view {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .app-shell .home-view > .home-welcome,
+  .app-shell .home-view > .home-week,
+  .app-shell .home-view > .home-focus,
+  .app-shell .home-view > .home-next,
+  .app-shell .home-view > .home-recovery,
+  .app-shell .home-view > .home-notifications,
+  .app-shell .home-view > .home-calendar,
+  .app-shell .home-view > .home-streak,
+  .app-shell .home-view > .home-metrics,
+  .app-shell .home-view > .home-trial-banner,
+  .app-shell .home-view > .home-weekly-summary,
+  .app-shell .home-view > .home-quick-actions {
+    grid-column: 1 / -1;
+  }
+
+  .app-shell .home-view > .home-welcome,
+  .app-shell .home-view > .home-week {
+    grid-column: span 1;
+  }
+
+  .app-shell .home-view > .home-focus,
+  .app-shell .home-view > .home-next,
+  .app-shell .home-view > .home-recovery,
+  .app-shell .home-view > .home-notifications {
+    grid-column: span 1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app-shell .native-dock {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  .app-shell .native-dock button[aria-current="page"] {
+    font-weight: 800;
+  }
+
+  .app-shell .home-recovery {
+    grid-area: recovery;
+  }
+
+  .app-shell .home-view {
+    grid-template-areas:
+      'trial trial'
+      'summary summary'
+      'welcome week'
+      'focus calendar'
+      'next calendar'
+      'recovery calendar'
+      'quick calendar'
+      'notifications calendar'
+      'streak streak'
+      'metrics metrics';
+  }
+}
+
+@media (max-width: 420px) {
+  .app-shell .home-quick-actions .grid {
+    gap: 8px;
+  }
+
+  .app-shell .home-quick-action {
+    padding: 10px !important;
+  }
+
+  .app-shell .home-quick-action__icon {
+    width: 30px;
+    height: 30px;
+  }
+}
