@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { workoutLogService } from '@/services'
-import { formatDateShort, formatVolume, getPlanLimit } from '@/utils/helpers'
+import { estimateOneRepMax, formatDateShort, formatVolume, getPlanLimit } from '@/utils/helpers'
 import { Badge, Button } from '@/components/ui'
 import { SkeletonList } from '@/components/ui/Skeleton'
 import { useNavigate } from 'react-router-dom'
@@ -107,7 +107,8 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
       const ex = log.exercises?.find(e => e.name === selected)
       if (!ex) return null
       const maxWeight = ex.sets.reduce((m, s) => Math.max(m, parseFloat(s.weight)||0), 0)
-      return { date: formatDateShort(log.date), carga: maxWeight, volume: ex.sets.reduce((a,s) => a+(parseFloat(s.weight)||0)*(parseInt(s.reps)||0),0) }
+      const e1rm = Math.max(...ex.sets.map(set => estimateOneRepMax(set.weight, set.reps)), 0)
+      return { date: formatDateShort(log.date), carga: maxWeight, e1rm, volume: ex.sets.reduce((a,s) => a+(parseFloat(s.weight)||0)*(parseInt(s.reps)||0),0) }
     })
     .filter(Boolean)
     .reverse()
@@ -196,11 +197,10 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
             <div className="glass-card p-4">
               <div className="flex items-center justify-between mb-3">
                 <p className="font-semibold text-sm" style={{ color: 'var(--text-1)' }}>Carga máxima (kg)</p>
-                {loadData.length > 0 && (
-                  <Badge variant="accent">
-                    Máx: {Math.max(...loadData.map(d=>d.carga))}kg
-                  </Badge>
-                )}
+                <div className="flex gap-2">
+                  <Badge variant="accent">Máx: {Math.max(...loadData.map(d=>d.carga))}kg</Badge>
+                  <Badge variant="green">e1RM: {Math.max(...loadData.map(d => d.e1rm))}kg</Badge>
+                </div>
               </div>
               <ResponsiveContainer width="100%" height={180}>
                 <LineChart data={loadData}>

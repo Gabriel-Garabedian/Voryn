@@ -5,7 +5,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   translateError, formatDuration, formatDate, formatDateShort,
-  formatVolume, calcStreak, calcBestStreak, getRoutineDates, getPlanLimit, PLAN_LIMITS
+  estimateOneRepMax, formatVolume, getRecoverySnapshot, calcStreak, calcBestStreak, getRoutineDates, getPlanLimit, PLAN_LIMITS
 } from '../utils/helpers'
 
 describe('translateError', () => {
@@ -123,6 +123,27 @@ describe('getPlanLimit', () => {
 describe('calcStreak', () => {
   it('returns 0 for empty dates', () => {
     expect(calcStreak([])).toBe(0)
+  })
+
+  describe('training insights', () => {
+    it('estimates e1RM with the Epley formula', () => {
+      expect(estimateOneRepMax('80', '5')).toBe(93.3)
+      expect(estimateOneRepMax('', '5')).toBe(0)
+    })
+
+    it('summarizes recent muscle recovery without counting incomplete sets', () => {
+      const now = new Date('2026-10-14T12:00:00')
+      const snapshot = getRecoverySnapshot([{
+        date: '2026-10-13',
+        exercises: [{ muscle: 'Peito', sets: [
+          { weight: '80', reps: '5', done: true },
+          { weight: '80', reps: '5', done: false },
+        ] }],
+      }], now)
+      expect(snapshot[0].muscle).toBe('Peito')
+      expect(snapshot[0].sets).toBe(1)
+      expect(snapshot[0].status).toBe('recuperando')
+    })
   })
 
   it('returns 1 for only today', () => {

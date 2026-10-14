@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { workoutLogService, routineService, notificationService } from '@/services'
-import { calcStreak, calcBestStreak, getRoutineDates, localDateKey, getSubscription } from '@/utils/helpers'
+import { calcStreak, calcBestStreak, getRecoverySnapshot, getRoutineDates, localDateKey, getSubscription } from '@/utils/helpers'
 import { SkeletonHome } from '@/components/ui/Skeleton'
 import WorkoutLogModal from '@/components/WorkoutLogModal'
 
@@ -127,6 +127,45 @@ function QuickActions({ navigate }) {
   )
 }
 
+function RecoveryPanel({ logs, navigate }) {
+  const snapshot = getRecoverySnapshot(logs)
+  if (!snapshot.length) return null
+
+  return (
+    <section className="home-recovery f-card p-4" aria-labelledby="home-recovery-title">
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <div>
+          <p className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>Treino inteligente</p>
+          <h2 id="home-recovery-title" className="font-display text-xl uppercase" style={{ color: 'var(--text-1)' }}>
+            Prontidão muscular
+          </h2>
+        </div>
+        <span className="text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>últimos 4 dias</span>
+      </div>
+      <div className="space-y-2">
+        {snapshot.slice(0, 3).map(item => {
+          const ready = item.status === 'pronto'
+          return (
+            <div key={item.muscle} className="flex items-center gap-3">
+              <span className="w-2 h-2 rounded-full flex-shrink-0"
+                style={{ background: ready ? 'var(--success)' : item.status === 'quase pronto' ? '#facc15' : '#fb7185' }}
+                aria-hidden="true" />
+              <span className="text-sm flex-1" style={{ color: 'var(--text-2)' }}>{item.muscle}</span>
+              <span className="text-xs font-semibold" style={{ color: ready ? 'var(--success)' : 'var(--text-3)' }}>
+                {ready ? 'Pronto' : item.status}
+              </span>
+            </div>
+          )
+        })}
+      </div>
+      <button type="button" onClick={() => navigate('/app/evolution')}
+        className="text-xs font-semibold mt-3" style={{ color: 'var(--accent)' }}>
+        Ver análise completa →
+      </button>
+    </section>
+  )
+}
+
 const STREAK_MILESTONES = [3, 7, 14, 30, 60, 100]
 
 
@@ -211,6 +250,7 @@ export default function HomeView() {
 
   const [trainedDates, setTrainedDates] = useState([])
   const [routines,     setRoutines]     = useState({})
+  const [recentLogs,   setRecentLogs]   = useState([])
   const [metrics,      setMetrics]      = useState(null)
   const [lastWeek,     setLastWeek]     = useState(null)
   const [loading,      setLoading]      = useState(true)
@@ -230,10 +270,12 @@ export default function HomeView() {
       workoutLogService.getTrainedDates(user.id),
       routineService.getAll(user.id),
       workoutLogService.getMetrics(user.id),
-    ]).then(([dates, { data: rts }, m]) => {
+      workoutLogService.getAll(user.id, localDateKey(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7))),
+    ]).then(([dates, { data: rts }, m, { data: logs }]) => {
       if (cancelled) return
       setTrainedDates(dates || [])
       setRoutines(rts || {})
+      setRecentLogs(logs || [])
       setMetrics(m)
 
       const oneWeekAgo  = new Date(today); oneWeekAgo.setDate(today.getDate() - 7)
@@ -427,6 +469,8 @@ export default function HomeView() {
       </section>
 
       <QuickActions navigate={navigate} />
+
+      <RecoveryPanel logs={recentLogs} navigate={navigate} />
 
       <div className="home-notifications"><NotificationPanel userId={user.id} /></div>
 
