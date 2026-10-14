@@ -2355,6 +2355,7 @@ body::after {
       'welcome week'
       'focus calendar'
       'next calendar'
+      'quick calendar'
       'notifications calendar'
       'streak streak'
       'metrics metrics';
@@ -2374,6 +2375,7 @@ body::after {
   .app-shell .home-focus { grid-area: focus; }
   .app-shell .home-next { grid-area: next; }
   .app-shell .home-notifications { grid-area: notifications; }
+  .app-shell .home-quick-actions { grid-area: quick; }
   .app-shell .home-calendar { grid-area: calendar; grid-row: span 3; }
   .app-shell .home-streak { grid-area: streak; align-self: start; }
   .app-shell .home-metrics { grid-area: metrics; }
@@ -2389,6 +2391,63 @@ body::after {
   .app-shell .home-focus button {
     min-height: 142px;
     padding: 24px !important;
+  }
+
+  .app-shell .routine-view {
+    padding-top: 28px;
+  }
+
+  .app-shell .routine-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr);
+    align-items: start;
+    gap: 18px 24px;
+  }
+
+  .app-shell .routine-content > .f-card:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .app-shell .routine-content > .exercise-list {
+    grid-column: 1;
+    min-width: 0;
+  }
+
+  .app-shell .routine-content > .exercise-list + button,
+  .app-shell .routine-content > .routine-empty-state {
+    grid-column: 2;
+    align-self: start;
+  }
+
+  .app-shell .routine-content > .exercise-list + button {
+    margin-top: 28px;
+  }
+
+  .app-shell .workout-view {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  .app-shell .workout-view .native-header {
+    border-radius: 0 0 18px 18px !important;
+  }
+
+  .app-shell .workout-exercises {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 18px 22px;
+  }
+
+  .app-shell .workout-exercises > .workout-set-row,
+  .app-shell .workout-exercises > button,
+  .app-shell .workout-exercises > .workout-empty-state {
+    grid-column: 1 / -1;
+  }
+
+  .app-shell .workout-exercises > .glass-card,
+  .app-shell .workout-exercises > button.f-card {
+    min-width: 0;
   }
 }
 
