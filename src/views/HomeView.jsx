@@ -77,6 +77,56 @@ function NotificationPanel({ userId }) {
   )
 }
 
+function QuickActions({ navigate }) {
+  const actions = [
+    { path: '/app/routine', label: 'Rotina', hint: 'Editar ficha', icon: 'calendar' },
+    { path: '/app/history', label: 'Histórico', hint: 'Ver treinos', icon: 'history' },
+    { path: '/app/evolution', label: 'Evolução', hint: 'Acompanhar dados', icon: 'chart' },
+    { path: '/app/photos', label: 'Progresso', hint: 'Fotos e medidas', icon: 'camera' },
+  ]
+
+  const icons = {
+    calendar: <><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h3"/></>,
+    history: <><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v5h5M12 7v5l3 2"/></>,
+    chart: <><path d="M4 19V5M4 19h16"/><path d="m7 15 3-4 3 2 5-7"/></>,
+    camera: <><path d="M4 7h3l1.5-2h7L17 7h3v12H4z"/><circle cx="12" cy="13" r="3"/></>,
+  }
+
+  return (
+    <section className="home-quick-actions" aria-labelledby="home-quick-actions-title">
+      <div className="flex items-end justify-between gap-3 mb-2">
+        <div>
+          <p className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>Acesso rápido</p>
+          <h2 id="home-quick-actions-title" className="font-display text-xl uppercase" style={{ color: 'var(--text-1)' }}>
+            Continue sua jornada
+          </h2>
+        </div>
+        <span className="text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>4 atalhos</span>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {actions.map(action => (
+          <button
+            key={action.path}
+            type="button"
+            onClick={() => navigate(action.path)}
+            className="home-quick-action f-card p-3 flex items-center gap-3 text-left"
+          >
+            <span className="home-quick-action__icon" aria-hidden="true">
+              <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                {icons[action.icon]}
+              </svg>
+            </span>
+            <span className="min-w-0">
+              <span className="block text-sm font-semibold truncate" style={{ color: 'var(--text-1)' }}>{action.label}</span>
+              <span className="block text-[11px] mt-0.5 truncate" style={{ color: 'var(--text-3)' }}>{action.hint}</span>
+            </span>
+          </button>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 const STREAK_MILESTONES = [3, 7, 14, 30, 60, 100]
 
 
@@ -370,6 +420,8 @@ export default function HomeView() {
           </div>
         </div>
       </section>
+
+      <QuickActions navigate={navigate} />
 
       <div className="home-notifications"><NotificationPanel userId={user.id} /></div>
 

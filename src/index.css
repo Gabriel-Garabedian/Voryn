@@ -250,11 +250,11 @@ body::after {
   .lp-steps-grid > div:last-child { padding-bottom: 0 !important; }
 }
 @media (max-width: 390px) {
-  /* 5 colunas: número, reps, kg, check e remover. Eram 4 (sem a de remover),
-     então o botão de remover série — adicionado depois — caía numa segunda
-     linha sob o número da série em toda tela de celular <= 390px. */
-  .workout-set-row { grid-template-columns: 24px 1fr 1fr 34px 22px !important; gap: 4px !important; }
+  /* Mantém o registro essencial em uma linha: série, peso, reps, detalhes,
+     concluir e remover. RPE/RIR/tipo ficam no painel opcional da série. */
+  .workout-set-row { grid-template-columns: 24px minmax(0, 1fr) minmax(0, 1fr) 34px 36px 22px !important; gap: 4px !important; }
   .workout-set-row input { font-size: 12px !important; padding: 6px 4px !important; }
+  .workout-set-row select { max-width: 84px; }
 }
 @media (max-height: 500px) and (orientation: landscape) {
   .onboarding-container { min-height: unset !important; overflow-y: auto !important; }
@@ -408,6 +408,32 @@ body::after {
   color: #fff;
   font-size: 20px;
   font-weight: 800;
+}
+.home-quick-action {
+  min-height: 68px;
+  border-color: var(--border);
+  transition: transform .18s ease, border-color .18s ease, background-color .18s ease;
+}
+.home-quick-action:hover {
+  transform: translateY(-1px);
+  border-color: rgba(var(--accent-rgb), .42);
+  background: rgba(var(--accent-rgb), .05);
+}
+.home-quick-action:focus-visible {
+  outline: 3px solid rgba(var(--accent-rgb), .35);
+  outline-offset: 2px;
+}
+.home-quick-action__icon {
+  display: flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 36px;
+  border: 1px solid rgba(var(--accent-rgb), .25);
+  border-radius: 11px;
+  background: rgba(var(--accent-rgb), .1);
+  color: var(--accent);
 }
 .notification-row {
   display: flex;

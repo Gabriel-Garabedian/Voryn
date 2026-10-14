@@ -65,7 +65,7 @@ export default function ExerciseDetail({ exercise, onAdd, onClose, buttonLabel =
               conteúdo real (ver src/data/exercises.js pra saber como
               popular). Mostra estado vazio elegante enquanto não houver
               media cadastrada, sem quebrar o layout. */}
-          <ExerciseMediaCarousel media={exercise.media || []} title={exercise.name} subtitle={exercise.equipment} />
+          <ExerciseMediaCarousel exercise={exercise} media={exercise.media || []} title={exercise.name} subtitle={exercise.equipment} />
 
           <div className="f-card p-3.5 flex items-center gap-3">
             <MuscleTargetImage

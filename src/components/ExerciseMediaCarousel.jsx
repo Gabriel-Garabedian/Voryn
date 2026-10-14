@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { findExerciseGif } from '@/data/exerciseGifMedia'
 
 // Carrossel de fotos/vídeos por exercício — estrutura visual pronta,
 // alimentada pelo campo `media` de cada exercício em data/exercises.js
@@ -10,13 +11,27 @@ import React, { useState } from 'react'
 //
 // title/subtitle (opcionais) sobrepõem o rodapé da imagem, no mesmo
 // estilo do print de referência (nome do exercício + equipamento).
-export default function ExerciseMediaCarousel({ media = [], title, subtitle, aspectRatio = '4/3' }) {
+export default function ExerciseMediaCarousel({ media = [], exercise, title, subtitle, aspectRatio = '4/3' }) {
   const [index, setIndex] = useState(0)
-  const hasMedia = media.length > 0
-  const current = hasMedia ? media[index] : null
+  const [remoteGif, setRemoteGif] = useState(null)
+  const [loadingGif, setLoadingGif] = useState(false)
+  const combinedMedia = remoteGif ? [...media, { type: 'gif', url: remoteGif }] : media
+  const hasMedia = combinedMedia.length > 0
+  const current = hasMedia ? combinedMedia[index] : null
+
+  useEffect(() => {
+    let cancelled = false
+    if (media.length || !exercise?.name) return undefined
+    findExerciseGif(exercise).then(url => {
+      if (!cancelled) setRemoteGif(url)
+    }).finally(() => {
+      if (!cancelled) setLoadingGif(false)
+    })
+    return () => { cancelled = true }
+  }, [exercise, media.length])
 
   function goTo(i) {
-    setIndex(Math.max(0, Math.min(media.length - 1, i)))
+    setIndex(Math.max(0, Math.min(combinedMedia.length - 1, i)))
   }
 
   // Swipe simples por toque (sem biblioteca externa) — funciona bem em
@@ -54,7 +69,7 @@ export default function ExerciseMediaCarousel({ media = [], title, subtitle, asp
             <path d="M21 15l-5-5L5 21"/>
           </svg>
           <p className="text-xs" style={{ color: 'var(--text-3)' }}>
-            Sem foto ou vídeo cadastrado ainda
+            {loadingGif ? 'Carregando demonstração do exercício...' : 'Sem GIF ou vídeo cadastrado ainda'}
           </p>
         </div>
       )}
@@ -70,9 +85,9 @@ export default function ExerciseMediaCarousel({ media = [], title, subtitle, asp
       )}
 
       {/* Pontos de navegação — só aparecem com mais de 1 item */}
-      {media.length > 1 && (
+      {combinedMedia.length > 1 && (
         <div className="absolute top-3 inset-x-0 flex items-center justify-center gap-1.5">
-          {media.map((_, i) => (
+          {combinedMedia.map((_, i) => (
             <button key={i} onClick={() => goTo(i)} aria-label={`Item ${i + 1}`}
               className="rounded-full transition-all"
               style={{

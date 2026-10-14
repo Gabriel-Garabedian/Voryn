@@ -34,6 +34,8 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
   const [loading,       setLoading]       = useState(true)
   const [editingEx,     setEditingEx]     = useState(null) // {exId, sets, reps, notes}
   const [trainerName,   setTrainerName]   = useState(null)
+  const [templates,     setTemplates]     = useState([])
+  const [showTemplates, setShowTemplates] = useState(false)
 
   useEffect(() => {
     if (!targetUserId) return
@@ -45,6 +47,15 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
       setLoading(false)
     })
   }, [targetUserId])
+
+  useEffect(() => {
+    if (!targetUserId || isEmbedded) return
+    try {
+      setTemplates(JSON.parse(localStorage.getItem(`voryn_routine_templates_${targetUserId}`) || '[]'))
+    } catch (err) {
+      console.error('[Voryn] Não foi possível carregar templates:', err)
+    }
+  }, [targetUserId, isEmbedded])
 
   // Nome do personal para o badge "Montada por" — created_by é gravado há
   // tempo (ver persist abaixo) mas nunca era lido em lugar nenhum: o aluno
@@ -102,7 +113,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
     const exercises = [...(current.exercises || []), {
       id: genId(), name: ex.name, sets: 3, reps: '10',
       muscle: ex.muscle, secondaryMuscles: ex.secondaryMuscles || [],
-      equipment: ex.equipment, notes: ''
+      equipment: ex.equipment, notes: '', supersetGroup: ''
     }]
     const updated = { ...current, exercises }
     setRoutines(r => ({ ...r, [selectedDay]: updated }))
@@ -145,6 +156,37 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
     await routineService.delete(targetUserId, dayIndex)
     setRoutines(r => { const n = { ...r }; delete n[dayIndex]; return n })
     toast.info(`${DAYS_FULL[dayIndex]} limpo`)
+  }
+
+  function saveTemplate() {
+    if (!day?.exercises?.length || isEmbedded) return
+    const name = window.prompt('Nome do template', day.name || `${DAYS_FULL[selectedDay]} - modelo`)
+    if (!name?.trim()) return
+    const next = [...templates, {
+      id: genId(),
+      name: name.trim(),
+      exercises: day.exercises.map(({ id, ...exercise }) => ({ ...exercise, id: genId() })),
+    }]
+    setTemplates(next)
+    localStorage.setItem(`voryn_routine_templates_${targetUserId}`, JSON.stringify(next))
+    toast.success('Template salvo!')
+  }
+
+  function applyTemplate(template) {
+    const updated = { name: template.name, exercises: template.exercises.map(({ id, ...exercise }) => ({ ...exercise, id: genId() })) }
+    setRoutines(r => ({ ...r, [selectedDay]: updated }))
+    persist(selectedDay, updated, 'Template aplicado!')
+    setShowTemplates(false)
+  }
+
+  function duplicateDay(targetDay) {
+    if (!day?.exercises?.length || Number(targetDay) === selectedDay) return
+    const updated = {
+      ...day,
+      exercises: day.exercises.map(({ id, ...exercise }) => ({ ...exercise, id: genId() })),
+    }
+    setRoutines(r => ({ ...r, [targetDay]: updated }))
+    persist(Number(targetDay), updated, `Rotina duplicada para ${DAYS_FULL[targetDay]}!`)
   }
 
   const day = routines[selectedDay]
@@ -274,6 +316,41 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                   </button>
                 )}
               </div>
+              {!isEmbedded && day?.exercises?.length > 0 && (
+                <div className="mt-3 pt-3 flex flex-wrap gap-2" style={{ borderTop: '1px solid var(--border)' }}>
+                  <button type="button" onClick={saveTemplate}
+                    className="px-3 py-2 rounded-lg text-xs font-semibold"
+                    style={{ color: AC, border: '1px solid rgba(var(--accent-rgb),.3)' }}>
+                    Salvar como template
+                  </button>
+                  <button type="button" onClick={() => setShowTemplates(v => !v)}
+                    className="px-3 py-2 rounded-lg text-xs font-semibold"
+                    style={{ color: 'var(--text-2)', border: '1px solid var(--border)' }}>
+                    {showTemplates ? 'Fechar templates' : 'Usar template'}
+                  </button>
+                  <label className="flex items-center gap-2 ml-auto text-xs" style={{ color: 'var(--text-3)' }}>
+                    Duplicar para
+                    <select className="f-input py-2 px-2 text-xs" value="" onChange={e => duplicateDay(e.target.value)}>
+                      <option value="">dia...</option>
+                      {DAYS_SHORT.map((label, index) => index !== selectedDay && <option key={index} value={index}>{label}</option>)}
+                    </select>
+                  </label>
+                </div>
+              )}
+              {showTemplates && (
+                <div className="mt-3 space-y-2">
+                  {templates.length === 0 ? (
+                    <p className="text-xs" style={{ color: 'var(--text-3)' }}>Salve um dia como template para reutilizá-lo.</p>
+                  ) : templates.map(template => (
+                    <button key={template.id} type="button" onClick={() => applyTemplate(template)}
+                      className="w-full p-3 rounded-xl text-left flex items-center justify-between"
+                      style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}>
+                      <span className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>{template.name}</span>
+                      <span className="text-xs" style={{ color: AC }}>{template.exercises.length} exercícios</span>
+                    </button>
+                  ))}
+                </div>
+              )}
               {exerciseCount > 0 && (
                 <div className="routine-overview mt-4 pt-3 flex items-center gap-3">
                   <div className="flex-1 min-w-0">
@@ -316,11 +393,12 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                           <span className="font-display font-bold text-sm" style={{ color: AC }}>{idx + 1}</span>
                         </div>
                         <MuscleTargetImage muscle={ex.muscle} secondaryMuscles={ex.secondaryMuscles} compact showLabel={false} />
-                        <div className="flex-1 min-w-0" onClick={() => setEditingEx(editingEx?.exId === ex.id ? null : { exId: ex.id, sets: String(ex.sets), reps: ex.reps, notes: ex.notes || '' })}>
+                        <div className="flex-1 min-w-0" onClick={() => setEditingEx(editingEx?.exId === ex.id ? null : { exId: ex.id, sets: String(ex.sets), reps: ex.reps, notes: ex.notes || '', supersetGroup: ex.supersetGroup || '' })}>
                           <p className="font-semibold text-sm truncate" style={{ color: 'var(--text-1)' }}>{ex.name}</p>
                           <p className="text-xs" style={{ color: 'var(--text-3)' }}>
                             {ex.sets} séries × {ex.reps} reps
                             {ex.muscle && <span style={{ color: 'rgba(var(--accent-rgb),.5)' }}> · {ex.muscle}</span>}
+                            {ex.supersetGroup && <span style={{ color: AC }}> · SS {ex.supersetGroup}</span>}
                           </p>
                           <span className="muscle-target-chip">Alvo: {ex.muscle || 'não informado'}</span>
                         </div>
@@ -355,8 +433,8 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                       {/* Inline edit panel */}
                       {editingEx?.exId === ex.id && (
                         <div className="mt-3 pt-3 space-y-2" style={{ borderTop: '1px solid var(--border)' }}>
-                          <div className="grid grid-cols-3 gap-2">
-                            {[['sets','Séries','number'],['reps','Reps','text'],['notes','Obs','text']].map(([k,l,t]) => (
+                          <div className="grid grid-cols-2 gap-2">
+                            {[['sets','Séries','number'],['reps','Reps','text'],['notes','Obs','text'],['supersetGroup','Supersérie','text']].map(([k,l,t]) => (
                               <div key={k}>
                                 <label className="f-label text-xs">{l}</label>
                                 <input type={t} className="f-input text-center py-2 text-sm"
@@ -373,6 +451,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                                 sets: parseInt(editingEx.sets) || 3,
                                 reps: editingEx.reps || '10',
                                 notes: editingEx.notes,
+                                supersetGroup: editingEx.supersetGroup.trim().slice(0, 12),
                               })}>
                               Salvar
                             </Button>
