@@ -255,7 +255,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
             return (
               <button key={i}
                 onClick={() => { setSelectedDay(i); setEditName(false) }}
-                className="flex-shrink-0 flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl transition-all relative"
+                className="routine-day-button flex-shrink-0 flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl transition-all relative"
                 style={{
                   background: isSel ? AC : 'var(--card)',
                   border:     `1px solid ${isSel ? AC : 'var(--border)'}`,
