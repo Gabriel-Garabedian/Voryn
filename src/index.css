@@ -2408,3 +2408,93 @@ body::after {
     animation: none;
   }
 }
+
+/* Product polish: Hevy-like clarity without changing Voryn's purple identity.
+   Primary actions are solid; secondary surfaces stop competing with them. */
+.app-shell .f-card,
+.app-shell .glass-card,
+.app-shell .glass-panel {
+  background: var(--card);
+  backdrop-filter: none;
+  box-shadow: 0 6px 18px rgba(0,0,0,.18);
+}
+
+.app-shell .f-card::before,
+.app-shell .glass-card::before,
+.app-shell .glass-panel::before {
+  display: none;
+}
+
+.app-shell .app-header {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.app-shell .native-dock {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 10px 28px rgba(0,0,0,.24) !important;
+}
+
+.home-primary-action {
+  min-height: 112px;
+  border-color: rgba(var(--accent-rgb), .45) !important;
+  background: var(--accent) !important;
+  box-shadow: 0 12px 26px rgba(var(--accent-rgb), .24);
+}
+
+.home-primary-action:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent-2) !important;
+  box-shadow: 0 16px 30px rgba(var(--accent-rgb), .3);
+}
+
+.home-primary-action p,
+.home-primary-action .home-primary-action__eyebrow {
+  color: #fff !important;
+}
+
+.home-primary-action__eyebrow {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  opacity: .74;
+}
+
+.home-primary-action > span:last-child {
+  background: rgba(255,255,255,.16) !important;
+  box-shadow: none !important;
+  border: 1px solid rgba(255,255,255,.24);
+}
+
+.routine-day-button {
+  min-width: 72px;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+
+.routine-day-button:hover {
+  border-color: rgba(var(--accent-rgb), .55) !important;
+}
+
+.app-shell .workout-view .glass-card {
+  box-shadow: 0 8px 20px rgba(0,0,0,.18);
+}
+
+@media (max-width: 640px) {
+  .app-shell .app-header {
+    padding-top: 12px !important;
+    padding-bottom: 10px !important;
+  }
+
+  .app-shell .home-view {
+    gap: 16px;
+  }
+
+  .home-primary-action {
+    min-height: 104px;
+  }
+}

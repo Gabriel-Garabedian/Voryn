@@ -381,9 +381,10 @@ export default function HomeView() {
       <div className="home-focus">
         <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-3)' }}>Foco de hoje</p>
         <button onClick={() => navigate('/app/workout')}
-          className="f-card w-full p-4 flex items-center justify-between text-left animate-slide-up glow-primary"
+          className="home-primary-action f-card w-full p-4 flex items-center justify-between text-left animate-slide-up"
           style={{ borderColor: 'rgba(var(--accent-rgb),.35)', background: 'rgba(var(--accent-rgb),.06)' }}>
           <div className="min-w-0">
+            <span className="home-primary-action__eyebrow">Treino de hoje</span>
             <p className="font-display text-2xl uppercase tracking-wide truncate" style={{ color: 'var(--text-1)' }}>
               {todayPlan?.name || 'Descanso'}
             </p>
