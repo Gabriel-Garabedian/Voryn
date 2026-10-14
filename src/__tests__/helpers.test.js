@@ -5,7 +5,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   translateError, formatDuration, formatDate, formatDateShort,
-  formatVolume, calcStreak, calcBestStreak, getPlanLimit, PLAN_LIMITS
+  formatVolume, calcStreak, calcBestStreak, getRoutineDates, getPlanLimit, PLAN_LIMITS
 } from '../utils/helpers'
 
 describe('translateError', () => {
@@ -147,6 +147,19 @@ describe('calcStreak', () => {
     const old = threeDaysAgo.toISOString().split('T')[0]
     expect(calcStreak([today, old])).toBe(1)
   })
+
+  it('skips planned rest days when calculating streak', () => {
+    const today = new Date()
+    const trained = [today, new Date(today.getTime() - 2 * 86400000)]
+      .map(d => d.toISOString().split('T')[0])
+    expect(calcStreak(trained, trained)).toBe(2)
+  })
+
+  it('stops when a planned training day was missed', () => {
+    const today = new Date().toISOString().split('T')[0]
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
+    expect(calcStreak([today], [today, yesterday])).toBe(1)
+  })
 })
 
 describe('calcBestStreak', () => {
@@ -168,5 +181,17 @@ describe('calcBestStreak', () => {
       dates.push(d.toISOString().split('T')[0])
     }
     expect(calcBestStreak(dates)).toBe(5)
+  })
+
+  it('counts planned training days across rest days', () => {
+    const dates = ['2024-01-01', '2024-01-03', '2024-01-05']
+    const eligible = ['2024-01-01', '2024-01-03', '2024-01-05']
+    expect(calcBestStreak(dates, eligible)).toBe(3)
+  })
+
+  it('breaks the best streak on an uncompleted planned day', () => {
+    const dates = ['2024-01-01', '2024-01-03']
+    const eligible = ['2024-01-01', '2024-01-02', '2024-01-03']
+    expect(calcBestStreak(dates, eligible)).toBe(1)
   })
 })

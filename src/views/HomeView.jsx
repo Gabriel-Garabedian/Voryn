@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { workoutLogService, routineService, notificationService } from '@/services'
-import { calcStreak, calcBestStreak, localDateKey, getSubscription } from '@/utils/helpers'
+import { calcStreak, calcBestStreak, getRoutineDates, localDateKey, getSubscription } from '@/utils/helpers'
 import { SkeletonHome } from '@/components/ui/Skeleton'
 import WorkoutLogModal from '@/components/WorkoutLogModal'
 
@@ -253,8 +253,12 @@ export default function HomeView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, reloadKey])
 
-  const streak     = calcStreak(trainedDates)
-  const bestStreak = calcBestStreak(trainedDates)
+  const oldestTrainedDate = trainedDates.length
+    ? new Date(`${[...trainedDates].sort()[0]}T12:00:00`)
+    : new Date(today.getFullYear(), today.getMonth(), today.getDate() - 365)
+  const eligibleDates = getRoutineDates(routines, oldestTrainedDate, today)
+  const streak     = calcStreak(trainedDates, eligibleDates)
+  const bestStreak = calcBestStreak(trainedDates, eligibleDates)
   const todayPlan  = routines[today.getDay()]
 
   const isStreakMilestone = STREAK_MILESTONES.includes(streak)

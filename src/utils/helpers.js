@@ -140,27 +140,64 @@ export function formatVolume(kg) {
   return `${Math.round(kg).toLocaleString('pt-BR')}kg`
 }
 
-export function calcStreak(dates) {
+export function getRoutineDates(routines, fromDate, toDate = new Date()) {
+  if (!routines || !fromDate) return []
+  const dates = []
+  const cursor = new Date(fromDate)
+  cursor.setHours(12, 0, 0, 0)
+  const end = new Date(toDate)
+  end.setHours(12, 0, 0, 0)
+  while (cursor <= end) {
+    const plan = routines[cursor.getDay()]
+    if (plan?.exercises?.length) dates.push(localDateKey(cursor))
+    cursor.setDate(cursor.getDate() + 1)
+  }
+  return dates
+}
+
+export function calcStreak(dates, eligibleDates) {
   if (!dates?.length) return 0
-  const sorted = [...new Set(dates)].sort().reverse()
+  const trained = new Set(dates)
+  const eligible = eligibleDates ? new Set(eligibleDates) : null
   const today  = localDateKey()
   let streak = 0
-  let prev   = today
-  for (const d of sorted) {
-    const diff = Math.round((new Date(prev) - new Date(d)) / 86400000)
-    if (diff <= 1) { streak++; prev = d }
-    else break
+  const cursor = new Date(today + 'T12:00:00')
+  const oldestEligible = eligible ? [...eligible].sort()[0] : null
+  for (let daysChecked = 0; daysChecked < 3661; daysChecked++) {
+    const date = localDateKey(cursor)
+    if (oldestEligible && date < oldestEligible) break
+    if (eligible && !eligible.has(date)) {
+      cursor.setDate(cursor.getDate() - 1)
+      continue
+    }
+    if (!trained.has(date)) break
+    streak++
+    cursor.setDate(cursor.getDate() - 1)
   }
   return streak
 }
 
-export function calcBestStreak(dates) {
+export function calcBestStreak(dates, eligibleDates) {
   if (!dates?.length) return 0
   const sorted = [...new Set(dates)].sort()
+  const eligible = eligibleDates ? new Set(eligibleDates) : null
   let best = 1, cur = 1
   for (let i = 1; i < sorted.length; i++) {
-    const diff = Math.round((new Date(sorted[i]) - new Date(sorted[i-1])) / 86400000)
-    if (diff === 1) { cur++; if (cur > best) best = cur }
+    if (!eligible) {
+      const diff = Math.round((new Date(sorted[i]) - new Date(sorted[i-1])) / 86400000)
+      if (diff === 1) { cur++; if (cur > best) best = cur }
+      else cur = 1
+      continue
+    }
+    const cursor = new Date(sorted[i-1] + 'T12:00:00')
+    const end = new Date(sorted[i] + 'T12:00:00')
+    let validGap = true
+    cursor.setDate(cursor.getDate() + 1)
+    while (cursor < end) {
+      if (eligible && eligible.has(localDateKey(cursor))) { validGap = false; break }
+      cursor.setDate(cursor.getDate() + 1)
+    }
+    if (validGap) { cur++; if (cur > best) best = cur }
     else cur = 1
   }
   return best
