@@ -7,11 +7,13 @@
 // plano mudar, atualize os dois lugares: aqui (o que o usuário vê) e lá (o
 // que é de fato aplicado).
 
+const envPrice = (key, fallback) => Number(import.meta.env[key]) || fallback
+
 export const PLANS = {
   student: {
     id:          'student',
     name:        'Plano Aluno',
-    price:       14.90,
+    price:       envPrice('VITE_PLAN_STUDENT_PRICE', 14.90),
     period:      'mês',
     description: 'Para quem treina com método',
     maxStudents: 0,
@@ -32,7 +34,7 @@ export const PLANS = {
   personal: {
     id:          'personal',
     name:        'Plano Personal',
-    price:       59.90,
+    price:       envPrice('VITE_PLAN_PERSONAL_PRICE', 59.90),
     period:      'mês',
     description: 'Para personal trainers',
     maxStudents: 15,
@@ -51,7 +53,7 @@ export const PLANS = {
   personal_pro: {
     id:          'personal_pro',
     name:        'Personal Pro',
-    price:       99.90,
+    price:       envPrice('VITE_PLAN_PRO_PRICE', 99.90),
     period:      'mês',
     description: 'Para negócios em crescimento',
     maxStudents: 50,

@@ -66,10 +66,31 @@ serve(async (req) => {
   const db = createClient(SUPA_URL, SUPA_KEY)
   const { type, action, data } = payload as Record<string, unknown> & { data: Record<string, unknown> }
 
-  await db.from('payment_events').insert({
-    event_type: `${type}:${action}`, external_id: String(data?.id ?? ''),
-    payload, received_at: new Date().toISOString(),
-  })
+  const eventType = `${type}:${action}`
+  const externalId = String(data?.id ?? '')
+  const { data: storedEvent, error: eventError } = await db
+    .from('payment_events')
+    .insert({
+      provider: 'mercadopago',
+      event_type: eventType,
+      external_id: externalId,
+      payload,
+      received_at: new Date().toISOString(),
+    })
+    .select('id')
+    .maybeSingle()
+
+  if (eventError) {
+    if (eventError.code === '23505') {
+      return new Response('OK (duplicate)', { status: 200 })
+    }
+    console.error('[Voryn] Falha ao registrar evento de pagamento:', eventError)
+    return new Response('Database Error', { status: 500 })
+  } else if (!storedEvent) {
+    // Mercado Pago retries are common; do not send duplicate notifications
+    // or repeat subscription transitions for an event already persisted.
+    return new Response('OK (duplicate)', { status: 200 })
+  }
 
   if (type === 'subscription_preapproval') {
     const subId = data?.id as string

@@ -29,21 +29,13 @@ const PLAN_IDS: Record<string, string> = {
   personal_pro: Deno.env.get('MP_PLAN_PRO')      ?? '',
 }
 
-// Preços de fallback caso o plano MP não seja preapproval.
-// DUPLICAÇÃO CONHECIDA E ACEITA: o frontend já foi consolidado para usar
-// uma única fonte de preços (src/services/payment.js, PLANS), eliminando
-// a duplicação que existia em 5 lugares diferentes do React. Esta Edge
-// Function NÃO pode importar diretamente de src/ — roda em runtime Deno
-// separado do bundle Vite do frontend, são ambientes de execução
-// diferentes. Se o preço de algum plano mudar, é preciso atualizar AQUI e
-// em src/services/payment.js manualmente. Eliminar essa duplicação por
-// completo exigiria mover os preços para uma tabela no banco (consultável
-// por ambos os lados) — não fiz essa mudança estrutural maior nesta
-// rodada por ser fora do escopo de correção pontual de bug.
+// Os preços são configurados no ambiente de deploy. O frontend usa os
+// equivalentes VITE_PLAN_* para exibição; a Edge Function nunca confia no
+// preço enviado pelo cliente.
 const PRICES: Record<string, number> = {
-  student:      14.90,
-  personal:     59.90,
-  personal_pro: 99.90,
+  student:      Number(Deno.env.get('MP_PRICE_STUDENT') ?? ''),
+  personal:     Number(Deno.env.get('MP_PRICE_PERSONAL') ?? ''),
+  personal_pro: Number(Deno.env.get('MP_PRICE_PRO') ?? ''),
 }
 
 const CORS = {
@@ -106,6 +98,12 @@ serve(async (req) => {
         error: `Plano "${planId}" ainda não está configurado no Mercado Pago (preapproval_plan_id ausente). Configure MP_PLAN_${planId.toUpperCase()} antes de habilitar este plano.`,
       }),
       { status: 500, headers: CORS }
+    )
+  }
+  if (!Number.isFinite(PRICES[planId]) || PRICES[planId] <= 0) {
+    return new Response(
+      JSON.stringify({ error: 'Preço do plano não configurado.' }),
+      { status: 503, headers: CORS }
     )
   }
 
