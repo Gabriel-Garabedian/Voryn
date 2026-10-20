@@ -70,7 +70,7 @@ create table if not exists public.users (
   -- é o mesmo mecanismo das comunidades — lá o código é do GRUPO, aqui é
   -- da PESSOA). Mesmo princípio de sempre: nunca aparece em busca, só
   -- funciona se você mandar seu link pra alguém.
-  friend_invite_code text unique default substr(md5(random()::text || clock_timestamp()::text), 1, 8),
+  friend_invite_code text unique default substr(md5(random()::text || clock_timestamp()::text), 1, 16),
   onboarding_done  boolean not null default false,
   created_at       timestamptz default now(),
   updated_at       timestamptz default now()
@@ -89,8 +89,8 @@ alter table public.users add column if not exists friend_invite_code text;
 -- a funcionalidade, até fazer login de novo (o que nunca dispara um
 -- update nessa coluna). Preenche todo mundo que ainda está null, uma
 -- vez só.
-update public.users set friend_invite_code = substr(md5(random()::text || clock_timestamp()::text || id::text), 1, 8)
-  where friend_invite_code is null;
+update public.users set friend_invite_code = substr(md5(random()::text || clock_timestamp()::text || id::text), 1, 16)
+where friend_invite_code is null or length(friend_invite_code) < 16;
 
 do $$
 begin
@@ -294,6 +294,25 @@ create table if not exists public.payment_events (
   received_at  timestamptz default now(),
   created_at   timestamptz default now()
 );
+
+-- Webhooks podem ser reenviados pelo provedor. O par provider/event_type/
+-- external_id identifica um evento do Mercado Pago e impede duplicação.
+update public.payment_events
+   set provider = coalesce(provider, 'mercadopago')
+ where provider is null;
+delete from public.payment_events older
+ using public.payment_events newer
+ where older.ctid < newer.ctid
+   and older.provider = newer.provider
+   and older.event_type = newer.event_type
+   and older.external_id = newer.external_id
+   and older.external_id is not null
+   and older.external_id <> '';
+alter table public.payment_events
+  alter column provider set default 'mercadopago';
+create unique index if not exists payment_events_provider_type_external_key
+  on public.payment_events(provider, event_type, external_id)
+  where external_id is not null and external_id <> '';
 
 -- ── PUSH SUBSCRIPTIONS (notificações PWA) ─────────────────
 create table if not exists public.push_subscriptions (
@@ -558,7 +577,8 @@ create policy "users_select_own" on public.users
   for select using (auth.uid() = id);
 
 create policy "users_update_own" on public.users
-  for update using (auth.uid() = id);
+  for update using (auth.uid() = id)
+  with check (auth.uid() = id);
 
 create policy "users_insert_own" on public.users
   for insert with check (auth.uid() = id);
@@ -593,18 +613,17 @@ create policy "users_student_see_own_trainer" on public.users
 create policy "subs_select_own" on public.subscriptions
   for select using (auth.uid() = user_id);
 
-create policy "subs_insert_own" on public.subscriptions
-  for insert with check (auth.uid() = user_id);
-
 create policy "subs_update_own" on public.subscriptions
-  for update using (auth.uid() = user_id);
+  for update using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
 
 create policy "subs_admin_all" on public.subscriptions
   for all using (public.is_admin());
 
 -- ── trainers ──────────────────────────────────────────────
 create policy "trainers_own" on public.trainers
-  for all using (auth.uid() = user_id);
+  for all using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
 
 -- Alunos vinculados a um personal podem ver os dados completos dele
 -- (bio, phone, instagram) dentro do app — necessário para a tela do
@@ -641,7 +660,8 @@ create policy "trainers_read_linked_student" on public.trainers
 
 -- ── trainer_students ──────────────────────────────────────
 create policy "ts_trainer" on public.trainer_students
-  for all using (public.owns_trainer(trainer_id));
+  for all using (public.owns_trainer(trainer_id))
+  with check (public.owns_trainer(trainer_id));
 
 create policy "ts_student_read" on public.trainer_students
   for select using (auth.uid() = student_id);
@@ -840,7 +860,11 @@ begin
     new.id,
     new.email,
     coalesce(new.raw_user_meta_data->>'name', split_part(new.email, '@', 1)),
-    coalesce(new.raw_user_meta_data->>'role', 'student')
+    case
+      when new.raw_user_meta_data->>'role' in ('student', 'personal')
+        then new.raw_user_meta_data->>'role'
+      else 'student'
+    end
   )
   on conflict (id) do nothing;
 
@@ -1604,7 +1628,8 @@ create policy "communities_member_read" on public.communities
 
 drop policy if exists "communities_creator_write" on public.communities;
 create policy "communities_creator_write" on public.communities
-  for update using (creator_id = auth.uid());
+  for update using (creator_id = auth.uid())
+  with check (creator_id = auth.uid());
 
 drop policy if exists "communities_creator_delete" on public.communities;
 create policy "communities_creator_delete" on public.communities
@@ -1629,7 +1654,10 @@ create policy "community_members_read" on public.community_members
 -- princípio já usado no vínculo personal→aluno neste projeto.
 drop policy if exists "community_members_self_join" on public.community_members;
 create policy "community_members_self_join" on public.community_members
-  for insert with check (auth.uid() = user_id);
+  for insert with check (
+    auth.uid() = user_id
+    and role = 'member'
+  );
 
 -- Sair do grupo (linha própria) ou o criador remover alguém.
 drop policy if exists "community_members_leave_or_remove" on public.community_members;
