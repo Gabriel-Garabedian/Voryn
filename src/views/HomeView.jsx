@@ -172,7 +172,7 @@ const STREAK_MILESTONES = [3, 7, 14, 30, 60, 100]
 // ── Resumo Semanal Banner ─────────────────────────────────────
 function WeeklySummaryBanner({ lastWeek, metrics, streak }) {
   const [dismissed, setDismissed] = React.useState(
-    () => localStorage.getItem('voryn_summary_dismissed') === new Date().toISOString().slice(0,7)
+    () => localStorage.getItem('voryn_summary_dismissed') === localDateKey().slice(0,7)
   )
   // Só mostrar às segundas-feiras
   const isMonday = new Date().getDay() === 1
@@ -182,7 +182,7 @@ function WeeklySummaryBanner({ lastWeek, metrics, streak }) {
   const volumeK = metrics?.totalVolume ? (metrics.totalVolume / 1000).toFixed(1) : null
 
   function dismiss() {
-    localStorage.setItem('voryn_summary_dismissed', new Date().toISOString().slice(0,7))
+    localStorage.setItem('voryn_summary_dismissed', localDateKey().slice(0,7))
     setDismissed(true)
   }
 

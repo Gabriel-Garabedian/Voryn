@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { workoutLogService } from '@/services'
 import { estimateOneRepMax, formatDateShort, formatVolume, getPlanLimit } from '@/utils/helpers'
@@ -85,6 +85,57 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
     })
   }, [targetUserId, hasGraphs])
 
+  // ── Load progression data ──────────────────────────────
+  const loadData = useMemo(() => logs
+    .map(log => {
+      const ex = log.exercises?.find(e => e.name === selected)
+      if (!ex) return null
+      const sets = ex.sets || []
+      const maxWeight = sets.reduce((m, s) => Math.max(m, parseFloat(s.weight)||0), 0)
+      const e1rm = Math.max(...sets.map(set => estimateOneRepMax(set.weight, set.reps)), 0)
+      return { date: formatDateShort(log.date), carga: maxWeight, e1rm, volume: sets.reduce((a,s) => a+(parseFloat(s.weight)||0)*(parseInt(s.reps)||0),0) }
+    })
+    .filter(Boolean)
+    .reverse()
+    .slice(-20), [logs, selected])
+
+  // ── Volume per week ────────────────────────────────────
+  const weeklyVolume = useMemo(() => {
+    const map = {}
+    logs.forEach(log => {
+      const week = getWeekLabel(log.date)
+      const vol  = parseFloat(log.total_volume) || 0
+      map[week]  = (map[week] || 0) + vol
+    })
+    return Object.entries(map).slice(-8).map(([week, vol]) => ({ week, volume: Math.round(vol) }))
+  }, [logs])
+
+  // ── Frequency per month ────────────────────────────────
+  const monthlyFreq = useMemo(() => {
+    const map = {}
+    logs.forEach(log => {
+      const m = log.date?.slice(0,7)
+      map[m] = (map[m]||0) + 1
+    })
+    return Object.entries(map).slice(-6).map(([month, count]) => ({
+      mes: month.slice(5) + '/' + month.slice(2,4),
+      treinos: count
+    }))
+  }, [logs])
+
+  // Anotações por exercício, mais recentes primeiro — mesma lista de logs
+  // já carregada para os gráficos, sem query extra. É o que faz a
+  // anotação feita durante o treino (WorkoutView) aparecer aqui depois,
+  // tanto para o aluno quanto para o personal (esta view é reaproveitada
+  // nos dois contextos via embeddedUserId — ver PersonalDashboardView).
+  const recentNotes = useMemo(() => logs
+    .flatMap(log => (log.exercises || [])
+      .filter(ex => ex.notes?.trim())
+      .map(ex => ({ date: log.date, exercise: ex.name, note: ex.notes }))
+    )
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 8), [logs])
+
   if (!hasGraphs) return <GateCard navigate={navigate}/>
   if (loading) return (
     <div className="px-4 pt-6 pb-8">
@@ -100,56 +151,6 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
       <p className="text-sm" style={{ color: 'var(--text-3)' }}>Complete alguns treinos para ver sua evolução.</p>
     </div>
   )
-
-  // ── Load progression data ──────────────────────────────
-  const loadData = logs
-    .map(log => {
-      const ex = log.exercises?.find(e => e.name === selected)
-      if (!ex) return null
-      const maxWeight = ex.sets.reduce((m, s) => Math.max(m, parseFloat(s.weight)||0), 0)
-      const e1rm = Math.max(...ex.sets.map(set => estimateOneRepMax(set.weight, set.reps)), 0)
-      return { date: formatDateShort(log.date), carga: maxWeight, e1rm, volume: ex.sets.reduce((a,s) => a+(parseFloat(s.weight)||0)*(parseInt(s.reps)||0),0) }
-    })
-    .filter(Boolean)
-    .reverse()
-    .slice(-20)
-
-  // ── Volume per week ────────────────────────────────────
-  const weeklyVolume = (() => {
-    const map = {}
-    logs.forEach(log => {
-      const week = getWeekLabel(log.date)
-      const vol  = parseFloat(log.total_volume) || 0
-      map[week]  = (map[week] || 0) + vol
-    })
-    return Object.entries(map).slice(-8).map(([week, vol]) => ({ week, volume: Math.round(vol) }))
-  })()
-
-  // ── Frequency per month ────────────────────────────────
-  const monthlyFreq = (() => {
-    const map = {}
-    logs.forEach(log => {
-      const m = log.date?.slice(0,7)
-      map[m] = (map[m]||0) + 1
-    })
-    return Object.entries(map).slice(-6).map(([month, count]) => ({
-      mes: month.slice(5) + '/' + month.slice(2,4),
-      treinos: count
-    }))
-  })()
-
-  // Anotações por exercício, mais recentes primeiro — mesma lista de logs
-  // já carregada para os gráficos, sem query extra. É o que faz a
-  // anotação feita durante o treino (WorkoutView) aparecer aqui depois,
-  // tanto para o aluno quanto para o personal (esta view é reaproveitada
-  // nos dois contextos via embeddedUserId — ver PersonalDashboardView).
-  const recentNotes = logs
-    .flatMap(log => (log.exercises || [])
-      .filter(ex => ex.notes?.trim())
-      .map(ex => ({ date: log.date, exercise: ex.name, note: ex.notes }))
-    )
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
-    .slice(0, 8)
 
   return (
     <div className="app-view view-evolution pb-6">

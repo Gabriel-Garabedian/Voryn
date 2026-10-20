@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { prService, workoutLogService, routineService, dataExportService } from '@/services'
@@ -236,13 +236,26 @@ export default function ProfileView() {
   const statusInfo = statusMap[subStatus] || statusMap.inactive
   const planInfo   = PLANS[plan]
 
-  const totalVolume  = logs.reduce((a, l) => a + (parseFloat(l.total_volume) || 0), 0)
-  const streak       = calcStreak(logs.map(l => l.date))
-  const bestStreak   = calcBestStreak(logs.map(l => l.date))
-  const monthAgo     = new Date(); monthAgo.setDate(monthAgo.getDate() - 30)
-  const monthlyCount = logs.filter(l => new Date(l.date) >= monthAgo).length
-  const achMetrics   = { total: logs.length, bestStreak, totalVolume, monthlyCount }
-  const unlockedAch  = ACHIEVEMENTS.filter(a => a.check(achMetrics))
+  const { totalVolume, streak, bestStreak, unlockedAch, achMetrics } = useMemo(() => {
+    const dates = logs.map(l => l.date)
+    const monthAgo = new Date()
+    monthAgo.setDate(monthAgo.getDate() - 30)
+    const totalVolume = logs.reduce((a, l) => a + (parseFloat(l.total_volume) || 0), 0)
+    const bestStreak = calcBestStreak(dates)
+    const achMetrics = {
+      total: logs.length,
+      bestStreak,
+      totalVolume,
+      monthlyCount: logs.filter(l => new Date(`${l.date}T00:00:00`) >= monthAgo).length,
+    }
+    return {
+      totalVolume,
+      streak: calcStreak(dates),
+      bestStreak,
+      unlockedAch: ACHIEVEMENTS.filter(a => a.check(achMetrics)),
+      achMetrics,
+    }
+  }, [logs])
 
   return (
     <div className="app-view view-profile px-4 pt-6 pb-10 space-y-5">

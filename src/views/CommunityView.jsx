@@ -163,6 +163,7 @@ function CreateCommunityModal({ open, onClose, userId, onCreated }) {
 
 function CommunityDetail({ community, userId, onBack, onLeft }) {
   const toast = useToast()
+  const copyTimer = useRef(null)
   const [members,  setMembers]  = useState([])
   const [prFeed,   setPrFeed]   = useState([])
   const [activity, setActivity] = useState([])
@@ -173,6 +174,8 @@ function CommunityDetail({ community, userId, onBack, onLeft }) {
 
   const isCreator = community.myRole === 'creator' || community.creator_id === userId
   const inviteLink = `${window.location.origin}/community/join/${community.invite_code}`
+
+  useEffect(() => () => clearTimeout(copyTimer.current), [])
 
   useEffect(() => {
     Promise.all([
@@ -208,7 +211,8 @@ function CommunityDetail({ community, userId, onBack, onLeft }) {
       }
       setCopied(true)
       toast.success('Link copiado! Manda pelo WhatsApp.')
-      setTimeout(() => setCopied(false), 3000)
+      clearTimeout(copyTimer.current)
+      copyTimer.current = setTimeout(() => setCopied(false), 3000)
     } catch {
       toast.error('Não foi possível copiar. Copie manualmente: ' + inviteLink)
     }
@@ -427,11 +431,14 @@ function ChatCommunity({ communityId, userId, members }) {
 function FriendsTab({ userId, onSelect }) {
   const { profile } = useAuth()
   const toast = useToast()
+  const copyTimer = useRef(null)
   const [friends, setFriends] = useState([])
   const [loading, setLoading] = useState(true)
   const [copied,  setCopied]  = useState(false)
 
   const myLink = `${window.location.origin}/friend/add/${profile?.friend_invite_code || ''}`
+
+  useEffect(() => () => clearTimeout(copyTimer.current), [])
 
   useEffect(() => {
     friendService.getMyFriends().then(({ data }) => {
@@ -458,7 +465,8 @@ function FriendsTab({ userId, onSelect }) {
       }
       setCopied(true)
       toast.success('Link copiado! Manda pra quem você quiser conectar.')
-      setTimeout(() => setCopied(false), 3000)
+      clearTimeout(copyTimer.current)
+      copyTimer.current = setTimeout(() => setCopied(false), 3000)
     } catch {
       toast.error('Não foi possível copiar. Copie manualmente: ' + myLink)
     }

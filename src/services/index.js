@@ -1,18 +1,30 @@
 import { supabase } from '@/lib/supabase'
 import { PLANS } from '@/services/payment'
-import { parseWeight, localDateKey } from '@/utils/helpers'
+import { parseWeight, localDateKey, calcStreak, calcBestStreak, localDateStart } from '@/utils/helpers'
 
 const SYNC_QUEUE_KEY = 'voryn_sync_queue'
+const MAX_SYNC_QUEUE = 100
 
 export const offlineSyncService = {
   get() {
-    try { return JSON.parse(localStorage.getItem(SYNC_QUEUE_KEY) || '[]') } catch { return [] }
+    try {
+      const queue = JSON.parse(localStorage.getItem(SYNC_QUEUE_KEY) || '[]')
+      return Array.isArray(queue) ? queue.filter(item => item?.id && item?.userId && item?.log) : []
+    } catch { return [] }
   },
   add(item) {
+    if (!item?.userId || !item?.log) return false
     const queue = this.get()
-    queue.push({ ...item, id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`, queuedAt: Date.now() })
-    try { localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(queue)) } catch {}
+    const next = [...queue, {
+      ...item,
+      attempts: 0,
+      id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      queuedAt: Date.now(),
+    }]
+      .slice(-MAX_SYNC_QUEUE)
+    try { localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(next)) } catch { return false }
     window.dispatchEvent(new Event('voryn:sync_queue_change'))
+    return true
   },
   remove(id) {
     try { localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(this.get().filter(item => item.id !== id))) } catch {}
@@ -143,28 +155,20 @@ export const workoutLogService = {
 
       const dates   = data.map(r => r.date)
       const now     = new Date()
-      const weekAgo = new Date(now); weekAgo.setDate(weekAgo.getDate() - 7)
-      const monAgo  = new Date(now); monAgo.setMonth(monAgo.getMonth() - 1)
-
       // Streak calculation
-      const uniqueDates = [...new Set(dates)].sort().reverse()
-      let streak = 0, bestStreak = 0, cur = 0
-      let prev = localDateKey(now)
-      for (const d of uniqueDates) {
-        const diff = Math.round((new Date(prev) - new Date(d)) / 86400000)
-        if (diff <= 1) { cur++; if (cur > bestStreak) bestStreak = cur }
-        else { if (streak === 0) streak = cur; cur = 1 }
-        prev = d
-      }
-      if (streak === 0) streak = cur
+      const weekStart = new Date(now); weekStart.setDate(now.getDate() - 7)
+      const monthStart = new Date(now); monthStart.setMonth(now.getMonth() - 1)
+      const uniqueDates = [...new Set(dates)]
+      const streak = calcStreak(uniqueDates)
+      const bestStreak = calcBestStreak(uniqueDates)
 
       return {
         total:        data.length,
         streak,
         bestStreak,
-        weeklyCount:  data.filter(r => new Date(r.date) >= weekAgo).length,
-        weeklyVolume: data.filter(r => new Date(r.date) >= weekAgo).reduce((a, r) => a + (parseFloat(r.total_volume) || 0), 0),
-        monthlyCount: data.filter(r => new Date(r.date) >= monAgo).length,
+        weeklyCount:  data.filter(r => localDateStart(r.date) >= weekStart).length,
+        weeklyVolume: data.filter(r => localDateStart(r.date) >= weekStart).reduce((a, r) => a + (parseFloat(r.total_volume) || 0), 0),
+        monthlyCount: data.filter(r => localDateStart(r.date) >= monthStart).length,
         avgDuration:  Math.round(data.reduce((a, r) => a + (r.duration || 0), 0) / data.length),
         totalVolume:  data.reduce((a, r) => a + (parseFloat(r.total_volume) || 0), 0),
       }
@@ -176,10 +180,35 @@ export const workoutLogService = {
 }
 
 export async function syncPendingWorkouts(userId) {
-  const pending = offlineSyncService.get().filter(item => item.kind === 'workout_log' && (!userId || item.userId === userId))
+  if (!userId || (typeof navigator !== 'undefined' && !navigator.onLine)) return offlineSyncService.count(userId)
+  const pending = offlineSyncService.get()
+    .filter(item => item.kind === 'workout_log' && item.userId === userId)
+    .slice(0, MAX_SYNC_QUEUE)
   for (const item of pending) {
-    const result = await workoutLogService.create(item.userId, item.log, { queueOnFailure: false })
-    if (!result.error) offlineSyncService.remove(item.id)
+    try {
+      const result = await workoutLogService.create(item.userId, item.log, { queueOnFailure: false })
+      if (!result.error) {
+        offlineSyncService.remove(item.id)
+        continue
+      }
+
+      const attempts = (item.attempts || 0) + 1
+      const permanent = result.error.status >= 400 && result.error.status < 500
+      if (permanent || attempts >= 3) {
+        console.error('[Voryn] Removendo treino pendente após falha permanente ou 3 tentativas:', result.error)
+        offlineSyncService.remove(item.id)
+        continue
+      }
+
+      const queue = offlineSyncService.get().map(entry => (
+        entry.id === item.id ? { ...entry, attempts } : entry
+      ))
+      localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(queue))
+      break
+    } catch (error) {
+      console.warn('[Voryn] Falha ao sincronizar treino pendente:', error)
+      break
+    }
   }
   return offlineSyncService.count(userId)
 }

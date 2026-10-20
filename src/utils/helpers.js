@@ -39,6 +39,19 @@ export function localDateKey(date = new Date()) {
   return `${y}-${m}-${d}`
 }
 
+export function readStoredJson(key, fallback = null) {
+  try {
+    const value = localStorage.getItem(key)
+    return value == null ? fallback : JSON.parse(value)
+  } catch {
+    return fallback
+  }
+}
+
+export function localDateStart(dateKey) {
+  return new Date(`${dateKey}T00:00:00`)
+}
+
 // ── Tradução de erros do Supabase para português ──────────
 const ERROR_MAP = {
   'Invalid login credentials':           'Email ou senha incorretos.',
@@ -222,7 +235,7 @@ export function calcBestStreak(dates, eligibleDates) {
   let best = 1, cur = 1
   for (let i = 1; i < sorted.length; i++) {
     if (!eligible) {
-      const diff = Math.round((new Date(sorted[i]) - new Date(sorted[i-1])) / 86400000)
+      const diff = Math.round((localDateStart(sorted[i]) - localDateStart(sorted[i-1])) / 86400000)
       if (diff === 1) { cur++; if (cur > best) best = cur }
       else cur = 1
       continue

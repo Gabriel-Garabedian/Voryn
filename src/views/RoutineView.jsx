@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { routineService } from '@/services'
+import { readStoredJson } from '@/utils/helpers'
 import { Button } from '@/components/ui'
 import { useToast } from '@/components/ui/Toast'
 import { SkeletonList } from '@/components/ui/Skeleton'
@@ -51,7 +52,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
   useEffect(() => {
     if (!targetUserId || isEmbedded) return
     try {
-      setTemplates(JSON.parse(localStorage.getItem(`voryn_routine_templates_${targetUserId}`) || '[]'))
+      setTemplates(readStoredJson(`voryn_routine_templates_${targetUserId}`, []))
     } catch (err) {
       console.error('[Voryn] Não foi possível carregar templates:', err)
     }

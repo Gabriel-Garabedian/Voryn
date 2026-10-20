@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { workoutLogService } from '@/services'
-import { formatDuration, formatVolume, getPlanLimit } from '@/utils/helpers'
+import { formatDuration, formatVolume, getPlanLimit, localDateKey, localDateStart } from '@/utils/helpers'
 import { summarizeCardio, getCardioType } from '@/data/cardio'
 import { SkeletonList } from '@/components/ui/Skeleton'
 
@@ -162,7 +162,7 @@ export default function HistoryView() {
     if (isLimited) {
       const cutoff = new Date()
       cutoff.setDate(cutoff.getDate() - historyDays)
-      sinceDate = cutoff.toISOString().split('T')[0]
+      sinceDate = localDateKey(cutoff)
     }
     workoutLogService.getAll(user.id, sinceDate)
       .then(({ data }) => { setLogs(data || []); setLoading(false) })
@@ -179,7 +179,7 @@ export default function HistoryView() {
       if (period === 'week')    cutoff.setDate(now.getDate() - 7)
       if (period === 'month')   cutoff.setMonth(now.getMonth() - 1)
       if (period === '3months') cutoff.setMonth(now.getMonth() - 3)
-      result = result.filter(l => new Date(l.date) >= cutoff)
+      result = result.filter(l => localDateStart(l.date) >= cutoff)
     }
 
     // Search

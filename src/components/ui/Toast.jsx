@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react'
 
 const ToastContext = createContext(null)
 
@@ -35,14 +35,23 @@ const STYLES = {
 
 function ToastItem({ toast, onRemove }) {
   const [visible, setVisible] = useState(false)
+  const timers = useRef([])
   const s = STYLES[toast.type] || STYLES.info
 
   useEffect(() => {
-    requestAnimationFrame(() => setVisible(true))
+    const frame = requestAnimationFrame(() => setVisible(true))
+    timers.current.push({ type: 'frame', id: frame })
     if (toast.type !== 'loading' && toast.duration !== Infinity) {
-      const t = setTimeout(() => { setVisible(false); setTimeout(() => onRemove(toast.id), 300) }, toast.duration || 3000)
-      return () => clearTimeout(t)
+      const t = setTimeout(() => {
+        setVisible(false)
+        const removeTimer = setTimeout(() => onRemove(toast.id), 300)
+        timers.current.push({ type: 'timeout', id: removeTimer })
+      }, toast.duration || 3000)
+      timers.current.push({ type: 'timeout', id: t })
     }
+    return () => timers.current.forEach(timer => (
+      timer.type === 'frame' ? cancelAnimationFrame(timer.id) : clearTimeout(timer.id)
+    ))
   }, [])
 
   return (
@@ -71,7 +80,11 @@ function ToastItem({ toast, onRemove }) {
         <button
           type="button"
           aria-label="Fechar notificação"
-          onClick={() => { setVisible(false); setTimeout(() => onRemove(toast.id), 300) }}
+          onClick={() => {
+            setVisible(false)
+            const removeTimer = setTimeout(() => onRemove(toast.id), 300)
+            timers.current.push({ type: 'timeout', id: removeTimer })
+          }}
           style={{
             width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             border: 0, borderRadius: 8, color: 'var(--text-3)', background: 'transparent', cursor: 'pointer',

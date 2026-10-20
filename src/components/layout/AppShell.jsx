@@ -1,21 +1,22 @@
-import React, { useState, useEffect } from 'react'
+import React, { lazy, Suspense, useState, useEffect } from 'react'
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { supabase } from '@/lib/supabase'
-import HomeView              from '@/views/HomeView'
-import RoutineView           from '@/views/RoutineView'
-import WorkoutView           from '@/views/WorkoutView'
-import PersonalView          from '@/views/PersonalView'
-import ProfileView           from '@/views/ProfileView'
-import PersonalDashboardView from '@/views/PersonalDashboardView'
-import SubscriptionView      from '@/views/SubscriptionView'
-import EvolutionView         from '@/views/EvolutionView'
-import HistoryView           from '@/views/HistoryView'
-import GoalsView             from '@/views/GoalsView'
-import AchievementsView      from '@/views/AchievementsView'
-import ProgressPhotosView    from '@/views/ProgressPhotosView'
-import CommunityView         from '@/views/CommunityView'
-import OnboardingView        from '@/views/OnboardingView'
+import LoadingScreen from '@/components/ui/LoadingScreen'
+const HomeView = lazy(() => import('@/views/HomeView'))
+const RoutineView = lazy(() => import('@/views/RoutineView'))
+const WorkoutView = lazy(() => import('@/views/WorkoutView'))
+const PersonalView = lazy(() => import('@/views/PersonalView'))
+const ProfileView = lazy(() => import('@/views/ProfileView'))
+const PersonalDashboardView = lazy(() => import('@/views/PersonalDashboardView'))
+const SubscriptionView = lazy(() => import('@/views/SubscriptionView'))
+const EvolutionView = lazy(() => import('@/views/EvolutionView'))
+const HistoryView = lazy(() => import('@/views/HistoryView'))
+const GoalsView = lazy(() => import('@/views/GoalsView'))
+const AchievementsView = lazy(() => import('@/views/AchievementsView'))
+const ProgressPhotosView = lazy(() => import('@/views/ProgressPhotosView'))
+const CommunityView = lazy(() => import('@/views/CommunityView'))
+const OnboardingView = lazy(() => import('@/views/OnboardingView'))
 import PaywallGate           from '@/components/PaywallGate'
 import EmailConfirmGate      from '@/components/EmailConfirmGate'
 import NotificationPrompt    from '@/components/ui/NotificationPrompt'
@@ -137,7 +138,12 @@ export default function AppShell() {
   }, [])
   useEffect(() => {
     const refresh = () => setPendingSync(offlineSyncService.count(user?.id))
-    const sync = () => { syncPendingWorkouts(user?.id).then(refresh) }
+    const sync = () => {
+      if (!user?.id || (typeof navigator !== 'undefined' && !navigator.onLine)) return
+      syncPendingWorkouts(user.id).then(refresh).catch(error => {
+        console.warn('[Voryn] Sincronização offline falhou:', error)
+      })
+    }
     window.addEventListener('voryn:sync_queue_change', refresh)
     window.addEventListener('online', sync)
     if (navigator.onLine) sync()
@@ -285,7 +291,8 @@ export default function AppShell() {
       <div className="app-content flex-1 overflow-y-auto overflow-x-hidden">
         <div className="app-content__inner max-w-2xl mx-auto">
           <TrialEndingBanner hidden={onSubscriptionPage} />
-          <Routes>
+          <Suspense fallback={<div className="flex-1"><LoadingScreen /></div>}>
+            <Routes>
             <Route index              element={isPersonal ? <PersonalDashboardView /> : <HomeView />} />
             <Route path="routine/*"      element={<RoutineView />} />
             <Route path="workout/*"      element={<WorkoutView />} />
@@ -299,7 +306,8 @@ export default function AppShell() {
             <Route path="photos/*"        element={<ProgressPhotosView />} />
             <Route path="community/*"     element={<CommunityView />} />
             <Route path="onboarding"     element={<OnboardingView />} />
-          </Routes>
+            </Routes>
+          </Suspense>
         </div>
       </div>
 

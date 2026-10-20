@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/context/AuthContext'
+import { readStoredJson } from '@/utils/helpers'
 import { workoutLogService } from '@/services'
 import { SkeletonList } from '@/components/ui/Skeleton'
 
@@ -82,7 +83,7 @@ export default function AchievementsView() {
 
   useEffect(() => {
     if (!user) return
-    const stored = JSON.parse(localStorage.getItem(`voryn_ach_${user.id}`) || '[]')
+    const stored = readStoredJson(`voryn_ach_${user.id}`, [])
     workoutLogService.getMetrics(user.id).then(m => {
       setMetrics(m)
       setLoading(false)

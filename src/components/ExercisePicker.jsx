@@ -21,7 +21,10 @@ export default function ExercisePicker({ onSelect, onClose, onCustom, initialMus
   const [detailExercise, setDetailExercise] = useState(null) // exercício aberto no modal de instruções
   const inputRef = useRef(null)
 
-  useEffect(() => { setTimeout(() => inputRef.current?.focus(), 120) }, [])
+  useEffect(() => {
+    const timer = setTimeout(() => inputRef.current?.focus(), 120)
+    return () => clearTimeout(timer)
+  }, [])
 
   const equipments = useMemo(() => [...new Set(EXERCISE_LIBRARY.map(ex => ex.equipment).filter(Boolean))].sort(), [])
   const results = useMemo(

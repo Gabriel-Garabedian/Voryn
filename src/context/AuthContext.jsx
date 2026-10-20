@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import { getSubscription } from '@/utils/helpers'
 
@@ -53,6 +53,7 @@ export function AuthProvider({ children }) {
   // já que a RLS de subscriptions não permite o aluno ler a assinatura de
   // terceiros diretamente — nem deveria.
   const [hasTrainerAccess, setHasTrainerAccess] = useState(false)
+  const profileRequest = useRef(null)
 
   useEffect(() => {
     document.documentElement.classList.toggle('theme-light', theme === 'light')
@@ -64,6 +65,9 @@ export function AuthProvider({ children }) {
       setUser(session?.user ?? null)
       if (session?.user) fetchProfile(session.user.id)
       else setLoading(false)
+    }).catch(error => {
+      console.error('[Voryn] Falha ao recuperar sessão:', error)
+      setLoading(false)
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
@@ -74,6 +78,16 @@ export function AuthProvider({ children }) {
   }, [])
 
   async function fetchProfile(userId) {
+    if (!userId) return
+    if (profileRequest.current?.userId === userId) return profileRequest.current.promise
+    const promise = fetchProfileInternal(userId)
+    profileRequest.current = { userId, promise }
+    try { return await promise } finally {
+      if (profileRequest.current?.promise === promise) profileRequest.current = null
+    }
+  }
+
+  async function fetchProfileInternal(userId) {
     try {
       const { data, error } = await supabase
         .from('users')

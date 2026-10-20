@@ -239,6 +239,11 @@ function searchText(exercise) {
 }
 
 export function searchExercises(query = '', muscle = '', equipment = '', difficulty = '', type = '') {
+  const difficultyAliases = {
+    beginner: 'iniciante', intermediate: 'intermediario', advanced: 'avancado',
+    iniciante: 'iniciante', intermediario: 'intermediario', avançado: 'avancado', avancado: 'avancado',
+  }
+  const normalizedDifficulty = difficultyAliases[String(difficulty).toLowerCase()] || String(difficulty).toLowerCase()
   const q = query.toLowerCase().trim()
   const expandedQuery = q && Object.entries(SEARCH_SYNONYMS)
     .find(([key, values]) => key === q || values.some(value => value === q))
@@ -248,7 +253,8 @@ export function searchExercises(query = '', muscle = '', equipment = '', difficu
     const matchName   = !q || terms.some(term => text.includes(term))
     const matchMuscle = !muscle || e.muscle === muscle
     const matchEquipment = !equipment || e.equipment === equipment
-    const matchDifficulty = !difficulty || (e.difficulty || 'intermediario') === difficulty
+    const exerciseDifficulty = difficultyAliases[String(e.difficulty || 'intermediario').toLowerCase()] || 'intermediario'
+    const matchDifficulty = !normalizedDifficulty || exerciseDifficulty === normalizedDifficulty
     const matchType = !type || e.type === type
     return matchName && matchMuscle && matchEquipment && matchDifficulty && matchType
   })

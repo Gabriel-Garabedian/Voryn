@@ -85,10 +85,12 @@ export default function GoalsView() {
       const weekStart = new Date(now)
       weekStart.setDate(now.getDate() - now.getDay())
       weekStart.setHours(0,0,0,0)
-      const count = dates.filter(d => new Date(d) >= weekStart).length
+      const count = dates.filter(d => new Date(`${d}T00:00:00`) >= weekStart).length
       setWeekCount(count)
-    })
-    getBodyLogs(user.id).then(logs => { setBodyLogs(logs); setLoading(false) })
+    }).catch(err => console.error('[Voryn] GoalsView: falha ao carregar treinos:', err))
+    getBodyLogs(user.id).then(logs => { setBodyLogs(logs) }).catch(err => {
+      console.error('[Voryn] GoalsView: falha ao carregar avaliações:', err)
+    }).finally(() => setLoading(false))
     sb.from('student_goals').select('*').eq('student_id', user.id).single()
       .then(({ data }) => {
         if (data) { setGoals(data); setGoalForm(f => ({ ...f, ...data })) }

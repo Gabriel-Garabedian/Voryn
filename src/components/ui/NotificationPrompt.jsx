@@ -1,14 +1,20 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { pushService } from '@/services/pushNotifications'
 
 export default function NotificationPrompt({ onDismiss }) {
   const { user } = useAuth()
   const [state, setState] = useState('idle') // idle | requesting | granted | denied
+  const dismissTimer = useRef(null)
 
   useEffect(() => {
-    if (!pushService.isSupported()) { onDismiss?.(); return }
-    if (Notification.permission !== 'default') { onDismiss?.(); return }
+    if (!pushService.isSupported()) { onDismiss?.(); return undefined }
+    if (Notification.permission !== 'default') { onDismiss?.(); return undefined }
+    return undefined
+  }, [onDismiss])
+
+  useEffect(() => () => {
+    if (dismissTimer.current) clearTimeout(dismissTimer.current)
   }, [])
 
   async function handleEnable() {
@@ -16,10 +22,10 @@ export default function NotificationPrompt({ onDismiss }) {
     const result = await pushService.subscribe(user?.id)
     if (result.error === 'denied' || result.error === 'not_supported') {
       setState('denied')
-      setTimeout(onDismiss, 2000)
+      dismissTimer.current = setTimeout(onDismiss, 2000)
     } else {
       setState('granted')
-      setTimeout(onDismiss, 1800)
+      dismissTimer.current = setTimeout(onDismiss, 1800)
     }
   }
 
