@@ -49,6 +49,9 @@ coverage/
 # Vercel
 .vercel/
 
+# OpenClaude — config local personificada
+.openclaude/settings.local.json
+
 # Misc
 *.log
 *.pid
