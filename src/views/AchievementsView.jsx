@@ -43,7 +43,7 @@ function AchievementCard({ achievement, unlocked, isNew }) {
         {achievement.icon}
         {isNew && (
           <span className="absolute -top-1 -right-1 text-xs font-bold px-1.5 py-0.5 rounded-full"
-            style={{ background: '#4ade80', color: '#000', fontSize: 9 }}>
+            style={{ background: 'var(--success-solid)', color: 'var(--on-success)', fontSize: 9 }}>
             NOVO
           </span>
         )}
@@ -54,7 +54,7 @@ function AchievementCard({ achievement, unlocked, isNew }) {
             {achievement.title}
           </p>
           {unlocked && (
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2.5">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2.5" aria-hidden="true">
               <polyline points="20 6 9 17 4 12"/>
             </svg>
           )}
@@ -65,7 +65,7 @@ function AchievementCard({ achievement, unlocked, isNew }) {
         <div className="flex-shrink-0">
           <div className="w-8 h-8 rounded-full flex items-center justify-center"
             style={{ background: 'var(--accent)', boxShadow: '0 0 12px rgba(var(--accent-rgb),.4)' }}>
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="3">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="3" aria-hidden="true">
               <polyline points="20 6 9 17 4 12"/>
             </svg>
           </div>
@@ -132,7 +132,7 @@ export default function AchievementsView() {
       <div className="f-card p-4 mb-4">
         <div className="flex items-center justify-between text-xs mb-2">
           <span style={{ color: 'var(--text-3)' }}>Progresso geral</span>
-          <span style={{ color: 'var(--accent)', fontWeight: 700 }}>{pct}%</span>
+          <span style={{ color: 'var(--accent-text)', fontWeight: 700 }}>{pct}%</span>
         </div>
         <div className="h-2 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
           <div className="h-full rounded-full transition-all duration-700"
@@ -145,7 +145,7 @@ export default function AchievementsView() {
             { label:'Total',         value: ACHIEVEMENTS.length },
           ].map(s => (
             <div key={s.label} className="text-center">
-              <div className="font-display text-2xl" style={{ color: 'var(--accent)' }}>{s.value}</div>
+              <div className="font-display text-2xl" style={{ color: 'var(--accent-text)' }}>{s.value}</div>
               <div className="text-xs" style={{ color: 'var(--text-3)' }}>{s.label}</div>
             </div>
           ))}
@@ -155,10 +155,10 @@ export default function AchievementsView() {
       {/* Next milestone */}
       {nextMilestone && (
         <div className="f-card p-4 mb-5 flex items-center gap-3"
-          style={{ borderColor: 'rgba(250,204,21,.2)', background: 'rgba(250,204,21,.04)' }}>
+          style={{ borderColor: 'rgba(var(--warning-rgb), .2)', background: 'rgba(var(--warning-rgb), .04)' }}>
           <span className="section-index">NEXT</span>
           <div>
-            <p className="text-xs font-semibold" style={{ color: '#facc15' }}>Próxima conquista</p>
+            <p className="text-xs font-semibold" style={{ color: 'var(--warning)' }}>Próxima conquista</p>
             <p className="text-sm font-bold" style={{ color: 'var(--text-1)' }}>{nextMilestone.label}</p>
             <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>
               Faltam {nextMilestone.streak - streak} dias de sequência
@@ -169,10 +169,10 @@ export default function AchievementsView() {
 
       {newlyUnlocked.size > 0 && (
         <div className="f-card p-4 mb-5 flex items-center gap-3"
-          style={{ borderColor: 'rgba(74,222,128,.3)', background: 'rgba(74,222,128,.06)' }}>
+          style={{ borderColor: 'rgba(var(--success-rgb), .3)', background: 'rgba(var(--success-rgb), .06)' }}>
           <span className="section-index">NEW</span>
           <div>
-            <p className="text-sm font-bold" style={{ color: '#4ade80' }}>
+            <p className="text-sm font-bold" style={{ color: 'var(--success)' }}>
               {newlyUnlocked.size === 1 ? 'Nova conquista desbloqueada!' : `${newlyUnlocked.size} novas conquistas!`}
             </p>
             <p className="text-xs" style={{ color: 'var(--text-3)' }}>Continue assim, você está arrasando!</p>

@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { workoutLogService } from '@/services'
 import { formatDuration, formatVolume } from '@/utils/helpers'
+import { useDialogA11y } from '@/components/ui/useDialogA11y'
 
 const MONTHS_PT = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro']
 
 function StatBoxSmall({ label, value }) {
   return (
     <div className="text-center py-2 rounded-lg" style={{ background: 'var(--card)' }}>
-      <div className="font-display text-base" style={{ color: 'var(--accent)' }}>{value}</div>
+      <div className="font-display text-base" style={{ color: 'var(--accent-text)' }}>{value}</div>
       <div className="text-xs" style={{ color: 'var(--text-3)' }}>{label}</div>
     </div>
   )
@@ -21,6 +22,7 @@ export default function WorkoutLogModal({ userId, date, onClose }) {
   const [show,    setShow]    = useState(false)
   const [loading, setLoading] = useState(true)
   const [log,     setLog]     = useState(null)
+  const panelRef = useRef(null)
 
   useEffect(() => { const t = setTimeout(() => setShow(true), 20); return () => clearTimeout(t) }, [])
 
@@ -38,6 +40,10 @@ export default function WorkoutLogModal({ userId, date, onClose }) {
     setTimeout(onClose, 250) // espera a animação de saída antes de desmontar
   }
 
+  // Diálogo acessível: Escape fecha, Tab fica preso no painel e o foco
+  // volta para o dia do calendário que abriu o modal.
+  useDialogA11y(true, handleClose, panelRef)
+
   const [_y, m, d] = date.split('-').map(Number)
   const totalSets = log?.exercises?.reduce((a, ex) => a + (ex.sets?.length || 0), 0) || 0
   const doneSets  = log?.exercises?.reduce((a, ex) => a + (ex.sets?.filter(s => s.done)?.length || 0), 0) || 0
@@ -46,7 +52,8 @@ export default function WorkoutLogModal({ userId, date, onClose }) {
     <div className="fixed inset-0 z-50 flex items-end justify-center"
       style={{ background: 'rgba(0,0,0,.8)', backdropFilter: 'blur(12px)' }}
       onClick={handleClose}>
-      <div onClick={e => e.stopPropagation()}
+      <div onClick={e => e.stopPropagation()} ref={panelRef}
+        role="dialog" aria-modal="true" aria-labelledby="workout-log-title"
         className={`w-full max-w-lg transition-all duration-300 ${show ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}
         style={{
           background: 'var(--surface)', borderRadius: '28px 28px 0 0',
@@ -56,14 +63,14 @@ export default function WorkoutLogModal({ userId, date, onClose }) {
 
         <div className="flex items-center justify-between mb-4">
           <div className="min-w-0">
-            <p className="font-display text-2xl uppercase tracking-wide truncate" style={{ color: 'var(--text-1)' }}>
+            <p id="workout-log-title" className="font-display text-2xl uppercase tracking-wide truncate" style={{ color: 'var(--text-1)' }}>
               {d} de {MONTHS_PT[m - 1]}
             </p>
             {log?.name && <p className="text-sm truncate" style={{ color: 'var(--text-3)' }}>{log.name}</p>}
           </div>
           <button onClick={handleClose} aria-label="Fechar"
-            className="p-2 rounded-lg flex-shrink-0" style={{ color: 'var(--text-3)' }}>
-            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            className="icon-btn" style={{ color: 'var(--text-3)' }}>
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <path d="M18 6L6 18M6 6l12 12"/>
             </svg>
           </button>
@@ -98,7 +105,7 @@ export default function WorkoutLogModal({ userId, date, onClose }) {
                         className="text-xs px-2 py-1 rounded-lg"
                         style={{
                           background: set.done ? 'rgba(var(--accent-rgb),.12)' : 'var(--surface)',
-                          color:      set.done ? 'var(--accent)'         : 'var(--text-3)',
+                          color:      set.done ? 'var(--accent-text)'         : 'var(--text-3)',
                           border:     `1px solid ${set.done ? 'rgba(var(--accent-rgb),.25)' : 'var(--border)'}`,
                         }}>
                         {set.weight ? `${set.weight}kg` : ''}{set.weight && set.reps ? ' × ' : ''}{set.reps ? `${set.reps}` : '—'}

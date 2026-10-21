@@ -11,7 +11,8 @@ const CATEGORIES = [
   { key: 'back',  label: 'Costas',    emoji: '⬇️' },
   { key: 'custom',label: 'Outro' },
 ]
-const AC = 'var(--accent)'
+const AC  = 'var(--accent)'
+const ACT = 'var(--accent-text)'
 
 // ── Upload Card ─────────────────────────────────────────────
 function UploadCard({ studentId, onUploaded }) {
@@ -57,7 +58,7 @@ function UploadCard({ studentId, onUploaded }) {
 
   return (
     <div className="f-card p-4 space-y-3" style={{ borderColor: 'rgba(var(--accent-rgb),.25)' }}>
-      <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: AC }}>
+      <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: ACT }}>
         Nova foto de progresso
       </p>
 
@@ -78,7 +79,7 @@ function UploadCard({ studentId, onUploaded }) {
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
             <div className="w-12 h-12 rounded-2xl flex items-center justify-center"
               style={{ background: 'rgba(var(--accent-rgb),.1)' }}>
-              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke={AC} strokeWidth="2">
+              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke={ACT} strokeWidth="2" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
                 <polyline points="17 8 12 3 7 8"/>
                 <line x1="12" y1="3" x2="12" y2="15"/>
@@ -97,7 +98,7 @@ function UploadCard({ studentId, onUploaded }) {
             onClick={e => { e.stopPropagation(); setPreview(null); setFile(null) }}
             className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center"
             style={{ background: 'rgba(0,0,0,.6)' }}>
-            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2.5">
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2.5" aria-hidden="true">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
           </button>
@@ -119,7 +120,7 @@ function UploadCard({ studentId, onUploaded }) {
               style={{
                 borderColor: form.category === c.key ? AC : 'var(--border)',
                 background:  form.category === c.key ? 'rgba(var(--accent-rgb),.08)' : 'var(--card)',
-                color:       form.category === c.key ? AC : 'var(--text-3)',
+                color:       form.category === c.key ? ACT : 'var(--text-3)',
               }}>
               <div className="text-base mb-0.5">{c.emoji}</div>
               {c.label}
@@ -163,8 +164,8 @@ function CompareModal({ photos, onClose }) {
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-4"
         style={{ borderBottom: '1px solid var(--border)', background: 'var(--surface)' }}>
-        <button onClick={onClose} style={{ color: 'var(--text-3)' }}>
-          <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <button onClick={onClose} aria-label="Fechar comparação" className="icon-btn" style={{ color: 'var(--text-3)' }}>
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <path d="M15 18l-6-6 6-6"/>
           </svg>
         </button>
@@ -255,8 +256,8 @@ function PhotoCard({ photo, onDelete }) {
       {onDelete && (
         <button onClick={() => onDelete(photo)}
           className="absolute top-2 right-2 w-7 h-7 rounded-full items-center justify-center hidden group-hover:flex"
-          style={{ background: 'rgba(239,68,68,.8)' }}>
-          <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2.5">
+          style={{ background: 'rgba(var(--danger-rgb), .8)' }}>
+          <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2.5" aria-hidden="true">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
         </button>
@@ -279,7 +280,7 @@ function TimelineView({ photos, onDelete }) {
       {Object.entries(byMonth).map(([month, ps]) => (
         <div key={month}>
           <p className="font-display text-sm uppercase tracking-widest mb-3 px-1"
-            style={{ color: AC }}>
+            style={{ color: ACT }}>
             {new Date(month + '-01').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
             <span className="ml-2 text-xs" style={{ color: 'var(--text-3)' }}>({ps.length} foto{ps.length !== 1 ? 's' : ''})</span>
           </p>
@@ -344,8 +345,8 @@ export default function ProgressPhotosView({ studentId: propStudentId, readOnly 
           {photos.length >= 2 && (
             <button onClick={() => setCompare(true)}
               className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl"
-              style={{ background: 'rgba(var(--accent-rgb),.1)', color: AC, border: '1px solid rgba(var(--accent-rgb),.25)' }}>
-              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              style={{ background: 'rgba(var(--accent-rgb),.1)', color: ACT, border: '1px solid rgba(var(--accent-rgb),.25)' }}>
+              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
               </svg>
               Comparar
@@ -364,7 +365,7 @@ export default function ProgressPhotosView({ studentId: propStudentId, readOnly 
             className="flex-1 py-2 rounded-lg text-xs font-semibold transition-all"
             style={{
               background: tab === key ? 'var(--card)' : 'transparent',
-              color:      tab === key ? AC : 'var(--text-3)',
+              color:      tab === key ? ACT : 'var(--text-3)',
               border:     tab === key ? '1px solid var(--border)' : '1px solid transparent',
             }}>
             {label}
@@ -412,7 +413,7 @@ export default function ProgressPhotosView({ studentId: propStudentId, readOnly 
                 </p>
                 <button onClick={() => setTab('upload')}
                   className="text-sm font-semibold px-5 py-2.5 rounded-xl"
-                  style={{ background: 'rgba(var(--accent-rgb),.1)', color: AC, border: '1px solid rgba(var(--accent-rgb),.25)' }}>
+                  style={{ background: 'rgba(var(--accent-rgb),.1)', color: ACT, border: '1px solid rgba(var(--accent-rgb),.25)' }}>
                   + Adicionar primeira foto
                 </button>
               </div>

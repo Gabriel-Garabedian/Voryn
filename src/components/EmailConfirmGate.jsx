@@ -38,7 +38,7 @@ export default function EmailConfirmGate({ onSignOut }) {
       <p className="text-sm max-w-sm mb-1" style={{ color: 'var(--text-2)' }}>
         Enviamos um link de confirmação para
       </p>
-      <p className="text-sm font-semibold max-w-sm mb-6" style={{ color: 'var(--accent)' }}>
+      <p className="text-sm font-semibold max-w-sm mb-6" style={{ color: 'var(--accent-text)' }}>
         {user?.email}
       </p>
       <p className="text-xs max-w-sm mb-8" style={{ color: 'var(--text-3)' }}>
@@ -47,7 +47,7 @@ export default function EmailConfirmGate({ onSignOut }) {
 
       <div className="w-full max-w-xs space-y-3">
         {sent ? (
-          <p className="text-sm font-medium py-3" style={{ color: 'var(--accent)' }}>
+          <p className="text-sm font-medium py-3" style={{ color: 'var(--accent-text)' }}>
             ✓ Email reenviado. Confira sua caixa de entrada.
           </p>
         ) : (
@@ -56,7 +56,7 @@ export default function EmailConfirmGate({ onSignOut }) {
           </Button>
         )}
         {error && (
-          <p className="text-xs" style={{ color: '#EF4444' }}>{error}</p>
+          <p className="text-xs" style={{ color: 'var(--danger)' }}>{error}</p>
         )}
         <button onClick={onSignOut}
           className="w-full text-center text-sm py-2 transition-colors"

@@ -3,7 +3,7 @@ import { getExerciseInstructions, getExerciseVideoSearchUrl } from '@/data/exerc
 import ExerciseMediaCarousel from '@/components/ExerciseMediaCarousel'
 import MuscleTargetImage from '@/components/MuscleTargetImage'
 
-const AC = 'var(--accent)'
+const ACT = 'var(--accent-text)'
 
 const MUSCLE_EMOJI = {
   'Peito': '🫀', 'Costas': '🏋️', 'Pernas': '🦵', 'Ombro': '💪',
@@ -51,8 +51,8 @@ export default function ExerciseDetail({ exercise, onAdd, onClose, buttonLabel =
               <span className="text-xs" style={{ color: 'var(--text-3)' }}>{exercise.equipment}</span>
             </div>
           </div>
-          <button onClick={onClose} style={{ color: 'var(--text-3)', flexShrink: 0 }}>
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <button onClick={onClose} aria-label="Fechar detalhes do exercício" className="icon-btn" style={{ color: 'var(--text-3)' }}>
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
           </button>
@@ -74,7 +74,7 @@ export default function ExerciseDetail({ exercise, onAdd, onClose, buttonLabel =
               compact
             />
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: AC }}>
+              <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: ACT }}>
                 Músculo alvo
               </p>
               <p className="text-sm font-semibold mt-1" style={{ color: 'var(--text-1)' }}>
@@ -91,10 +91,10 @@ export default function ExerciseDetail({ exercise, onAdd, onClose, buttonLabel =
           {/* Vídeo — link de busca no YouTube (sempre atualizado) */}
           <a href={videoUrl} target="_blank" rel="noopener noreferrer"
             className="w-full f-card p-3.5 flex items-center gap-3 transition-all"
-            style={{ borderColor: 'rgba(239,68,68,.25)', background: 'rgba(239,68,68,.04)' }}>
+            style={{ borderColor: 'rgba(var(--danger-rgb), .25)', background: 'rgba(var(--danger-rgb), .04)' }}>
             <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{ background: 'rgba(239,68,68,.12)' }}>
-              <svg width="18" height="18" fill="#ef4444" viewBox="0 0 24 24">
+              style={{ background: 'rgba(var(--danger-rgb), .12)' }}>
+              <svg width="18" height="18" fill="var(--danger)" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M21.582 7.182a2.51 2.51 0 00-1.768-1.768C18.254 5 12 5 12 5s-6.254 0-7.814.414a2.51 2.51 0 00-1.768 1.768C2 8.742 2 12 2 12s0 3.258.418 4.818a2.51 2.51 0 001.768 1.768C5.746 19 12 19 12 19s6.254 0 7.814-.414a2.51 2.51 0 001.768-1.768C22 15.258 22 12 22 12s0-3.258-.418-4.818z" opacity=".15"/>
                 <path d="M9.75 15.02V8.98L15.5 12l-5.75 3.02z"/>
               </svg>
@@ -103,7 +103,7 @@ export default function ExerciseDetail({ exercise, onAdd, onClose, buttonLabel =
               <p className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>Ver vídeo de execução</p>
               <p className="text-xs" style={{ color: 'var(--text-3)' }}>Busca no YouTube · abre em nova aba</p>
             </div>
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2" aria-hidden="true">
               <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
               <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
             </svg>
@@ -111,7 +111,7 @@ export default function ExerciseDetail({ exercise, onAdd, onClose, buttonLabel =
 
           {/* Setup */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: AC }}>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: ACT }}>
               Posição inicial
             </p>
             <p className="text-sm leading-relaxed" style={{ color: 'var(--text-2)' }}>{setup}</p>
@@ -119,7 +119,7 @@ export default function ExerciseDetail({ exercise, onAdd, onClose, buttonLabel =
 
           {/* Steps */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: AC }}>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: ACT }}>
               Execução
             </p>
             <div className="space-y-2.5">
@@ -137,12 +137,12 @@ export default function ExerciseDetail({ exercise, onAdd, onClose, buttonLabel =
 
           {/* Caution */}
           <div className="f-card p-3.5 flex items-start gap-3"
-            style={{ borderColor: 'rgba(250,204,21,.25)', background: 'rgba(250,204,21,.05)' }}>
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#facc15" strokeWidth="2" style={{ flexShrink: 0, marginTop: 1 }}>
+            style={{ borderColor: 'rgba(var(--warning-rgb), .25)', background: 'rgba(var(--warning-rgb), .05)' }}>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--warning)" strokeWidth="2" style={{ flexShrink: 0, marginTop: 1 }} aria-hidden="true">
               <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
               <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
             </svg>
-            <p className="text-xs leading-relaxed" style={{ color: 'rgba(250,204,21,.85)' }}>{caution}</p>
+            <p className="text-xs leading-relaxed" style={{ color: 'rgba(var(--warning-rgb), .85)' }}>{caution}</p>
           </div>
         </div>
 
@@ -151,7 +151,7 @@ export default function ExerciseDetail({ exercise, onAdd, onClose, buttonLabel =
           <button onClick={() => onAdd(exercise)}
             className="w-full py-3.5 rounded-xl text-sm font-semibold text-white transition-all flex items-center justify-center gap-2"
             style={{ background: 'var(--accent)', boxShadow: '0 0 20px rgba(var(--accent-rgb),.35)' }}>
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
               <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
             </svg>
             {buttonLabel}

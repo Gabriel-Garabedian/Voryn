@@ -1,9 +1,13 @@
 import React from 'react'
 
-const PRIMARY = 'var(--accent)'
-const SECONDARY = '#f59e0b'
-const BASE = 'rgba(148,163,184,.18)'
-const LINE = 'rgba(226,232,240,.38)'
+// O desenho é um gráfico (WCAG 1.4.11): cada parte precisa de 3:1 contra
+// o fundo. As cores vêm de tokens porque o contraste muda com o tema — e
+// o fundo é um gradiente, medido contra a parada mais desfavorável dele.
+const PRIMARY = 'var(--accent-text)'
+const SECONDARY = 'var(--warning)'
+const BASE = 'var(--muscle-base)'
+const LINE = 'var(--muscle-stroke)'
+const HEAD = 'var(--muscle-head)'
 
 const MUSCLE_LABELS = {
   Peito: 'Peitoral',
@@ -50,7 +54,7 @@ function fillFor(muscle, primary, secondary) {
 function FrontBody({ primary, secondary }) {
   return (
     <g stroke={LINE} strokeWidth="1.2" strokeLinejoin="round">
-      <circle cx="80" cy="17" r="11" fill="#cbd5e1" />
+      <circle cx="80" cy="17" r="11" fill={HEAD} />
       <path d="M73 28h14l5 9-3 9H71l-3-9 5-9Z" fill={BASE} />
       <path d="M69 38c-8 1-16 5-20 12l7 10 12-5 5-14Z" fill={fillFor('Ombro', primary, secondary)} />
       <path d="M91 38c8 1 16 5 20 12l-7 10-12-5-5-14Z" fill={fillFor('Ombro', primary, secondary)} />
@@ -74,7 +78,7 @@ function FrontBody({ primary, secondary }) {
 function BackBody({ primary, secondary }) {
   return (
     <g stroke={LINE} strokeWidth="1.2" strokeLinejoin="round">
-      <circle cx="80" cy="17" r="11" fill="#cbd5e1" />
+      <circle cx="80" cy="17" r="11" fill={HEAD} />
       <path d="M73 28h14l5 10-5 10H73l-5-10 5-10Z" fill={BASE} />
       <path d="M70 38 51 48l-7 17 12 8 15-20Z" fill={fillFor('Costas', primary, secondary)} />
       <path d="M90 38 109 48l7 17-12 8-15-20Z" fill={fillFor('Costas', primary, secondary)} />
@@ -112,14 +116,14 @@ export default function MuscleTargetImage({
       role="img"
       aria-label={aria}
       title={aria}
-      style={{ background: 'linear-gradient(145deg, rgba(var(--accent-rgb),.12), rgba(15,23,42,.22))', border: '1px solid rgba(var(--accent-rgb),.2)' }}
+      style={{ background: 'var(--muscle-bg)', border: '1px solid rgba(var(--accent-rgb),.2)' }}
     >
       <svg viewBox="0 0 160 215" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
         {viewIsBack ? <BackBody primary={primary} secondary={secondary} /> : <FrontBody primary={primary} secondary={secondary} />}
       </svg>
       {showLabel && (
         <div className="muscle-target__label">
-          <span className="muscle-target__dot" />
+          <span className="muscle-target__dot" aria-hidden="true" />
           <span>{label}</span>
         </div>
       )}

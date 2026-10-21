@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { CARDIO_TYPES, getCardioType } from '@/data/cardio'
+import { useDialogA11y } from '@/components/ui/useDialogA11y'
 
 // ──────────────────────────────────────────────────────────
 //  Voryn — Cardio Pós-Treino
@@ -19,6 +20,16 @@ export default function CardioModal({ onSkip, onSave, saving }) {
   const [step, setStep] = useState('prompt')
   const [typeId, setTypeId] = useState(null)
   const [form, setForm] = useState({})
+  const panelRef = useRef(null)
+
+  // Diálogo acessível: Escape fecha (volta ao passo anterior quando
+  // não está no primeiro), Tab fica preso no painel e o foco volta
+  // para quem abriu.
+  useDialogA11y(true, () => {
+    if (saving) return // botões já ficam desabilitados; Esc não pode finalizar o treino 2x
+    if (step === 'prompt') onSkip()
+    else setStep(step === 'form' ? 'pick' : 'prompt')
+  }, panelRef)
 
   const type = getCardioType(typeId)
 
@@ -42,7 +53,8 @@ export default function CardioModal({ onSkip, onSave, saving }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center"
       style={{ background: 'rgba(0,0,0,.8)', backdropFilter: 'blur(12px)' }}>
-      <div className="w-full max-w-lg animate-slide-up"
+      <div ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="cardio-modal-title"
+        className="w-full max-w-lg animate-slide-up"
         style={{
           background: 'var(--surface)', borderRadius: '28px 28px 0 0',
           border: '1px solid var(--border)', borderBottom: 'none',
@@ -51,8 +63,8 @@ export default function CardioModal({ onSkip, onSave, saving }) {
 
         {step === 'prompt' && (
           <div className="text-center">
-            <div className="text-5xl mb-3">🏃</div>
-            <h2 className="font-display text-2xl uppercase tracking-wide mb-2" style={{ color: 'var(--text-1)' }}>
+            <div className="text-5xl mb-3" aria-hidden="true">🏃</div>
+            <h2 id="cardio-modal-title" className="font-display text-2xl uppercase tracking-wide mb-2" style={{ color: 'var(--text-1)' }}>
               Cardio pós-treino?
             </h2>
             <p className="text-sm mb-6" style={{ color: 'var(--text-3)' }}>
@@ -70,14 +82,14 @@ export default function CardioModal({ onSkip, onSave, saving }) {
 
         {step === 'pick' && (
           <div>
-            <h2 className="font-display text-xl uppercase tracking-wide mb-4 text-center" style={{ color: 'var(--text-1)' }}>
+            <h2 id="cardio-modal-title" className="font-display text-xl uppercase tracking-wide mb-4 text-center" style={{ color: 'var(--text-1)' }}>
               Qual modalidade?
             </h2>
             <div className="grid grid-cols-2 gap-3 mb-4">
               {CARDIO_TYPES.map(t => (
                 <button key={t.id} onClick={() => pickType(t.id)}
                   className="f-card p-4 text-center transition-transform active:scale-95">
-                  <div className="text-3xl mb-2">{t.icon}</div>
+                  <div className="text-3xl mb-2" aria-hidden="true">{t.icon}</div>
                   <div className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>{t.label}</div>
                 </button>
               ))}
@@ -91,8 +103,8 @@ export default function CardioModal({ onSkip, onSave, saving }) {
         {step === 'form' && type && (
           <div>
             <div className="flex items-center gap-2 mb-5">
-              <span className="text-2xl">{type.icon}</span>
-              <h2 className="font-display text-xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
+              <span className="text-2xl" aria-hidden="true">{type.icon}</span>
+              <h2 id="cardio-modal-title" className="font-display text-xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
                 {type.label}
               </h2>
             </div>

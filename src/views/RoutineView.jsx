@@ -11,7 +11,8 @@ import MuscleTargetImage from '@/components/MuscleTargetImage'
 
 const DAYS_FULL  = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
 const DAYS_SHORT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
-const AC = 'var(--accent)'
+const AC  = 'var(--accent)'
+const ACT = 'var(--accent-text)'
 
 function genId() { return Math.random().toString(36).slice(2,9) }
 
@@ -217,8 +218,8 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
           <p className="text-sm mt-1 flex items-center gap-2" style={{ color: 'var(--text-3)' }}>
             {isEmbedded ? `Editando a ficha de ${embeddedName || 'aluno'}` : 'Organize sua semana'}
             {saving && (
-              <span className="flex items-center gap-1" style={{ color: AC }}>
-                <svg className="animate-spin" width="10" height="10" viewBox="0 0 24 24" fill="none">
+              <span className="flex items-center gap-1" style={{ color: ACT }}>
+                <svg className="animate-spin" width="10" height="10" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3"/>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                 </svg>
@@ -228,8 +229,8 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
           </p>
         </div>
         {isEmbedded && onClose && (
-          <button onClick={onClose} className="p-2 rounded-xl flex-shrink-0" style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text-3)' }}>
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <button onClick={onClose} aria-label="Fechar rotina" className="icon-btn rounded-xl" style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text-3)' }}>
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
           </button>
@@ -241,14 +242,14 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
       <div className="px-4 mb-4">
         {!isEmbedded && day?.created_by && trainerName && (
           <div className="flex items-center gap-1.5 mb-3 text-xs" style={{ color: 'var(--text-3)' }}>
-            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2" aria-hidden="true">
               <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/>
               <path d="M20 8v6M23 11h-6"/>
             </svg>
-            Ficha montada por <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{trainerName}</span>
+            Ficha montada por <span style={{ color: 'var(--accent-text)', fontWeight: 600 }}>{trainerName}</span>
           </div>
         )}
-        <div className="schedule-rail flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+        <div className="schedule-rail flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Selecionar dia da semana" style={{ scrollbarWidth: 'none' }}>
           {DAYS_SHORT.map((d, i) => {
             const hasPlan = routines[i]?.name || routines[i]?.exercises?.length
             const isSel   = i === selectedDay
@@ -256,6 +257,8 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
             return (
               <button key={i}
                 onClick={() => { setSelectedDay(i); setEditName(false) }}
+                aria-pressed={isSel}
+                aria-label={`${d}${isToday ? ', hoje' : ''}${hasPlan ? ', com plano' : ', sem plano'}`}
                 className="routine-day-button flex-shrink-0 flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl transition-all relative"
                 style={{
                   background: isSel ? AC : 'var(--card)',
@@ -264,7 +267,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                   boxShadow:  isSel ? '0 0 16px rgba(var(--accent-rgb),.35)' : 'none',
                 }}>
                 {hasPlan && !isSel && (
-                  <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full" style={{ background: AC }}/>
+                  <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full" style={{ background: AC }} aria-hidden="true"/>
                 )}
                 <span className="text-xs font-semibold uppercase tracking-wider">{d}</span>
                 <span className="text-xs">{isToday ? 'Hoje' : `${i+1}°`}</span>
@@ -284,7 +287,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg flex items-center justify-center"
                   style={{ background: 'rgba(var(--accent-rgb),.1)', border: '1px solid rgba(var(--accent-rgb),.25)' }}>
-                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke={AC} strokeWidth="2">
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke={ACT} strokeWidth="2" aria-hidden="true">
                     <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
                   </svg>
                 </div>
@@ -309,8 +312,8 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                   )}
                 </div>
                 {(day?.name || day?.exercises?.length > 0) && (
-                  <button onClick={() => clearDay(selectedDay)} style={{ color: 'rgba(239,68,68,.4)' }}>
-                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <button onClick={() => clearDay(selectedDay)} style={{ color: 'rgba(var(--danger-rgb), .4)' }}>
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                       <polyline points="3 6 5 6 21 6"/>
                       <path d="M19 6l-1 14H6L5 6"/>
                     </svg>
@@ -321,7 +324,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                 <div className="mt-3 pt-3 flex flex-wrap gap-2" style={{ borderTop: '1px solid var(--border)' }}>
                   <button type="button" onClick={saveTemplate}
                     className="px-3 py-2 rounded-lg text-xs font-semibold"
-                    style={{ color: AC, border: '1px solid rgba(var(--accent-rgb),.3)' }}>
+                    style={{ color: ACT, border: '1px solid rgba(var(--accent-rgb),.3)' }}>
                     Salvar como template
                   </button>
                   <button type="button" onClick={() => setShowTemplates(v => !v)}
@@ -347,7 +350,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                       className="w-full p-3 rounded-xl text-left flex items-center justify-between"
                       style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}>
                       <span className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>{template.name}</span>
-                      <span className="text-xs" style={{ color: AC }}>{template.exercises.length} exercícios</span>
+                      <span className="text-xs" style={{ color: ACT }}>{template.exercises.length} exercícios</span>
                     </button>
                   ))}
                 </div>
@@ -391,7 +394,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                           style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-                          <span className="font-display font-bold text-sm" style={{ color: AC }}>{idx + 1}</span>
+                          <span className="font-display font-bold text-sm" style={{ color: ACT }}>{idx + 1}</span>
                         </div>
                         <MuscleTargetImage muscle={ex.muscle} secondaryMuscles={ex.secondaryMuscles} compact showLabel={false} />
                         <div className="flex-1 min-w-0" onClick={() => setEditingEx(editingEx?.exId === ex.id ? null : { exId: ex.id, sets: String(ex.sets), reps: ex.reps, notes: ex.notes || '', supersetGroup: ex.supersetGroup || '' })}>
@@ -399,32 +402,36 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                           <p className="text-xs" style={{ color: 'var(--text-3)' }}>
                             {ex.sets} séries × {ex.reps} reps
                             {ex.muscle && <span style={{ color: 'rgba(var(--accent-rgb),.5)' }}> · {ex.muscle}</span>}
-                            {ex.supersetGroup && <span style={{ color: AC }}> · SS {ex.supersetGroup}</span>}
+                            {ex.supersetGroup && <span style={{ color: ACT }}> · SS {ex.supersetGroup}</span>}
                           </p>
                           <span className="muscle-target-chip">Alvo: {ex.muscle || 'não informado'}</span>
                         </div>
                         <div className="flex items-center gap-0.5">
                           <button onClick={() => moveExercise(selectedDay, ex.id, -1)} disabled={idx === 0}
+                            aria-label={`Mover ${ex.name} para cima`}
                             className="p-1.5 disabled:opacity-20" style={{ color: 'var(--text-3)' }}>
-                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M18 15l-6-6-6 6"/></svg>
+                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>
                           </button>
                           <button onClick={() => moveExercise(selectedDay, ex.id, 1)} disabled={idx === day.exercises.length - 1}
+                            aria-label={`Mover ${ex.name} para baixo`}
                             className="p-1.5 disabled:opacity-20" style={{ color: 'var(--text-3)' }}>
-                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
                           </button>
-                          <button onClick={() => removeExercise(selectedDay, ex.id)} className="p-1.5" style={{ color: 'rgba(239,68,68,.4)' }}>
-                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <button onClick={() => removeExercise(selectedDay, ex.id)} className="p-1.5"
+                            aria-label={`Remover ${ex.name}`}
+                            style={{ color: 'rgba(var(--danger-rgb), .4)' }}>
+                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                             </svg>
                           </button>
                           <button
                             onClick={() => { setReplacingEx(ex.id); setShowPicker(true) }}
                             className="p-1.5"
-                            style={{ color: AC }}
+                            style={{ color: ACT }}
                             aria-label={`Substituir ${ex.name}`}
                             title="Sugerir substituição"
                           >
-                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                               <path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/>
                             </svg>
                           </button>
@@ -474,7 +481,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
               style={{ borderStyle: 'dashed', color: 'var(--text-3)' }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(var(--accent-rgb),.4)'; e.currentTarget.style.color = AC }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-3)' }}>
-              <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <circle cx="12" cy="12" r="10"/>
                 <line x1="12" y1="8" x2="12" y2="16"/>
                 <line x1="8" y1="12" x2="16" y2="12"/>
@@ -482,7 +489,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
               <span className="text-sm font-medium">
                 Adicionar exercício da biblioteca
               </span>
-              <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(var(--accent-rgb),.1)', color: AC }}>
+              <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(var(--accent-rgb),.1)', color: ACT }}>
                 100+
               </span>
             </button>
@@ -492,7 +499,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
               <div className="text-center py-10">
                 <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center"
                   style={{ background: 'rgba(var(--accent-rgb),.06)', border: '1px dashed rgba(var(--accent-rgb),.2)' }}>
-                  <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke={AC} strokeWidth="2" opacity=".4">
+                  <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke={ACT} strokeWidth="2" opacity=".4" aria-hidden="true">
                     <path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"/>
                   </svg>
                 </div>
@@ -502,7 +509,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                 </p>
                 <button onClick={() => setShowPicker(true)}
                   className="text-sm font-semibold px-4 py-2 rounded-xl"
-                  style={{ background: 'rgba(var(--accent-rgb),.1)', color: AC, border: '1px solid rgba(var(--accent-rgb),.25)' }}>
+                  style={{ background: 'rgba(var(--accent-rgb),.1)', color: ACT, border: '1px solid rgba(var(--accent-rgb),.25)' }}>
                   + Criar treino para este dia
                 </button>
               </div>

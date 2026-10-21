@@ -97,14 +97,14 @@ export default function SubscriptionView() {
 
         {accessViaTrainer && (
           <div className="mb-4 px-4 py-3 rounded-xl text-sm"
-            style={{ background: 'rgba(74,222,128,.08)', border: '1px solid rgba(74,222,128,.2)', color: '#4ade80' }}>
+            style={{ background: 'rgba(var(--success-rgb), .08)', border: '1px solid rgba(var(--success-rgb), .2)', color: 'var(--success)' }}>
             Seu acesso ao Voryn está incluso no plano do seu personal — você não precisa pagar nada enquanto esse vínculo estiver ativo.
           </div>
         )}
 
         {subStatus === 'trialing' && trialDaysLeft > 0 && (
           <div className="mb-4 px-4 py-3 rounded-xl text-sm"
-            style={{ background: 'rgba(250,204,21,.08)', border: '1px solid rgba(250,204,21,.2)', color: '#facc15' }}>
+            style={{ background: 'rgba(var(--warning-rgb), .08)', border: '1px solid rgba(var(--warning-rgb), .2)', color: 'var(--warning)' }}>
             Seu trial expira em <strong>{trialDaysLeft} dia{trialDaysLeft !== 1 ? 's' : ''}</strong>.
             Assine agora para não perder o acesso.
           </div>
@@ -112,7 +112,7 @@ export default function SubscriptionView() {
 
         {subStatus === 'past_due' && (
           <div className="mb-4 px-4 py-3 rounded-xl text-sm"
-            style={{ background: 'rgba(248,113,113,.08)', border: '1px solid rgba(248,113,113,.2)', color: '#f87171' }}>
+            style={{ background: 'rgba(var(--danger-rgb), .08)', border: '1px solid rgba(var(--danger-rgb), .2)', color: 'var(--danger)' }}>
             Seu pagamento está em atraso. Assine novamente abaixo para regularizar.
           </div>
         )}
@@ -128,7 +128,7 @@ export default function SubscriptionView() {
             {current.features.map(f => (
               <li key={f} className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-2)' }}>
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24"
-                  stroke="var(--accent-2)" strokeWidth="2.5">
+                  stroke="var(--accent-2)" strokeWidth="2.5" aria-hidden="true">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
                 {f}
@@ -198,14 +198,14 @@ export default function SubscriptionView() {
               Após isso, o acesso será limitado ao plano gratuito.
             </p>
             {cancelDone ? (
-              <p className="text-sm font-semibold" style={{ color: '#4ade80' }}>
+              <p className="text-sm font-semibold" style={{ color: 'var(--success)' }}>
                 Cancelamento processado. Seu acesso continua disponível até o fim do período já pago.
               </p>
             ) : (
               <button onClick={handleCancel} disabled={cancelling}
                 className="inline-flex items-center gap-2 text-sm font-semibold transition-all"
-                style={{ color: 'rgba(239,68,68,.7)', opacity: cancelling ? .6 : 1 }}>
-                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                style={{ color: 'rgba(var(--danger-rgb), .7)', opacity: cancelling ? .6 : 1 }}>
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
                 </svg>
                 {cancelling ? 'Cancelando...' : 'Cancelar assinatura'}

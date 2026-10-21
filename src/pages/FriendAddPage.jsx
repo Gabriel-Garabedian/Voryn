@@ -63,8 +63,8 @@ export default function FriendAddPage() {
             <p className="text-sm text-center" style={{ color: 'var(--text-3)' }}>Carregando...</p>
           ) : error ? (
             <>
-              <p className="text-sm text-center" style={{ color: '#f87171' }}>{error}</p>
-              <Link to="/" className="block text-center text-sm" style={{ color: 'var(--accent)' }}>Voltar ao início</Link>
+              <p className="text-sm text-center" style={{ color: 'var(--danger)' }}>{error}</p>
+              <Link to="/" className="block text-center text-sm" style={{ color: 'var(--accent-text)' }}>Voltar ao início</Link>
             </>
           ) : (
             <>
@@ -80,10 +80,10 @@ export default function FriendAddPage() {
                 <p className="text-xs text-center" style={{ color: 'var(--text-3)' }}>
                   Você precisa de uma conta Voryn. Já tem uma?{' '}
                   <Link to="/login" onClick={() => localStorage.setItem('voryn_pending_friend', code)}
-                    style={{ color: 'var(--accent)' }}>Fazer login</Link>
+                    style={{ color: 'var(--accent-text)' }}>Fazer login</Link>
                   {' '}ou{' '}
                   <Link to="/register" onClick={() => localStorage.setItem('voryn_pending_friend', code)}
-                    style={{ color: 'var(--accent)' }}>criar conta grátis</Link>.
+                    style={{ color: 'var(--accent-text)' }}>criar conta grátis</Link>.
                 </p>
               )}
             </>

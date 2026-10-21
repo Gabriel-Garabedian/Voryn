@@ -36,7 +36,7 @@ export default function CheckoutPage() {
     <div className="min-h-screen flex items-center justify-center px-6" style={{ background: 'var(--bg)' }}>
       <div className="w-full max-w-md animate-slide-up">
         <Link to="/pricing" className="flex items-center gap-2 text-sm mb-6" style={{ color: 'var(--text-3)' }}>
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
           Voltar
         </Link>
 
@@ -50,14 +50,14 @@ export default function CheckoutPage() {
               {plan.name}
             </h2>
             <div className="flex items-end justify-center gap-1">
-              <span className="font-display text-5xl" style={{ color: 'var(--accent)' }}>
+              <span className="font-display text-5xl" style={{ color: 'var(--accent-text)' }}>
                 R${plan.price.toFixed(2).replace('.', ',')}
               </span>
               <span className="text-sm mb-2" style={{ color: 'var(--text-3)' }}>/mês</span>
             </div>
             <div className="inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-full text-xs"
-              style={{ background: 'rgba(74,222,128,.1)', color: '#4ade80', border: '1px solid rgba(74,222,128,.2)' }}>
-              <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              style={{ background: 'rgba(var(--success-rgb), .1)', color: 'var(--success)', border: '1px solid rgba(var(--success-rgb), .2)' }}>
+              <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
               14 dias grátis incluídos
             </div>
           </div>
@@ -66,7 +66,7 @@ export default function CheckoutPage() {
           <ul className="space-y-2 mb-6">
             {plan.features.map(f => (
               <li key={f} className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-2)' }}>
-                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--accent-2)" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--accent-2)" strokeWidth="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
                 {f}
               </li>
             ))}
@@ -74,13 +74,13 @@ export default function CheckoutPage() {
 
           {error && (
             <div className="mb-4 text-sm rounded-xl px-4 py-3"
-              style={{ background: 'rgba(248,113,113,.1)', border: '1px solid rgba(248,113,113,.3)', color: '#f87171' }}>
+              style={{ background: 'rgba(var(--danger-rgb), .1)', border: '1px solid rgba(var(--danger-rgb), .3)', color: 'var(--danger)' }}>
               {error}
             </div>
           )}
 
           <Button size="xl" loading={loading} onClick={handleCheckout}>
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
             </svg>
             Ir para pagamento

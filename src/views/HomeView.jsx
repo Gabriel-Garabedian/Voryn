@@ -6,7 +6,8 @@ import { calcStreak, calcBestStreak, getRecoverySnapshot, getRoutineDates, local
 import { SkeletonHome } from '@/components/ui/Skeleton'
 import WorkoutLogModal from '@/components/WorkoutLogModal'
 
-const AC        = 'var(--accent)'
+const AC  = 'var(--accent)'
+const ACT = 'var(--accent-text)'
 
 function greeting() {
   const h = new Date().getHours()
@@ -16,7 +17,7 @@ function greeting() {
 function StatMini({ label, value, accent, delta }) {
   return (
     <div className="f-card p-3 text-center">
-      <div className="font-display text-2xl leading-none" style={{ color: accent ? AC : 'var(--text-1)' }}>
+      <div className="font-display text-2xl leading-none" style={{ color: accent ? ACT : 'var(--text-1)' }}>
         {value ?? '—'}
       </div>
       <div className="text-xs mt-1 font-medium" style={{ color: 'var(--text-3)' }}>{label}</div>
@@ -53,11 +54,11 @@ function NotificationPanel({ userId }) {
     <section className="f-card p-4" aria-label="Notificações">
       <div className="flex items-center justify-between gap-3 mb-3">
         <div>
-          <p className="text-xs uppercase tracking-widest" style={{ color: AC }}>Atualizações</p>
+          <p className="text-xs uppercase tracking-widest" style={{ color: ACT }}>Atualizações</p>
           <h2 className="font-display text-xl uppercase" style={{ color: 'var(--text-1)' }}>Notificações</h2>
         </div>
         {unread.length > 0 && (
-          <button type="button" onClick={markAllRead} className="text-xs font-semibold" style={{ color: AC }}>
+          <button type="button" onClick={markAllRead} className="text-xs font-semibold" style={{ color: ACT }}>
             Marcar como lidas
           </button>
         )}
@@ -112,7 +113,7 @@ function QuickActions({ navigate }) {
             className="home-quick-action f-card p-3 flex items-center gap-3 text-left"
           >
             <span className="home-quick-action__icon" aria-hidden="true">
-              <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 {icons[action.icon]}
               </svg>
             </span>
@@ -148,7 +149,7 @@ function RecoveryPanel({ logs, navigate }) {
           return (
             <div key={item.muscle} className="flex items-center gap-3">
               <span className="w-2 h-2 rounded-full flex-shrink-0"
-                style={{ background: ready ? 'var(--success)' : item.status === 'quase pronto' ? '#facc15' : '#fb7185' }}
+                style={{ background: ready ? 'var(--success-solid)' : item.status === 'quase pronto' ? 'var(--warning-solid)' : 'var(--danger-solid)' }}
                 aria-hidden="true" />
               <span className="text-sm flex-1" style={{ color: 'var(--text-2)' }}>{item.muscle}</span>
               <span className="text-xs font-semibold" style={{ color: ready ? 'var(--success)' : 'var(--text-3)' }}>
@@ -159,7 +160,7 @@ function RecoveryPanel({ logs, navigate }) {
         })}
       </div>
       <button type="button" onClick={() => navigate('/app/evolution')}
-        className="text-xs font-semibold mt-3" style={{ color: 'var(--accent)' }}>
+        className="text-xs font-semibold mt-3" style={{ color: 'var(--accent-text)' }}>
         Ver análise completa →
       </button>
     </section>
@@ -196,8 +197,8 @@ function WeeklySummaryBanner({ lastWeek, metrics, streak }) {
             Resumo da semana passada
           </p>
         </div>
-        <button type="button" aria-label="Fechar resumo semanal" onClick={dismiss} style={{ color:'var(--text-3)', marginTop:2 }}>
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <button type="button" aria-label="Fechar resumo semanal" onClick={dismiss} className="icon-btn" style={{ color:'var(--text-3)', marginTop:2 }}>
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
         </button>
@@ -212,7 +213,7 @@ function WeeklySummaryBanner({ lastWeek, metrics, streak }) {
           <div key={s.label} className="text-center py-2 rounded-xl"
             style={{ background:'rgba(var(--accent-rgb),.08)', border:'1px solid rgba(var(--accent-rgb),.12)' }}>
             <div className="summary-mark text-base mb-0.5">{s.icon}</div>
-            <div className="font-display text-lg leading-none" style={{ color:'var(--accent)' }}>{s.value}</div>
+            <div className="font-display text-lg leading-none" style={{ color:'var(--accent-text)' }}>{s.value}</div>
             <div className="text-xs mt-0.5" style={{ color:'var(--text-3)' }}>{s.label}</div>
           </div>
         ))}
@@ -352,16 +353,16 @@ export default function HomeView() {
       {/* Trial banner */}
       {isTrial && (
         <div className="home-trial-banner f-card px-4 py-3 flex items-center justify-between animate-slide-up"
-          style={{ borderColor: 'rgba(250,204,21,.3)', background: 'rgba(250,204,21,.05)' }}>
+          style={{ borderColor: 'rgba(var(--warning-rgb), .3)', background: 'rgba(var(--warning-rgb), .05)' }}>
           <div className="flex items-center gap-2">
             <span className="summary-mark">TRIAL</span>
-            <p className="text-sm font-medium" style={{ color: '#facc15' }}>
+            <p className="text-sm font-medium" style={{ color: 'var(--warning)' }}>
               {trialDaysLeft > 0 ? `${trialDaysLeft} dias de trial restantes` : 'Trial expirado'}
             </p>
           </div>
           <button onClick={() => navigate('/app/subscription')}
             className="text-xs font-semibold px-3 py-1.5 rounded-lg whitespace-nowrap"
-            style={{ background: 'rgba(250,204,21,.15)', color: '#facc15', border: '1px solid rgba(250,204,21,.3)' }}>
+            style={{ background: 'rgba(var(--warning-rgb), .15)', color: 'var(--warning)', border: '1px solid rgba(var(--warning-rgb), .3)' }}>
             Assinar
           </button>
         </div>
@@ -385,7 +386,7 @@ export default function HomeView() {
         </div>
         <button onClick={() => navigate('/app/profile')} aria-label="Lembretes de treino"
           className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-          style={{ background: 'rgba(var(--accent-rgb),.14)', border: '1px solid rgba(var(--accent-rgb),.3)', color: AC }}>
+          style={{ background: 'rgba(var(--accent-rgb),.14)', border: '1px solid rgba(var(--accent-rgb),.3)', color: ACT }}>
           <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>
           </svg>
@@ -397,7 +398,7 @@ export default function HomeView() {
         <div className="flex justify-between">
           {weekDays.map(({ isToday, trained, date, key }) => (
             <div key={key} className="flex flex-col items-center gap-1.5">
-              <span className="text-[10px] uppercase" style={{ color: isToday ? AC : 'var(--text-3)', fontWeight: isToday ? 700 : 500 }}>
+              <span className="text-[10px] uppercase" style={{ color: isToday ? ACT : 'var(--text-3)', fontWeight: isToday ? 700 : 500 }}>
                 {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'][date.getDay()]}
               </span>
               <button
@@ -415,7 +416,7 @@ export default function HomeView() {
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
                 ) : (
-                  <span className="font-display text-sm" style={{ color: isToday ? AC : 'var(--text-3)' }}>{date.getDate()}</span>
+                  <span className="font-display text-sm" style={{ color: isToday ? ACT : 'var(--text-3)' }}>{date.getDate()}</span>
                 )}
               </button>
             </div>
@@ -451,7 +452,7 @@ export default function HomeView() {
         <div className="flex items-start gap-3">
           <div className="home-action-card__mark" aria-hidden="true">→</div>
           <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: AC }}>
+            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: ACT }}>
               Próxima ação
             </p>
             <p className="text-sm font-semibold mt-1" style={{ color: 'var(--text-1)' }}>
@@ -504,8 +505,8 @@ export default function HomeView() {
               aria-label={`${cell.trained ? 'Ver treino de ' : ''}${cell.date.getDate()} de ${monthLabel}`}
               className="mx-auto w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold transition-colors"
               style={{
-                color: cell.trained ? '#fff' : cell.isToday ? AC : 'var(--text-2)',
-                background: cell.trained ? AC : cell.isToday ? 'rgba(var(--accent-rgb),.12)' : 'transparent',
+                color: cell.trained ? '#fff' : cell.isToday ? ACT : 'var(--text-2)',
+                background: cell.trained ? ACT : cell.isToday ? 'rgba(var(--accent-rgb),.12)' : 'transparent',
                 border: cell.isToday && !cell.trained ? `1px solid ${AC}` : '1px solid transparent',
                 cursor: cell.trained ? 'pointer' : 'default',
               }}>
@@ -515,10 +516,10 @@ export default function HomeView() {
         </div>
         <div className="flex items-center justify-center gap-4 mt-4 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
           <span className="flex items-center gap-1.5 text-[10px]" style={{ color: 'var(--text-3)' }}>
-            <span className="w-2 h-2 rounded-full" style={{ background: AC }} /> Treino concluído
+            <span className="w-2 h-2 rounded-full" aria-hidden="true" style={{ background: AC }} /> Treino concluído
           </span>
           <span className="flex items-center gap-1.5 text-[10px]" style={{ color: 'var(--text-3)' }}>
-            <span className="w-2 h-2 rounded-full" style={{ border: `1px solid ${AC}` }} /> Hoje
+            <span className="w-2 h-2 rounded-full" aria-hidden="true" style={{ border: `1px solid ${AC}` }} /> Hoje
           </span>
         </div>
       </section>
@@ -528,11 +529,11 @@ export default function HomeView() {
       {/* Sequência */}
       <div className={`home-streak f-card px-4 py-3 flex items-center gap-2.5 animate-slide-up ${isStreakMilestone ? 'streak-milestone' : ''}`}
         style={{ borderColor: 'rgba(var(--accent-rgb),.3)', background: 'rgba(var(--accent-rgb),.06)' }}>
-        <svg width="18" height="18" fill={AC} viewBox="0 0 24 24" aria-hidden="true">
+        <svg width="18" height="18" fill={ACT} viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 2c1 3-2 4-2 7a3 3 0 006 0c1.5 1.5 2 3.5 2 5a6 6 0 11-12 0c0-4 3-6 3-9 1 0 2.5.5 3 3z"/>
         </svg>
         <p className="text-sm" style={{ color: 'var(--text-2)' }}>
-          <strong style={{ color: AC }}>{streak} dia{streak === 1 ? '' : 's'}</strong> de sequência — seu recorde é {bestStreak}
+          <strong style={{ color: ACT }}>{streak} dia{streak === 1 ? '' : 's'}</strong> de sequência — seu recorde é {bestStreak}
         </p>
       </div>
 

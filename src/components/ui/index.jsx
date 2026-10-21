@@ -1,6 +1,7 @@
-import React, { useEffect, useId, useRef } from 'react'
+import React, { useId, useRef } from 'react'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'motion/react'
+import { useDialogA11y } from '@/components/ui/useDialogA11y'
 
 // ── Button ─────────────────────────────────────────────────
 export function Button({ children, variant='accent', size='md', className, loading, ...props }) {
@@ -9,7 +10,7 @@ export function Button({ children, variant='accent', size='md', className, loadi
     accent:  'f-btn-accent',
     ghost:   'f-btn-ghost',
     danger:  'f-btn-danger',
-    outline: 'border border-[var(--border)] text-[var(--text-2)] hover:border-[var(--accent)] hover:text-[var(--accent)] bg-transparent',
+    outline: 'border border-[var(--border)] text-[var(--text-2)] hover:border-[var(--accent)] hover:text-[var(--accent-text)] bg-transparent',
   }
   const sizes = {
     sm: 'py-1.5 px-3 text-xs rounded-lg',
@@ -24,7 +25,7 @@ export function Button({ children, variant='accent', size='md', className, loadi
       {...props}
     >
       {loading && (
-        <svg className="animate-spin w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none">
+        <svg className="animate-spin w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3"/>
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
         </svg>
@@ -69,24 +70,9 @@ export function Modal({ open, onClose, title, children, size = 'md' }) {
   const sizes = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-lg', xl: 'max-w-2xl' }
   const titleId = useId().replace(/:/g, '')
   const dialogRef = useRef(null)
-  const restoreFocusRef = useRef(null)
 
-  useEffect(() => {
-    if (!open) return
-    restoreFocusRef.current = document.activeElement
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    const onKeyDown = event => {
-      if (event.key === 'Escape') onClose()
-    }
-    document.addEventListener('keydown', onKeyDown)
-    requestAnimationFrame(() => dialogRef.current?.querySelector('button, input, select, textarea, [tabindex="0"]')?.focus())
-    return () => {
-      document.removeEventListener('keydown', onKeyDown)
-      document.body.style.overflow = previousOverflow
-      restoreFocusRef.current?.focus?.()
-    }
-  }, [open, onClose])
+  useDialogA11y(open, onClose, dialogRef)
+
   return (
     <AnimatePresence>
       {open && (
@@ -114,8 +100,8 @@ export function Modal({ open, onClose, title, children, size = 'md' }) {
               <div className="flex items-center justify-between mb-5 pb-4"
                 style={{ borderBottom: '1px solid var(--border)' }}>
                 <h3 id={titleId} className="font-display text-2xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>{title}</h3>
-                <button type="button" aria-label="Fechar janela" onClick={onClose} className="f-btn f-btn-ghost p-2 min-h-0">
-                  <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <button type="button" aria-label="Fechar janela" onClick={onClose} className="icon-btn" style={{ color: 'var(--text-3)' }}>
+                  <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                     <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                   </svg>
                 </button>
@@ -133,7 +119,7 @@ export function Modal({ open, onClose, title, children, size = 'md' }) {
 export function EmptyState({ icon, title, description, action }) {
   return (
     <div className="glass-card f-empty-state p-10 text-center flex flex-col items-center gap-3">
-      {icon && <div className="f-empty-mark w-14 h-14 flex items-center justify-center text-2xl mb-1" style={{ background: 'rgba(var(--accent-rgb),.12)', border: '1px solid rgba(var(--accent-rgb),.25)' }}>{icon}</div>}
+      {icon && <div className="f-empty-mark w-14 h-14 flex items-center justify-center text-2xl mb-1" aria-hidden="true" style={{ background: 'rgba(var(--accent-rgb),.12)', border: '1px solid rgba(var(--accent-rgb),.25)' }}>{icon}</div>}
       <p className="font-display text-2xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>{title}</p>
       {description && <p className="text-sm" style={{ color: 'var(--text-3)' }}>{description}</p>}
       {action}
@@ -144,7 +130,7 @@ export function EmptyState({ icon, title, description, action }) {
 // ── Spinner ────────────────────────────────────────────────
 export function Spinner({ size = 20 }) {
   return (
-    <svg className="animate-spin" width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <svg className="animate-spin" width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3"/>
       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
     </svg>
@@ -167,12 +153,12 @@ export function SectionHeader({ eyebrow, title, sub }) {
 }
 
 // ── Stat card ──────────────────────────────────────────────
-export function StatCard({ label, value, sub, icon }) {
+export function StatCard({ label, value, sub, icon, color = 'var(--accent-text)' }) {
   return (
     <div className="glass-card f-stat-card p-4 text-left">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="font-display text-4xl leading-none" style={{ color: 'var(--accent)' }}>{value}</div>
+          <div className="font-display text-4xl leading-none" style={{ color }}>{value}</div>
           <div className="text-xs font-semibold uppercase tracking-wider mt-2" style={{ color: 'var(--text-3)' }}>{label}</div>
         </div>
         {icon && <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg" style={{ background: 'rgba(var(--accent-rgb),.12)', border: '1px solid rgba(var(--accent-rgb),.25)' }}>{icon}</div>}

@@ -4,7 +4,7 @@ import { PLANS } from '@/services/payment'
 
 function Check() {
   return (
-    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" style={{ color: 'var(--accent-2)', flexShrink: 0 }}>
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" style={{ color: 'var(--accent-2)', flexShrink: 0 }} aria-hidden="true">
       <polyline points="20 6 9 17 4 12"/>
     </svg>
   )
@@ -35,8 +35,8 @@ export default function PricingPage() {
           14 dias grátis em todos os planos. Cancele quando quiser.
         </p>
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm mb-16"
-          style={{ background: 'rgba(74,222,128,.1)', border: '1px solid rgba(74,222,128,.2)', color: '#4ade80' }}>
-          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse inline-block"/>
+          style={{ background: 'rgba(var(--success-rgb), .1)', border: '1px solid rgba(var(--success-rgb), .2)', color: 'var(--success)' }}>
+          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse inline-block" aria-hidden="true"/>
           14 dias grátis — sem cartão de crédito
         </div>
 
@@ -65,7 +65,7 @@ export default function PricingPage() {
                   {plan.name}
                 </h3>
                 <div className="flex items-end gap-1">
-                  <span className="font-display text-5xl" style={{ color: plan.highlight ? 'var(--accent)' : 'var(--text-1)' }}>
+                  <span className="font-display text-5xl" style={{ color: plan.highlight ? 'var(--accent-text)' : 'var(--text-1)' }}>
                     R${plan.price.toFixed(2).replace('.',',')}
                   </span>
                   <span className="text-sm mb-2" style={{ color: 'var(--text-3)' }}>/{plan.period}</span>

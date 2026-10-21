@@ -11,7 +11,7 @@ export default function NotFoundPage() {
           style={{ color: 'rgba(var(--accent-rgb),.15)', fontSize: 160 }}>404</div>
         <div className="w-16 h-16 rounded-2xl mx-auto -mt-12 flex items-center justify-center mb-6"
           style={{ background: 'rgba(var(--accent-rgb),.1)', border: '1px solid rgba(var(--accent-rgb),.25)' }}>
-          <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2">
+          <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2" aria-hidden="true">
             <circle cx="12" cy="12" r="10"/>
             <line x1="12" y1="8" x2="12" y2="12"/>
             <line x1="12" y1="16" x2="12.01" y2="16"/>

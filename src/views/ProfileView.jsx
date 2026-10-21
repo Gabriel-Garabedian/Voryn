@@ -27,10 +27,10 @@ function ThemeToggle() {
         <div className="w-9 h-9 rounded-xl flex items-center justify-center"
           style={{ background: 'rgba(var(--accent-rgb),.1)', border: '1px solid rgba(var(--accent-rgb),.2)' }}>
           {dark
-            ? <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2">
+            ? <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2" aria-hidden="true">
                 <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
               </svg>
-            : <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2">
+            : <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2" aria-hidden="true">
                 <circle cx="12" cy="12" r="5"/>
                 <line x1="12" y1="1" x2="12" y2="3"/>
                 <line x1="12" y1="21" x2="12" y2="23"/>
@@ -60,15 +60,19 @@ function ThemeToggle() {
 // Seletor de cor de destaque — recurso pago (ver isPayingUser no
 // AuthContext). Quem não é pagante vê as opções desabilitadas, com aviso
 // de que é preciso assinar (ou ter acesso via personal) para usar.
+//
+// A amostra usa os tokens --swatch-*, que são a MESMA cor que o app
+// aplica depois (--accent de cada acento). Antes, o catálogo mostrava os
+// hexes antigos da marca: o usuário via um roxo e recebia outro.
 const ACCENT_COLORS = [
-  { id: 'purple', label: 'Roxo (padrão)', hex: '#820AD1' },
-  { id: 'blue',   label: 'Azul',          hex: '#2563EB' },
-  { id: 'green',  label: 'Verde',         hex: '#16A34A' },
-  { id: 'orange', label: 'Laranja',       hex: '#EA580C' },
-  { id: 'red',    label: 'Vermelho',      hex: '#DC2626' },
-  { id: 'pink',   label: 'Rosa',          hex: '#DB2777' },
-  { id: 'cyan',   label: 'Ciano',         hex: '#0891B2' },
-  { id: 'amber',  label: 'Âmbar',         hex: '#D97706' },
+  { id: 'purple', label: 'Roxo (padrão)', color: 'var(--swatch-purple)' },
+  { id: 'blue',   label: 'Azul',          color: 'var(--swatch-blue)' },
+  { id: 'green',  label: 'Verde',         color: 'var(--swatch-green)' },
+  { id: 'orange', label: 'Laranja',       color: 'var(--swatch-orange)' },
+  { id: 'red',    label: 'Vermelho',      color: 'var(--swatch-red)' },
+  { id: 'pink',   label: 'Rosa',          color: 'var(--swatch-pink)' },
+  { id: 'cyan',   label: 'Ciano',         color: 'var(--swatch-cyan)' },
+  { id: 'amber',  label: 'Âmbar',         color: 'var(--swatch-amber)' },
 ]
 
 function AccentColorPicker() {
@@ -79,7 +83,7 @@ function AccentColorPicker() {
         <p className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>Cor do app</p>
         {!isPayingUser && (
           <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
-            style={{ background: 'rgba(var(--accent-rgb),.12)', color: 'var(--accent)' }}>
+            style={{ background: 'rgba(var(--accent-rgb),.12)', color: 'var(--accent-text)' }}>
             PREMIUM
           </span>
         )}
@@ -89,32 +93,48 @@ function AccentColorPicker() {
           ? 'Escolha a cor de destaque do app.'
           : 'Disponível para quem tem assinatura ativa (ou acesso pelo plano do personal).'}
       </p>
-      <div className="grid grid-cols-4 gap-2.5">
+      <div className="grid grid-cols-4 gap-3" role="group" aria-label="Cor de destaque do app">
         {ACCENT_COLORS.map(c => {
           const selected = accentColor === c.id
           const locked   = !isPayingUser && c.id !== 'purple'
           return (
             <button key={c.id}
+              type="button"
+              aria-pressed={selected}
               disabled={locked}
               onClick={() => !locked && setAccentColor(c.id)}
               title={locked ? 'Disponível só para assinantes' : c.label}
+              aria-label={locked ? `${c.label} — disponível só para assinantes` : c.label}
               className="aspect-square rounded-xl flex items-center justify-center transition-all"
               style={{
-                background: c.hex,
-                opacity: locked ? .35 : 1,
+                background: c.color,
                 cursor: locked ? 'not-allowed' : 'pointer',
-                border: selected ? '2.5px solid var(--text-1)' : '2.5px solid transparent',
-                boxShadow: selected ? '0 0 0 2px var(--card)' : 'none',
+                border: '2.5px solid transparent',
+                // Anel de seleção em duas camadas: o filete na cor do card
+                // separa o anel da amostra (sem ele, no tema claro, o anel
+                // se funde com a amostra) e o anel em --text-1 garante o
+                // contraste contra o fundo. Feito com box-shadow para não
+                // mexer no outline de foco.
+                boxShadow: selected
+                  ? '0 0 0 2px var(--card), 0 0 0 4.5px var(--text-1)'
+                  : 'none',
               }}>
               {selected && (
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth="3">
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth="3" aria-hidden="true">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
               )}
               {locked && (
-                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth="2.5">
-                  <rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/>
-                </svg>
+                // A amostra NÃO fica esmaecida: esmaecer mostraria uma
+                // tonalidade que o usuário não vai receber. O cadeado vem
+                // num selo opaco, legível nos dois temas.
+                <span aria-hidden="true"
+                  className="w-6 h-6 rounded-lg flex items-center justify-center"
+                  style={{ background: 'var(--card)' }}>
+                  <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--text-2)" strokeWidth="2.5">
+                    <rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/>
+                  </svg>
+                </span>
               )}
             </button>
           )
@@ -266,7 +286,7 @@ export default function ProfileView() {
       <div className="flex items-center gap-4">
         <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0"
           style={{ background: 'rgba(var(--accent-rgb),.15)', border: '1.5px solid rgba(var(--accent-rgb),.35)' }}>
-          <span className="font-display text-2xl" style={{ color: 'var(--accent)' }}>
+          <span className="font-display text-2xl" style={{ color: 'var(--accent-text)' }}>
             {profile?.name?.charAt(0)?.toUpperCase() || 'A'}
           </span>
         </div>
@@ -277,7 +297,7 @@ export default function ProfileView() {
                   onChange={e => setNameInput(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && saveName()}
                   autoFocus/>
-                <button onClick={saveName} className="text-xs font-semibold" style={{ color: 'var(--accent)' }}>OK</button>
+                <button onClick={saveName} className="text-xs font-semibold" style={{ color: 'var(--accent-text)' }}>OK</button>
                 <button onClick={() => setEditName(false)} className="text-xs" style={{ color: 'var(--text-3)' }}>✕</button>
               </div>
             : <div className="flex items-center gap-2">
@@ -286,7 +306,7 @@ export default function ProfileView() {
                 </p>
                 <button onClick={() => { setEditName(true); setNameInput(profile?.name || '') }}
                   style={{ color: 'var(--text-3)' }} aria-label="Editar nome">
-                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                     <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
                     <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
                   </svg>
@@ -310,7 +330,7 @@ export default function ProfileView() {
           { label: 'Melhor',     value: bestStreak },
         ].map(s => (
           <div key={s.label} className="glass-card p-3 text-center">
-            <div className="font-display text-xl" style={{ color: 'var(--accent)' }}>{s.value}</div>
+            <div className="font-display text-xl" style={{ color: 'var(--accent-text)' }}>{s.value}</div>
             <div className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>{s.label}</div>
           </div>
         ))}
@@ -333,7 +353,7 @@ export default function ProfileView() {
                   opacity: unlocked ? 1 : .5,
                 }}>
                 {unlocked ? (
-                  <span className="font-display text-sm" style={{ color: 'var(--accent)' }}>{a.icon}</span>
+                  <span className="font-display text-sm" style={{ color: 'var(--accent-text)' }}>{a.icon}</span>
                 ) : (
                   <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="var(--text-3)" strokeWidth="2" aria-hidden="true">
                     <rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
@@ -349,7 +369,7 @@ export default function ProfileView() {
         <div className="f-card p-3 flex items-center justify-between"
           style={{ borderColor: 'rgba(var(--accent-rgb),.25)', background: 'rgba(var(--accent-rgb),.04)' }}>
           <span className="text-sm" style={{ color: 'var(--text-2)' }}>Volume total acumulado</span>
-          <span className="font-display text-xl" style={{ color: 'var(--accent)' }}>
+          <span className="font-display text-xl" style={{ color: 'var(--accent-text)' }}>
             {formatVolume(totalVolume)}
           </span>
         </div>
@@ -380,7 +400,7 @@ export default function ProfileView() {
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center"
               style={{ background:'rgba(var(--accent-rgb),.1)', border:'1px solid rgba(var(--accent-rgb),.2)' }}>
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2" aria-hidden="true">
                 <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
               </svg>
             </div>
@@ -400,12 +420,12 @@ export default function ProfileView() {
                 else toast.error('Não foi possível ativar. Verifique as permissões do navegador.')
               }}
               className="text-xs font-semibold px-3 py-2 rounded-xl"
-              style={{ background:'rgba(var(--accent-rgb),.1)', color:'var(--accent)', border:'1px solid rgba(var(--accent-rgb),.25)' }}>
+              style={{ background:'rgba(var(--accent-rgb),.1)', color:'var(--accent-text)', border:'1px solid rgba(var(--accent-rgb),.25)' }}>
               Ativar
             </button>
           )}
           {pushPerm === 'granted' && (
-            <div className="w-2 h-2 rounded-full" style={{ background:'#4ade80' }}/>
+            <div className="w-2 h-2 rounded-full" style={{ background:'var(--success)' }}/>
           )}
         </div>
       </div>
@@ -431,13 +451,13 @@ export default function ProfileView() {
                 onChange={e => setSpotifyInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && saveSpotify()}
                 autoFocus/>
-              <button onClick={saveSpotify} className="text-xs font-semibold flex-shrink-0" style={{ color: 'var(--accent)' }}>OK</button>
+              <button onClick={saveSpotify} className="text-xs font-semibold flex-shrink-0" style={{ color: 'var(--accent-text)' }}>OK</button>
               <button onClick={() => setEditSpotify(false)} className="text-xs flex-shrink-0" style={{ color: 'var(--text-3)' }}>✕</button>
             </div>
           ) : profile?.spotify_url ? (
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#1DB95420' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="#1DB954">
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(var(--spotify-rgb),.125)' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--spotify)" aria-hidden="true">
                   <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
                 </svg>
               </div>
@@ -447,7 +467,7 @@ export default function ProfileView() {
               </a>
               <button onClick={() => { setEditSpotify(true); setSpotifyInput(profile.spotify_url) }}
                 className="flex-shrink-0" style={{ color: 'var(--text-3)' }}>
-                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
                   <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
                 </svg>
@@ -457,7 +477,7 @@ export default function ProfileView() {
             <button onClick={() => setEditSpotify(true)}
               className="w-full flex items-center gap-3 text-left">
               <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'var(--surface)' }}>
-                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--text-3)" strokeWidth="2">
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--text-3)" strokeWidth="2" aria-hidden="true">
                   <path d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zM21 16a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
               </div>
@@ -495,7 +515,7 @@ export default function ProfileView() {
                         onChange={e => setPrInput(e.target.value)}
                         onKeyDown={e => { if (e.key==='Enter') savePR(key); if (e.key==='Escape') setEditingPR(null) }}/>
                       <button onClick={() => savePR(key)}
-                        className="text-sm font-semibold" style={{ color: 'var(--accent)' }}>
+                        className="text-sm font-semibold" style={{ color: 'var(--accent-text)' }}>
                         Salvar
                       </button>
                       <button onClick={() => setEditingPR(null)}
@@ -503,7 +523,7 @@ export default function ProfileView() {
                     </div>
                   : <p className="text-xs mt-0.5">
                       {prs[key]?.weight
-                        ? <span className="font-display text-base" style={{ color: 'var(--accent)' }}>
+                        ? <span className="font-display text-base" style={{ color: 'var(--accent-text)' }}>
                             {prs[key].weight} kg
                           </span>
                         : <span style={{ color: 'rgba(var(--accent-rgb),.3)' }}>Não registrado</span>
@@ -516,7 +536,7 @@ export default function ProfileView() {
                   <button
                     onClick={() => { setEditingPR(key); setPrInput(prs[key]?.weight || '') }}
                     className="p-1.5 rounded-lg transition-colors" style={{ color: 'var(--text-3)' }}>
-                    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                       <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
                       <path d="M18.5 2.5a2.1 2.1 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
                     </svg>
@@ -526,8 +546,8 @@ export default function ProfileView() {
                   <button
                     onClick={() => deletePR(key)}
                     title="Remover este exercício"
-                    className="p-1.5 rounded-lg transition-colors" style={{ color: '#f87171' }}>
-                    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    className="p-1.5 rounded-lg transition-colors" style={{ color: 'var(--danger)' }}>
+                    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                       <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
                     </svg>
                   </button>
@@ -556,8 +576,8 @@ export default function ProfileView() {
           ) : (
             <button onClick={() => setAddingPR(true)}
               className="w-full f-card p-3.5 text-sm font-semibold flex items-center justify-center gap-2"
-              style={{ color: 'var(--accent)', borderColor: 'rgba(var(--accent-rgb),.25)' }}>
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              style={{ color: 'var(--accent-text)', borderColor: 'rgba(var(--accent-rgb),.25)' }}>
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               Adicionar exercício
             </button>
           )}
@@ -571,7 +591,7 @@ export default function ProfileView() {
           <p className="f-label">Histórico Recente</p>
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24"
             stroke="var(--muted)" strokeWidth="2"
-            style={{ transform: showHistory ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform .2s' }}>
+            style={{ transform: showHistory ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform .2s' }} aria-hidden="true">
             <path d="M6 9l6 6 6-6"/>
           </svg>
         </button>
@@ -586,7 +606,7 @@ export default function ProfileView() {
                     <div key={log.id || i} className="f-card px-4 py-3 flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl flex flex-col items-center justify-center flex-shrink-0"
                         style={{ background: 'var(--surface)' }}>
-                        <span className="font-display text-sm" style={{ color: 'var(--accent)' }}>
+                        <span className="font-display text-sm" style={{ color: 'var(--accent-text)' }}>
                           {String(log.date).slice(8)}
                         </span>
                         <span className="text-xs uppercase" style={{ color: 'var(--text-3)' }}>
@@ -602,7 +622,7 @@ export default function ProfileView() {
                       <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
                         style={{ background: 'rgba(var(--accent-rgb),.1)' }}>
                         <svg width="13" height="13" fill="none" viewBox="0 0 24 24"
-                          stroke="var(--accent)" strokeWidth="2.5">
+                          stroke="var(--accent-text)" strokeWidth="2.5" aria-hidden="true">
                           <polyline points="20 6 9 17 4 12"/>
                         </svg>
                       </div>
@@ -610,7 +630,7 @@ export default function ProfileView() {
                   ))}
                   <button onClick={() => navigate('/app/history')}
                     className="w-full text-center text-sm py-2"
-                    style={{ color: 'var(--accent)' }}>
+                    style={{ color: 'var(--accent-text)' }}>
                     Ver histórico completo →
                   </button>
                 </>
@@ -655,7 +675,7 @@ export default function ProfileView() {
               onMouseEnter={e => e.currentTarget.style.borderColor='rgba(var(--accent-rgb),.4)'}
               onMouseLeave={e => e.currentTarget.style.borderColor='var(--border)'}>
               <span className="text-sm font-medium">{btn.label}</span>
-              <svg className="ml-auto" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2">
+              <svg className="ml-auto" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
                 <polyline points="7 10 12 15 17 10"/>
                 <line x1="12" y1="15" x2="12" y2="3"/>
@@ -685,7 +705,7 @@ export default function ProfileView() {
       {/* ── Sair ── */}
       <div className="space-y-2" style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
         <Button variant="danger" size="xl" onClick={signOut}>
-          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
           </svg>
           Sair da conta
@@ -694,12 +714,12 @@ export default function ProfileView() {
         {!showDelete
           ? <button onClick={() => setShowDelete(true)}
               className="w-full text-center text-xs py-2 transition-colors"
-              style={{ color: 'rgba(239,68,68,.35)' }}>
+              style={{ color: 'rgba(var(--danger-rgb), .35)' }}>
               Excluir minha conta
             </button>
           : <div className="f-card p-4 space-y-3 scale-in"
-              style={{ borderColor: 'rgba(239,68,68,.3)', background: 'rgba(239,68,68,.04)' }}>
-              <p className="text-sm font-semibold text-center" style={{ color: '#f87171' }}>
+              style={{ borderColor: 'rgba(var(--danger-rgb), .3)', background: 'rgba(var(--danger-rgb), .04)' }}>
+              <p className="text-sm font-semibold text-center" style={{ color: 'var(--danger)' }}>
                 Isso excluirá todos os seus dados permanentemente.
               </p>
               <p className="text-xs text-center" style={{ color: 'var(--text-3)' }}>
@@ -708,7 +728,7 @@ export default function ProfileView() {
                 {isPersonal && ' Seus alunos perdem o vínculo com você, mas as contas deles continuam intactas.'}
               </p>
               {deleteError && (
-                <p className="text-xs text-center" style={{ color: '#f87171' }}>{deleteError}</p>
+                <p className="text-xs text-center" style={{ color: 'var(--danger)' }}>{deleteError}</p>
               )}
               <Button variant="danger" size="lg" className="w-full"
                 onClick={handleDeleteAccount} loading={deleting}>

@@ -82,7 +82,7 @@ export default function IOSInstallBanner() {
           style={{ padding: 6, color: 'var(--text-3)', background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}
           aria-label="Fechar"
         >
-          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
         </button>
@@ -96,9 +96,9 @@ export default function IOSInstallBanner() {
             text: 'Toque no botão Compartilhar',
             icon: (
               // Ícone de compartilhar do Safari iOS (caixa com seta pra cima)
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-text)" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                 <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" fill="var(--accent)" stroke="none"/>
-                <rect x="3" y="3" width="18" height="18" rx="2" stroke="var(--accent)"/>
+                <rect x="3" y="3" width="18" height="18" rx="2" stroke="var(--accent-text)"/>
                 <path d="M12 16V8M9 11l3-3 3 3"/>
               </svg>
             ),
@@ -108,7 +108,7 @@ export default function IOSInstallBanner() {
             num: '2',
             text: 'Toque em "Adicionar à Tela de Início"',
             icon: (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-text)" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                 <rect x="3" y="3" width="18" height="18" rx="2"/>
                 <path d="M12 8v8M8 12h8"/>
               </svg>
@@ -119,7 +119,7 @@ export default function IOSInstallBanner() {
             num: '3',
             text: 'Toque em "Adicionar" no canto superior direito',
             icon: (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-text)" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
             ),

@@ -27,8 +27,11 @@ function QRCanvas({ value, size = 200 }) {
         // mesmo que o personal tivesse escolhido outra cor de destaque
         // (recurso pago). getComputedStyle resolve o valor real aplicado
         // no momento, seguindo a cor escolhida.
+        // O fallback é a cor real do roxo padrão (#7c3aed): o hex antigo
+        // #820AD1 dava 2.70:1 contra o fundo do QR, abaixo do piso de 3:1
+        // que o leitor precisa.
         const resolvedAccent = getComputedStyle(document.documentElement)
-          .getPropertyValue('--accent').trim() || '#820AD1'
+          .getPropertyValue('--accent').trim() || '#7c3aed'
         // eslint-disable-next-line no-undef
         new QRCode(container, {
           text:           value,
@@ -197,7 +200,7 @@ function QRModal({ inviteLink, trainerName, onClose }) {
             }}
             className="f-card p-3 flex items-center justify-center gap-2 text-sm font-semibold"
             style={{ color: 'var(--text-1)' }}>
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
               <polyline points="7 10 12 15 17 10"/>
               <line x1="12" y1="15" x2="12" y2="3"/>
@@ -309,7 +312,7 @@ export default function PersonalInviteGuide({ onClose, trainerId, onStudentAdded
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center"
               style={{ background: 'rgba(var(--accent-rgb),.12)', border: '1px solid rgba(var(--accent-rgb),.25)' }}>
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2" aria-hidden="true">
                 <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
                 <circle cx="8.5" cy="7" r="4"/>
                 <line x1="20" y1="8" x2="20" y2="14"/>
@@ -322,8 +325,8 @@ export default function PersonalInviteGuide({ onClose, trainerId, onStudentAdded
             </div>
           </div>
           {onClose && (
-            <button onClick={onClose} style={{ color: 'var(--text-3)' }}>
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <button onClick={onClose} aria-label="Fechar guia de convite" className="icon-btn" style={{ color: 'var(--text-3)' }}>
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
               </svg>
             </button>
@@ -333,7 +336,7 @@ export default function PersonalInviteGuide({ onClose, trainerId, onStudentAdded
         {/* Link preview */}
         <div className="rounded-xl px-3 py-2.5 mb-3 flex items-center gap-2"
           style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
-          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2" aria-hidden="true">
             <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
             <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
           </svg>
@@ -348,17 +351,17 @@ export default function PersonalInviteGuide({ onClose, trainerId, onStudentAdded
           <button onClick={copyLink}
             className="flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all"
             style={{
-              background: copied ? 'rgba(74,222,128,.1)' : 'var(--card)',
-              border: `1px solid ${copied ? 'rgba(74,222,128,.3)' : 'var(--border)'}`,
+              background: copied ? 'rgba(var(--success-rgb), .1)' : 'var(--card)',
+              border: `1px solid ${copied ? 'rgba(var(--success-rgb), .3)' : 'var(--border)'}`,
             }}>
             {copied
-              ? <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#4ade80" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-              : <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2">
+              ? <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--success)" strokeWidth="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              : <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2" aria-hidden="true">
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                   <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
                 </svg>
             }
-            <span className="text-xs font-semibold" style={{ color: copied ? '#4ade80' : 'var(--text-2)' }}>
+            <span className="text-xs font-semibold" style={{ color: copied ? 'var(--success)' : 'var(--text-2)' }}>
               {copied ? 'Copiado!' : 'Copiar'}
             </span>
           </button>
@@ -369,7 +372,7 @@ export default function PersonalInviteGuide({ onClose, trainerId, onStudentAdded
             style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
             onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(var(--accent-rgb),.4)'}
             onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2" aria-hidden="true">
               <rect x="3" y="3" width="7" height="7" rx="1"/>
               <rect x="14" y="3" width="7" height="7" rx="1"/>
               <rect x="3" y="14" width="7" height="7" rx="1"/>
@@ -386,7 +389,7 @@ export default function PersonalInviteGuide({ onClose, trainerId, onStudentAdded
             style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
             onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(var(--accent-rgb),.4)'}
             onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2" aria-hidden="true">
               <circle cx="18" cy="5" r="3"/>
               <circle cx="6" cy="12" r="3"/>
               <circle cx="18" cy="19" r="3"/>
@@ -420,7 +423,7 @@ export default function PersonalInviteGuide({ onClose, trainerId, onStudentAdded
         </div>
 
         <div className="px-3 py-2 rounded-xl text-xs"
-          style={{ background: 'rgba(250,204,21,.06)', border: '1px solid rgba(250,204,21,.15)', color: 'rgba(250,204,21,.7)' }}>
+          style={{ background: 'rgba(var(--warning-rgb), .06)', border: '1px solid rgba(var(--warning-rgb), .15)', color: 'rgba(var(--warning-rgb), .7)' }}>
           💡 O cadastro do aluno é sempre gratuito. Apenas você paga a assinatura.
         </div>
 
@@ -438,7 +441,7 @@ export default function PersonalInviteGuide({ onClose, trainerId, onStudentAdded
                   placeholder="email do aluno@exemplo.com"
                   value={addEmail} onChange={e => setAddEmail(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleAddByEmail()}/>
-                {addError && <p className="text-xs" style={{ color: '#f87171' }}>{addError}</p>}
+                {addError && <p className="text-xs" style={{ color: 'var(--danger)' }}>{addError}</p>}
                 <p className="text-xs" style={{ color: 'var(--text-3)' }}>O aluno precisa já ter uma conta no Voryn.</p>
                 <div className="flex gap-2">
                   <Button className="flex-1 py-2 text-sm" onClick={handleAddByEmail}>Adicionar</Button>

@@ -19,7 +19,7 @@ function TrainerOverview({ data, onRemove }) {
         <div className="flex items-start gap-4">
           <div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
             style={{ background:'rgba(var(--accent-rgb),.15)', border:'1.5px solid rgba(var(--accent-rgb),.3)' }}>
-            <span className="font-display text-2xl" style={{ color:'var(--accent)' }}>
+            <span className="font-display text-2xl" style={{ color:'var(--accent-text)' }}>
               {data.user?.name?.charAt(0)?.toUpperCase() || 'P'}
             </span>
           </div>
@@ -49,9 +49,9 @@ function TrainerOverview({ data, onRemove }) {
             <span className="text-xl">{c.icon}</span>
             <div>
               <p className="text-xs" style={{ color:'var(--text-3)' }}>{c.label}</p>
-              <p className="text-sm font-semibold" style={{ color:'var(--accent)' }}>{c.val}</p>
+              <p className="text-sm font-semibold" style={{ color:'var(--accent-text)' }}>{c.val}</p>
             </div>
-            <svg className="ml-auto" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+            <svg className="ml-auto" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2" aria-hidden="true"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
           </a>
         ))}
       </div>
@@ -151,12 +151,12 @@ function Chat({ trainerId, studentId, userId }) {
       </div>
       <div className="flex gap-2 pt-2" style={{ borderTop:'1px solid var(--border)' }}>
         <input className="f-input flex-1" style={{ padding:'10px 14px' }}
-          placeholder="Mensagem..." value={input}
+          aria-label="Mensagem para o aluno" placeholder="Mensagem..." value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key==='Enter' && send()}/>
-        <button onClick={send} className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-all"
+        <button onClick={send} aria-label="Enviar mensagem" className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-all"
           style={{ background: input.trim() ? 'var(--accent)' : 'var(--surface)', border:'1px solid var(--border)' }}>
-          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke={input.trim() ? '#fff' : 'var(--muted)'} strokeWidth="2">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke={input.trim() ? '#fff' : 'var(--muted)'} strokeWidth="2" aria-hidden="true">
             <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
           </svg>
         </button>
@@ -186,7 +186,7 @@ function Assessments({ studentId, trainerId }) {
         </p>
         <button onClick={() => setShowAdd(!showAdd)}
           className="text-xs font-semibold px-3 py-1.5 rounded-lg"
-          style={{ background:'rgba(var(--accent-rgb),.1)', color:'var(--accent)', border:'1px solid rgba(var(--accent-rgb),.2)' }}>
+          style={{ background:'rgba(var(--accent-rgb),.1)', color:'var(--accent-text)', border:'1px solid rgba(var(--accent-rgb),.2)' }}>
           + Nova
         </button>
       </div>
@@ -211,8 +211,8 @@ function Assessments({ studentId, trainerId }) {
             {new Date(a.date+'T12:00').toLocaleDateString('pt-BR',{ day:'2-digit', month:'long', year:'numeric' })}
           </p>
           <div className="flex gap-3 mb-2">
-            {a.weight && <div className="f-card px-4 py-2 text-center flex-1" style={{ background:'var(--surface)' }}><p className="font-display text-xl" style={{ color:'var(--accent)' }}>{a.weight}kg</p><p className="text-xs" style={{ color:'var(--text-3)' }}>Peso</p></div>}
-            {a.body_fat && <div className="f-card px-4 py-2 text-center flex-1" style={{ background:'var(--surface)' }}><p className="font-display text-xl" style={{ color:'var(--accent)' }}>{a.body_fat}%</p><p className="text-xs" style={{ color:'var(--text-3)' }}>Gordura</p></div>}
+            {a.weight && <div className="f-card px-4 py-2 text-center flex-1" style={{ background:'var(--surface)' }}><p className="font-display text-xl" style={{ color:'var(--accent-text)' }}>{a.weight}kg</p><p className="text-xs" style={{ color:'var(--text-3)' }}>Peso</p></div>}
+            {a.body_fat && <div className="f-card px-4 py-2 text-center flex-1" style={{ background:'var(--surface)' }}><p className="font-display text-xl" style={{ color:'var(--accent-text)' }}>{a.body_fat}%</p><p className="text-xs" style={{ color:'var(--text-3)' }}>Gordura</p></div>}
           </div>
           {a.notes && <p className="text-sm italic" style={{ color:'var(--text-3)' }}>&ldquo;{a.notes}&rdquo;</p>}
         </div>
@@ -249,7 +249,7 @@ function Programs({ studentId }) {
         <div key={p.id} className="f-card p-4 flex items-start gap-3">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
             style={{ background:'rgba(var(--accent-rgb),.1)', border:'1px solid rgba(var(--accent-rgb),.2)' }}>
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
           </div>
           <div>
             <p className="font-display text-lg uppercase tracking-wide" style={{ color:'var(--text-1)' }}>{p.name}</p>
@@ -323,7 +323,7 @@ export default function PersonalView() {
           <div className="flex flex-col items-center justify-center min-h-64 gap-6 text-center">
             <div className="w-24 h-24 rounded-3xl flex items-center justify-center"
               style={{ background:'rgba(var(--accent-rgb),.1)', border:'1.5px solid rgba(var(--accent-rgb),.2)' }}>
-              <svg width="44" height="44" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2">
+              <svg width="44" height="44" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2" aria-hidden="true">
                 <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
                 <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
               </svg>
@@ -343,7 +343,7 @@ export default function PersonalView() {
         <p className="view-kicker">Coach link / 12</p>
         <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color:'var(--text-1)' }}>Personal</h1>
         <p className="text-sm mt-0.5" style={{ color:'var(--text-3)' }}>
-          Acompanhamento com <span style={{ color:'var(--accent)', fontWeight:600 }}>{trainerData.user?.name?.split(' ')[0]}</span>
+          Acompanhamento com <span style={{ color:'var(--accent-text)', fontWeight:600 }}>{trainerData.user?.name?.split(' ')[0]}</span>
         </p>
       </div>
 
@@ -355,7 +355,7 @@ export default function PersonalView() {
               className="flex-1 py-2 rounded-lg text-xs font-semibold transition-all"
               style={{
                 background: subtab===st.id ? 'var(--card)' : 'transparent',
-                color:      subtab===st.id ? 'var(--accent)' : 'var(--text-3)',
+                color:      subtab===st.id ? 'var(--accent-text)' : 'var(--text-3)',
                 border:     subtab===st.id ? '1px solid var(--border)' : '1px solid transparent',
               }}>
               {st.label}

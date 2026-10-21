@@ -41,7 +41,7 @@ function InviteSuccessScreen({ trainerName, onContinue }) {
             style={{ background: 'rgba(var(--accent-rgb),.15)', animationDuration: '1.5s' }}/>
           <div className="w-24 h-24 rounded-full flex items-center justify-center relative"
             style={{ background: 'linear-gradient(135deg,rgba(var(--accent-rgb),.25),rgba(var(--accent-rgb),.1))', border: '2px solid rgba(var(--accent-rgb),.4)' }}>
-            <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2">
+            <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2" aria-hidden="true">
               <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
               <circle cx="9" cy="7" r="4"/>
               <path d="M23 21v-2a4 4 0 00-3-3.87"/>
@@ -68,7 +68,7 @@ function InviteSuccessScreen({ trainerName, onContinue }) {
               {trainerName?.charAt(0)?.toUpperCase() || '?'}
             </div>
             <div>
-              <p className="font-display text-xl uppercase tracking-wide" style={{ color: 'var(--accent)' }}>
+              <p className="font-display text-xl uppercase tracking-wide" style={{ color: 'var(--accent-text)' }}>
                 {trainerName}
               </p>
               <p className="text-xs font-semibold uppercase tracking-wider mt-0.5"
@@ -87,8 +87,8 @@ function InviteSuccessScreen({ trainerName, onContinue }) {
             ].map((txt, i) => (
               <div key={i} className="flex items-start gap-2">
                 <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                  style={{ background: 'rgba(74,222,128,.15)', border: '1px solid rgba(74,222,128,.3)' }}>
-                  <svg width="9" height="9" fill="none" viewBox="0 0 24 24" stroke="#4ade80" strokeWidth="3">
+                  style={{ background: 'rgba(var(--success-rgb), .15)', border: '1px solid rgba(var(--success-rgb), .3)' }}>
+                  <svg width="9" height="9" fill="none" viewBox="0 0 24 24" stroke="var(--success)" strokeWidth="3" aria-hidden="true">
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
                 </div>
@@ -135,11 +135,11 @@ function InviteBanner({ trainerInfo, loading: loadingInfo }) {
       <div className="flex items-center gap-2 mb-3">
         <div className="w-5 h-5 rounded-full flex items-center justify-center"
           style={{ background: 'rgba(var(--accent-rgb),.2)' }}>
-          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2.5">
+          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2.5" aria-hidden="true">
             <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .27h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/>
           </svg>
         </div>
-        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--accent)' }}>
+        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--accent-text)' }}>
           Convite de Personal Trainer
         </p>
       </div>
@@ -178,7 +178,7 @@ function InviteBanner({ trainerInfo, loading: loadingInfo }) {
           'Evolução e histórico compartilhados',
         ].map((txt, i) => (
           <div key={i} className="flex items-center gap-2">
-            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="#4ade80" strokeWidth="2.5">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--success)" strokeWidth="2.5" aria-hidden="true">
               <polyline points="20 6 9 17 4 12"/>
             </svg>
             <p className="text-xs" style={{ color: 'var(--text-3)' }}>{txt}</p>
@@ -346,7 +346,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-4xl relative z-10 animate-slide-up grid md:grid-cols-[.85fr_1fr] gap-6 items-center">
         <div className="hidden md:block px-5">
           <p className="f-label" style={{ color: 'var(--accent-2)' }}>Performance club</p>
-          <h2 className="font-display uppercase text-7xl leading-[.82] tracking-wide mb-5">Seu treino.<br/><span style={{ color: 'var(--accent)' }}>Seu ritmo.</span><br/>Seu resultado.</h2>
+          <h2 className="font-display uppercase text-7xl leading-[.82] tracking-wide mb-5">Seu treino.<br/><span style={{ color: 'var(--accent-text)' }}>Seu ritmo.</span><br/>Seu resultado.</h2>
           <p className="max-w-xs text-sm leading-relaxed" style={{ color: 'var(--text-3)' }}>Crie seu perfil e deixe cada sessão contar.</p>
         </div>
         <div>
@@ -372,35 +372,36 @@ export default function RegisterPage() {
 
           {error && (
             <div className="text-sm rounded-xl px-4 py-3"
-              style={{ background: 'rgba(248,113,113,.1)', border: '1px solid rgba(248,113,113,.3)', color: '#f87171' }}>
+              style={{ background: 'rgba(var(--danger-rgb), .1)', border: '1px solid rgba(var(--danger-rgb), .3)', color: 'var(--danger)' }}>
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
-              <label className="f-label">Nome completo</label>
-              <input className="f-input" placeholder="Seu nome" autoComplete="name" value={form.name}
+              <label className="f-label" htmlFor="register-name">Nome completo</label>
+              <input id="register-name" className="f-input" placeholder="Seu nome" autoComplete="name" value={form.name}
                 onChange={e => setForm(p => ({ ...p, name: e.target.value }))}/>
             </div>
             <div>
-              <label className="f-label">Email</label>
-              <input type="email" className="f-input" placeholder="email@exemplo.com" autoComplete="email" value={form.email}
+              <label className="f-label" htmlFor="register-email">Email</label>
+              <input id="register-email" type="email" className="f-input" placeholder="email@exemplo.com" autoComplete="email" value={form.email}
                 onChange={e => setForm(p => ({ ...p, email: e.target.value }))}/>
             </div>
             <div>
-              <label className="f-label">Senha</label>
-              <input type="password" className="f-input" placeholder="Mínimo 6 caracteres" autoComplete="new-password" value={form.password}
+              <label className="f-label" htmlFor="register-password">Senha</label>
+              <input id="register-password" type="password" className="f-input" placeholder="Mínimo 6 caracteres" autoComplete="new-password" value={form.password}
                 onChange={e => setForm(p => ({ ...p, password: e.target.value }))}/>
             </div>
 
             {!hasInvite && (
               <div>
-                <label className="f-label">Você é</label>
-                <div className="grid grid-cols-2 gap-2">
+                <span className="f-label" id="register-role-label">Você é</span>
+                <div className="grid grid-cols-2 gap-2" role="group" aria-labelledby="register-role-label">
                   {[['student','Aluno'],['personal','Personal']].map(([val, label]) => (
                     <button key={val} type="button"
                       onClick={() => setForm(p => ({ ...p, role: val }))}
+                      aria-pressed={form.role === val}
                       className="glass-card p-3 text-center text-sm font-semibold transition-all active:scale-[.98]"
                       style={{
                         borderColor: form.role === val ? 'var(--accent)' : 'var(--border)',

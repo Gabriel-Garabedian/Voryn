@@ -24,7 +24,7 @@ function AuthCard({ children, title, sub }) {
       <div className="w-full max-w-4xl relative z-10 animate-slide-up grid md:grid-cols-[.85fr_1fr] gap-6 items-center">
         <div className="hidden md:block px-5">
           <p className="f-label" style={{ color: 'var(--accent-2)' }}>Performance club</p>
-          <h2 className="font-display uppercase text-7xl leading-[.82] tracking-wide mb-5">Treine.<br/><span style={{ color: 'var(--accent)' }}>Registre.</span><br/>Evolua.</h2>
+          <h2 className="font-display uppercase text-7xl leading-[.82] tracking-wide mb-5">Treine.<br/><span style={{ color: 'var(--accent-text)' }}>Registre.</span><br/>Evolua.</h2>
           <p className="max-w-xs text-sm leading-relaxed" style={{ color: 'var(--text-3)' }}>O painel de treino para quem transforma consistência em resultado.</p>
           <div className="mt-8 flex gap-2">
             {['FOCO', 'CARGA', 'RITMO'].map(item => <span key={item} className="f-badge f-badge-accent">{item}</span>)}
@@ -52,7 +52,7 @@ function ErrorBox({ msg }) {
   if (!msg) return null
   return (
     <div className="text-sm rounded-xl px-4 py-3 scale-in"
-      style={{ background: 'rgba(248,113,113,.1)', border: '1px solid rgba(248,113,113,.3)', color: '#f87171' }}>
+      style={{ background: 'rgba(var(--danger-rgb), .1)', border: '1px solid rgba(var(--danger-rgb), .3)', color: 'var(--danger)' }}>
       {msg}
     </div>
   )
@@ -81,21 +81,23 @@ export function LoginPage() {
     <AuthCard title="Bem-vindo de volta" sub="Faça login para continuar">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
-          <label className="f-label">Email</label>
-          <input type="email" className="f-input" placeholder="seu@email.com" autoComplete="email"
+          <label className="f-label" htmlFor="login-email">Email</label>
+          <input id="login-email" type="email" className="f-input" placeholder="seu@email.com" autoComplete="email"
             value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} required/>
         </div>
         <div className="space-y-1.5">
-          <label className="f-label">Senha</label>
+          <label className="f-label" htmlFor="login-password">Senha</label>
           <div style={{ position: 'relative' }}>
-            <input type={showPw ? 'text' : 'password'} className="f-input" autoComplete="current-password"
+            <input id="login-password" type={showPw ? 'text' : 'password'} className="f-input" autoComplete="current-password"
               style={{ paddingRight: 48 }} placeholder="••••••••"
               value={form.password}
               onChange={e => setForm(p => ({ ...p, password: e.target.value }))} required/>
             <button type="button" onClick={() => setShowPw(!showPw)}
+              aria-label={showPw ? 'Ocultar senha' : 'Mostrar senha'}
+              aria-pressed={showPw}
               style={{ position:'absolute', right:14, top:'50%', transform:'translateY(-50%)',
                 background:'none', border:'none', cursor:'pointer', color:'var(--muted)' }}>
-              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 {showPw
                   ? <><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></>
                   : <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>

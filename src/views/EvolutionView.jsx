@@ -14,7 +14,7 @@ import {
 // de destaque escolhida pelo usuário (recurso pago — ver AccentColorPicker
 // em ProfileView.jsx). Recharts renderiza via SVG real do DOM, então
 // var(--accent) é resolvida normalmente pelo navegador.
-const AC = 'var(--accent)'
+const AC  = 'var(--accent)'
 const AC2 = 'var(--accent-2)'
 
 function CustomTooltip({ active, payload, label }) {
@@ -172,7 +172,7 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
               className="flex-1 py-2 rounded-lg text-xs font-semibold transition-all"
               style={{
                 background: tab===id ? 'var(--card)' : 'transparent',
-                color:      tab===id ? 'var(--accent)' : 'var(--text-3)',
+                color:      tab===id ? 'var(--accent-text)' : 'var(--text-3)',
                 border:     tab===id ? '1px solid var(--border)' : '1px solid transparent',
               }}>
               {lbl}
@@ -264,7 +264,7 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
               { label:'Melhor semana',          value: weeklyVolume.length ? weeklyVolume.reduce((a,b)=>a.volume>b.volume?a:b).week : '—' },
             ].map(s => (
               <div key={s.label} className="f-card p-3 text-center">
-                <div className="font-display text-xl" style={{ color: 'var(--accent)' }}>{s.value}</div>
+                <div className="font-display text-xl" style={{ color: 'var(--accent-text)' }}>{s.value}</div>
                 <div className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>{s.label}</div>
               </div>
             ))}
@@ -295,7 +295,7 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
               { label:'Média/mês',        value: monthlyFreq.length ? Math.round(monthlyFreq.reduce((a,m)=>a+m.treinos,0)/monthlyFreq.length) : 0 },
             ].map(s => (
               <div key={s.label} className="f-card p-3 text-center">
-                <div className="font-display text-2xl" style={{ color: 'var(--accent)' }}>{s.value}</div>
+                <div className="font-display text-2xl" style={{ color: 'var(--accent-text)' }}>{s.value}</div>
                 <div className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>{s.label}</div>
               </div>
             ))}

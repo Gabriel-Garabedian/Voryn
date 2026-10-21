@@ -16,7 +16,8 @@ import MuscleTargetImage from '@/components/MuscleTargetImage'
 import PlateCalculator from '@/components/PlateCalculator'
 
 const DAYS_FULL = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
-const AC = 'var(--accent)'
+const AC  = 'var(--accent)'
+const ACT = 'var(--accent-text)'
 const genId = () => Math.random().toString(36).slice(2, 9)
 const SET_TYPES = [
   { value: 'working', label: 'Efetiva' },
@@ -113,14 +114,14 @@ function RestTimer({ seconds, endsAt, onSkip }) {
       className="workout-rest-timer"
       onClick={onSkip}
       aria-label={`Descanso, ${rem} segundos. Toque para pular`}
-      style={{ borderColor: warn ? '#ef4444' : 'var(--accent)' }}>
+      style={{ borderColor: warn ? 'var(--danger)' : 'var(--accent)' }}>
       <span className="workout-rest-timer__icon" aria-hidden="true">◷</span>
       <span className="workout-rest-timer__copy">
         <strong>{rem > 0 ? `DESCANSO ${rem}S` : 'PRÓXIMA SÉRIE'}</strong>
         <small>{rem > 0 ? 'TOQUE P/ PULAR' : 'TOQUE PARA CONTINUAR'}</small>
       </span>
       <span className="workout-rest-timer__progress" aria-hidden="true">
-        <span style={{ width: `${progress}%` }} />
+        <span aria-hidden="true" style={{ width: `${progress}%` }} />
       </span>
       <span className="workout-rest-timer__skip" aria-hidden="true">PULAR</span>
     </button>,
@@ -172,12 +173,12 @@ function NoWorkout({ user, onStart }) {
             style={{ borderColor: 'rgba(var(--accent-rgb),.4)', background: 'rgba(var(--accent-rgb),.05)' }}>
             <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
               style={{ background: AC, boxShadow: '0 0 20px rgba(var(--accent-rgb),.4)' }}>
-              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2.5">
+              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2.5" aria-hidden="true">
                 <polygon points="5 3 19 12 5 21 5 3"/>
               </svg>
             </div>
             <div>
-              <p className="font-display text-lg uppercase tracking-wide" style={{ color: AC }}>
+              <p className="font-display text-lg uppercase tracking-wide" style={{ color: ACT }}>
                 {todayPlan.name || DAYS_FULL[today]}
               </p>
               <p className="text-sm" style={{ color: 'var(--text-3)' }}>
@@ -200,7 +201,7 @@ function NoWorkout({ user, onStart }) {
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                   style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
                   <svg width="20" height="20" fill="none" viewBox="0 0 24 24"
-                    stroke="var(--muted)" strokeWidth="2">
+                    stroke="var(--muted)" strokeWidth="2" aria-hidden="true">
                     <polygon points="5 3 19 12 5 21 5 3"/>
                   </svg>
                 </div>
@@ -668,7 +669,7 @@ export default function WorkoutView() {
           </svg>
         </button>
         <div className="flex items-center gap-1.5" aria-live="off">
-          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke={AC} strokeWidth="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke={ACT} strokeWidth="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
           <span className="font-display text-lg tracking-wide" style={{ color: 'var(--text-2)' }}>{fmt(elapsed)}</span>
         </div>
         <button
@@ -685,7 +686,7 @@ export default function WorkoutView() {
       {/* Header */}
       <div className="native-header px-4 pt-2 pb-4 glass-panel"
         style={{ borderRadius: '0 0 var(--radius-xl) var(--radius-xl)' }}>
-        <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: AC }}>
+        <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: ACT }}>
           Treino de hoje
         </p>
         <h2 className="font-display text-2xl uppercase tracking-wide leading-tight mb-3"
@@ -706,13 +707,13 @@ export default function WorkoutView() {
           <span className="text-xs whitespace-nowrap" style={{ color: 'var(--text-3)' }}>
             {doneSets}/{totalSets} séries
           </span>
-          <span className="font-display text-sm whitespace-nowrap" style={{ color: AC }}>
+          <span className="font-display text-sm whitespace-nowrap" style={{ color: ACT }}>
             {totalSets > 0 ? Math.round((doneSets / totalSets) * 100) : 0}%
           </span>
           {doneSets < totalSets && (
             <button onClick={completeAllWorkout}
               className="text-xs font-semibold whitespace-nowrap flex-shrink-0"
-              style={{ color: AC }}>
+              style={{ color: ACT }}>
               marcar tudo
             </button>
           )}
@@ -734,7 +735,7 @@ export default function WorkoutView() {
           ))}
           <button type="button" onClick={() => setShowPlateCalculator(true)}
             className="ml-auto px-3 py-1 rounded-lg text-xs font-semibold"
-            style={{ color: AC, border: '1px solid rgba(var(--accent-rgb),.35)', background: 'rgba(var(--accent-rgb),.06)' }}>
+            style={{ color: ACT, border: '1px solid rgba(var(--accent-rgb),.35)', background: 'rgba(var(--accent-rgb),.06)' }}>
             anilhas
           </button>
         </div>
@@ -765,7 +766,7 @@ export default function WorkoutView() {
                       border: `1px solid ${exDone ? AC : 'var(--border)'}`,
                     }}>
                     {exDone
-                      ? <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="3">
+                      ? <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="3" aria-hidden="true">
                           <polyline points="20 6 9 17 4 12"/>
                         </svg>
                       : <span className="font-display text-xs" style={{ color: 'var(--text-3)' }}>{ei + 1}</span>
@@ -773,11 +774,11 @@ export default function WorkoutView() {
                   </div>
                   <MuscleTargetImage muscle={ex.muscle} secondaryMuscles={ex.secondaryMuscles} compact showLabel={false} />
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm truncate" style={{ color: exDone ? AC : 'var(--text-1)' }}>{ex.name}</p>
+                    <p className="font-semibold text-sm truncate" style={{ color: exDone ? ACT : 'var(--text-1)' }}>{ex.name}</p>
                     <p className="text-xs" style={{ color: 'var(--text-3)' }}>{doneCount} de {ex.sets.length} séries concluídas</p>
                     <span className="muscle-target-chip">Alvo: {ex.muscle || 'não informado'}</span>
                   </div>
-                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-3)" strokeWidth="2" style={{ flexShrink: 0 }}>
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--text-3)" strokeWidth="2" style={{ flexShrink: 0 }} aria-hidden="true">
                     <polyline points="9 18 15 12 9 6"/>
                   </svg>
                 </button>
@@ -803,7 +804,7 @@ export default function WorkoutView() {
                     border: `1px solid ${exDone ? AC : 'var(--border)'}`,
                   }}>
                   {exDone
-                    ? <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="3">
+                    ? <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="3" aria-hidden="true">
                         <polyline points="20 6 9 17 4 12"/>
                       </svg>
                     : <span className="font-display text-xs" style={{ color: 'var(--text-3)' }}>{ei + 1}</span>
@@ -815,21 +816,21 @@ export default function WorkoutView() {
                     setDetailExercise(libMatch || { name: ex.name, muscle: ex.muscle || 'Outro', equipment: 'Livre', type: 'compound' })
                   }}
                   className="font-semibold text-sm flex-1 text-left flex items-center gap-1.5"
-                  style={{ color: exDone ? AC : 'var(--text-1)' }}>
+                  style={{ color: exDone ? ACT : 'var(--text-1)' }}>
                   {ex.name}
-                  <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2" style={{ flexShrink: 0 }}>
+                  <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2" style={{ flexShrink: 0 }} aria-hidden="true">
                     <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
                   </svg>
                 </button>
                 <span className="muscle-target-chip muscle-target-chip--header">Alvo: {ex.muscle || 'não informado'}</span>
-                <span className="text-xs font-semibold" style={{ color: exDone ? AC : 'var(--text-3)' }}>
+                <span className="text-xs font-semibold" style={{ color: exDone ? ACT : 'var(--text-3)' }}>
                   {exDone ? 'Concluído ✓' : `${doneCount}/${ex.sets.length}`}
                 </span>
                 {!exDone && (
                   <button onClick={() => completeAllSets(ei)} aria-label="Marcar todas as séries como concluídas"
                     title="Marcar todas como concluídas"
                     className="flex-shrink-0 p-1" style={{ color: 'var(--text-3)' }}>
-                    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                       <path d="M9 11l3 3L22 4"/>
                       <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
                     </svg>
@@ -840,7 +841,7 @@ export default function WorkoutView() {
                 {workout.exercises.length > 1 && (
                   <button onClick={() => setExpandedEx(-1)} aria-label="Recolher exercício"
                     className="flex-shrink-0 p-1" style={{ color: 'var(--text-3)' }}>
-                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                       <polyline points="18 15 12 9 6 15"/>
                     </svg>
                   </button>
@@ -893,7 +894,7 @@ export default function WorkoutView() {
                         style={{
                           background: set.done ? 'rgba(var(--accent-rgb),.15)' : 'var(--surface)',
                           border: '1px solid var(--border)',
-                          color: set.done ? AC : 'var(--text-3)',
+                          color: set.done ? ACT : 'var(--text-3)',
                         }}>
                         {si + 1}
                       </div>
@@ -910,7 +911,7 @@ export default function WorkoutView() {
                         aria-label={`Detalhes da série ${si + 1}`}
                         aria-expanded={Boolean(openSetMeta[`${ei}-${si}`])}
                         onClick={() => setOpenSetMeta(current => ({ ...current, [`${ei}-${si}`]: !current[`${ei}-${si}`] }))}
-                        style={{ color: set.type !== 'working' || set.rpe || set.rir ? AC : 'var(--text-3)', border: '1px solid var(--border)' }}>
+                        style={{ color: set.type !== 'working' || set.rpe || set.rir ? ACT : 'var(--text-3)', border: '1px solid var(--border)' }}>
                         <span className="text-xs font-bold" aria-hidden="true">⋯</span>
                       </button>
                       <button onClick={() => toggleDone(ei, si)}
@@ -922,7 +923,7 @@ export default function WorkoutView() {
                         }}>
                         {set.done && (
                           <svg width="14" height="14" fill="none" viewBox="0 0 24 24"
-                            stroke="white" strokeWidth="3">
+                            stroke="white" strokeWidth="3" aria-hidden="true">
                             <polyline points="20 6 9 17 4 12"/>
                           </svg>
                         )}
@@ -934,7 +935,7 @@ export default function WorkoutView() {
                         <button onClick={() => removeSet(ei, si)} aria-label="Remover série"
                           className="w-6 h-6 rounded-md flex items-center justify-center mx-auto"
                           style={{ color: 'var(--border)' }}>
-                          <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                             <polyline points="3 6 5 6 21 6"/>
                             <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
                           </svg>
@@ -969,7 +970,7 @@ export default function WorkoutView() {
                   className="w-full mt-3 py-2 rounded-lg text-xs flex items-center justify-center gap-1 transition-all"
                   style={{ border: '1px dashed var(--border)', color: 'rgba(var(--accent-rgb),.35)' }}>
                   <svg width="12" height="12" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" strokeWidth="2">
+                    stroke="currentColor" strokeWidth="2" aria-hidden="true">
                     <line x1="12" y1="5" x2="12" y2="19"/>
                     <line x1="5" y1="12" x2="19" y2="12"/>
                   </svg>
@@ -993,7 +994,7 @@ export default function WorkoutView() {
                   <button onClick={() => setOpenNotes(o => ({ ...o, [ei]: true }))}
                     className="w-full mt-2 py-1.5 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all"
                     style={{ color: 'var(--text-3)' }}>
-                    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                       <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
                       <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
                     </svg>
@@ -1012,9 +1013,9 @@ export default function WorkoutView() {
         <button onClick={() => setShowExPicker(true)}
           className="w-full py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition-all"
           style={{ border: '1px dashed rgba(var(--accent-rgb),.3)', color: 'rgba(var(--accent-rgb),.5)' }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(var(--accent-rgb),.6)'; e.currentTarget.style.color='var(--accent)' }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(var(--accent-rgb),.6)'; e.currentTarget.style.color='var(--accent-text)' }}
           onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(var(--accent-rgb),.3)'; e.currentTarget.style.color='rgba(var(--accent-rgb),.5)' }}>
-          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
           </svg>
           Adicionar exercício
@@ -1051,14 +1052,14 @@ export default function WorkoutView() {
             <button
               onClick={() => { activeWorkoutService.clear(); window.dispatchEvent(new Event('voryn:workout_active_change')); setWorkout(null); navigate('/app') }}
               className="w-full text-center text-xs transition-colors"
-              style={{ color: 'rgba(239,68,68,.4)' }}>
+              style={{ color: 'rgba(var(--danger-rgb), .4)' }}>
               Cancelar treino (sem salvar)
             </button>
           </div>
         ) : (
           <Button size="xl" onClick={() => setConfirm(true)}>
             <svg width="18" height="18" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor" strokeWidth="2.5">
+              stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
               <polyline points="20 6 9 17 4 12"/>
             </svg>
             Finalizar Treino

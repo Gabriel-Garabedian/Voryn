@@ -20,7 +20,7 @@ function LogCard({ log }) {
         {/* Date box */}
         <div className="w-12 h-12 rounded-xl flex flex-col items-center justify-center flex-shrink-0"
           style={{ background: 'rgba(var(--accent-rgb),.1)', border: '1px solid rgba(var(--accent-rgb),.2)' }}>
-          <span className="font-display text-lg leading-none" style={{ color: 'var(--accent)' }}>
+          <span className="font-display text-lg leading-none" style={{ color: 'var(--accent-text)' }}>
             {log.date?.slice(8)}
           </span>
           <span className="text-xs uppercase" style={{ color: 'var(--text-3)' }}>
@@ -41,14 +41,14 @@ function LogCard({ log }) {
             </span>
             {log.total_volume > 0 && <>
               <span style={{ color: 'var(--border)' }}>·</span>
-              <span className="text-xs" style={{ color: 'var(--accent)' }}>
+              <span className="text-xs" style={{ color: 'var(--accent-text)' }}>
                 {formatVolume(log.total_volume)}
               </span>
             </>}
           </div>
           {log.cardio && (
             <div className="mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs max-w-full truncate"
-              style={{ background: 'rgba(var(--accent-rgb),.1)', color: 'var(--accent)', border: '1px solid rgba(var(--accent-rgb),.2)' }}>
+              style={{ background: 'rgba(var(--accent-rgb),.1)', color: 'var(--accent-text)', border: '1px solid rgba(var(--accent-rgb),.2)' }}>
               {summarizeCardio(log.cardio)}
             </div>
           )}
@@ -57,7 +57,7 @@ function LogCard({ log }) {
         {/* Chevron */}
         <svg width="16" height="16" fill="none" viewBox="0 0 24 24"
           stroke="var(--muted)" strokeWidth="2"
-          style={{ transform: open ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform .2s', flexShrink: 0 }}>
+          style={{ transform: open ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform .2s', flexShrink: 0 }} aria-hidden="true">
           <path d="M6 9l6 6 6-6"/>
         </svg>
       </button>
@@ -74,7 +74,7 @@ function LogCard({ log }) {
               { label:'Volume',   value: formatVolume(log.total_volume) },
             ].map(s => (
               <div key={s.label} className="text-center py-2 rounded-lg" style={{ background: 'var(--surface)' }}>
-                <div className="font-display text-base" style={{ color: 'var(--accent)' }}>{s.value}</div>
+                <div className="font-display text-base" style={{ color: 'var(--accent-text)' }}>{s.value}</div>
                 <div className="text-xs" style={{ color: 'var(--text-3)' }}>{s.label}</div>
               </div>
             ))}
@@ -92,7 +92,7 @@ function LogCard({ log }) {
                     className="text-xs px-2 py-1 rounded-lg"
                     style={{
                       background: set.done ? 'rgba(var(--accent-rgb),.12)' : 'var(--surface)',
-                      color:      set.done ? 'var(--accent)'         : 'var(--text-3)',
+                      color:      set.done ? 'var(--accent-text)'         : 'var(--text-3)',
                       border:     `1px solid ${set.done ? 'rgba(var(--accent-rgb),.25)' : 'var(--border)'}`,
                     }}>
                     {set.weight ? `${set.weight}kg` : ''}{set.weight && set.reps ? ' × ' : ''}{set.reps ? `${set.reps}` : '—'}
@@ -127,7 +127,7 @@ function LogCard({ log }) {
                     return (
                       <div key={f.key} className="text-xs px-2 py-1 rounded-lg"
                         style={{ background: 'var(--surface)', color: 'var(--text-2)' }}>
-                        {f.label}: <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{display}</span>
+                        {f.label}: <span style={{ color: 'var(--accent-text)', fontWeight: 600 }}>{display}</span>
                       </div>
                     )
                   })}
@@ -222,14 +222,14 @@ export default function HistoryView() {
           <span className="flex-1 text-xs" style={{ color: 'var(--text-2)' }}>
             Mostrando só os últimos {historyDays} dias. Assine para ver todo o seu histórico.
           </span>
-          <span className="text-xs font-semibold flex-shrink-0" style={{ color: 'var(--accent)' }}>Assinar</span>
+          <span className="text-xs font-semibold flex-shrink-0" style={{ color: 'var(--accent-text)' }}>Assinar</span>
         </button>
       )}
 
       {/* Search */}
       <div className="relative mb-3">
         <svg className="absolute left-3 top-1/2 -translate-y-1/2" width="16" height="16"
-          fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2">
+          fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2" aria-hidden="true">
           <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
         </svg>
         <input className="f-input pl-9" placeholder="Buscar treino ou exercício..."
@@ -260,7 +260,7 @@ export default function HistoryView() {
             { label: 'Volume',   value: formatVolume(totalVolume) },
           ].map(s => (
             <div key={s.label} className="f-card p-3 text-center">
-              <div className="font-display text-xl" style={{ color: 'var(--accent)' }}>{s.value}</div>
+              <div className="font-display text-xl" style={{ color: 'var(--accent-text)' }}>{s.value}</div>
               <div className="text-xs" style={{ color: 'var(--text-3)' }}>{s.label}</div>
             </div>
           ))}

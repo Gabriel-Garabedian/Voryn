@@ -30,7 +30,7 @@ export default function PlateCalculator({ onClose }) {
       <div className="relative w-full max-w-md p-5 rounded-t-3xl sm:rounded-3xl" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-xs uppercase tracking-widest" style={{ color: 'var(--accent)' }}>Ferramenta</p>
+            <p className="text-xs uppercase tracking-widest" style={{ color: 'var(--accent-text)' }}>Ferramenta</p>
             <h2 id="plate-title" className="font-display text-xl uppercase" style={{ color: 'var(--text-1)' }}>Calculadora de anilhas</h2>
           </div>
           <button onClick={onClose} className="w-11 h-11 rounded-xl" style={{ color: 'var(--text-3)', border: '1px solid var(--border)' }} aria-label="Fechar">×</button>
@@ -50,11 +50,11 @@ export default function PlateCalculator({ onClose }) {
           {!result ? (
             <p className="text-sm" style={{ color: 'var(--text-3)' }}>Informe o peso alvo para calcular cada lado.</p>
           ) : result.remaining > 0.01 ? (
-            <p className="text-sm" style={{ color: '#f59e0b' }}>Não foi possível montar exatamente. Faltam {result.remaining.toFixed(2)} kg por lado.</p>
+            <p className="text-sm" style={{ color: 'var(--warning)' }}>Não foi possível montar exatamente. Faltam {result.remaining.toFixed(2)} kg por lado.</p>
           ) : (
             <>
               <p className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>Cada lado</p>
-              <p className="mt-1 font-display text-2xl" style={{ color: 'var(--accent)' }}>{result.selected.join(' + ')} kg</p>
+              <p className="mt-1 font-display text-2xl" style={{ color: 'var(--accent-text)' }}>{result.selected.join(' + ')} kg</p>
               <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>Total: {target} kg incluindo a barra</p>
             </>
           )}

@@ -25,10 +25,10 @@ function formatLastWorkout(dateStr) {
   const date = new Date(dateStr + 'T12:00')
   const today = new Date(); today.setHours(12, 0, 0, 0)
   const diffDays = Math.round((today - date) / 86400000)
-  if (diffDays === 0) return { text: 'Treinou hoje', color: '#4ade80' }
-  if (diffDays === 1) return { text: 'Treinou ontem', color: '#4ade80' }
+  if (diffDays === 0) return { text: 'Treinou hoje', color: 'var(--success)' }
+  if (diffDays === 1) return { text: 'Treinou ontem', color: 'var(--success)' }
   if (diffDays <= 6)  return { text: `Treinou há ${diffDays} dias`, color: 'var(--text-3)' }
-  return { text: `Sem treinar há ${diffDays} dias`, color: '#f87171' }
+  return { text: `Sem treinar há ${diffDays} dias`, color: 'var(--danger)' }
 }
 
 function StudentCard({ student, onSelect, inactive, pendingAssessment, lastWorkoutDate }) {
@@ -39,17 +39,17 @@ function StudentCard({ student, onSelect, inactive, pendingAssessment, lastWorko
   return (
     <button onClick={() => onSelect(student)}
       className="w-full f-card p-4 text-left flex items-center gap-4 transition-all"
-      style={inactive ? { borderColor:'rgba(248,113,113,.25)', background:'rgba(248,113,113,.03)' } : {}}
+      style={inactive ? { borderColor:'rgba(var(--danger-rgb), .25)', background:'rgba(var(--danger-rgb), .03)' } : {}}
       onMouseEnter={e => e.currentTarget.style.borderColor='rgba(var(--accent-rgb),.4)'}
-      onMouseLeave={e => e.currentTarget.style.borderColor = inactive ? 'rgba(248,113,113,.25)' : 'var(--border)'}>
+      onMouseLeave={e => e.currentTarget.style.borderColor = inactive ? 'rgba(var(--danger-rgb), .25)' : 'var(--border)'}>
       <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 relative"
         style={{ background:'rgba(var(--accent-rgb),.1)', border:'1px solid rgba(var(--accent-rgb),.2)' }}>
-        <span className="font-display text-xl" style={{ color:'var(--accent)' }}>
+        <span className="font-display text-xl" style={{ color:'var(--accent-text)' }}>
           {name.charAt(0).toUpperCase()}
         </span>
         {inactive && (
           <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center"
-            style={{ background:'#f87171', fontSize:8, color:'#fff', fontWeight:700 }}>!</div>
+            style={{ background:'var(--danger-solid)', fontSize:8, color:'var(--on-danger)', fontWeight:700 }}>!</div>
         )}
       </div>
       <div className="flex-1 min-w-0">
@@ -58,7 +58,7 @@ function StudentCard({ student, onSelect, inactive, pendingAssessment, lastWorko
         <div className="flex flex-wrap items-center gap-2 mt-0.5">
           {pendingAssessment && (
             <span className="text-xs font-semibold flex items-center gap-1" style={{ color:'var(--accent-2)' }}>
-              <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
                 <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
               </svg>
               Avaliação pendente
@@ -66,7 +66,7 @@ function StudentCard({ student, onSelect, inactive, pendingAssessment, lastWorko
           )}
         </div>
       </div>
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2" aria-hidden="true">
         <path d="M9 18l6-6-6-6"/>
       </svg>
     </button>
@@ -120,13 +120,13 @@ function StudentDetail({ student, trainerId, onBack }) {
       {/* Header with back + PDF export */}
       <div className="flex items-center justify-between px-4 pt-4 mb-4">
         <button onClick={onBack} className="flex items-center gap-2 text-sm" style={{ color:'var(--text-3)' }}>
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
           Voltar
         </button>
         <div className="relative group">
           <button className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl"
-            style={{ background:'rgba(var(--accent-rgb),.1)', color:'var(--accent)', border:'1px solid rgba(var(--accent-rgb),.25)' }}>
-            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            style={{ background:'rgba(var(--accent-rgb),.1)', color:'var(--accent-text)', border:'1px solid rgba(var(--accent-rgb),.25)' }}>
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
             </svg>
             Exportar PDF
@@ -155,7 +155,7 @@ function StudentDetail({ student, trainerId, onBack }) {
         <div className="f-card p-4 flex items-center gap-4">
           <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
             style={{ background:'rgba(var(--accent-rgb),.1)', border:'1px solid rgba(var(--accent-rgb),.2)' }}>
-            <span className="font-display text-2xl" style={{ color:'var(--accent)' }}>{name.charAt(0).toUpperCase()}</span>
+            <span className="font-display text-2xl" style={{ color:'var(--accent-text)' }}>{name.charAt(0).toUpperCase()}</span>
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-display text-xl uppercase tracking-wide" style={{ color:'var(--text-1)' }}>{name}</p>
@@ -165,8 +165,8 @@ function StudentDetail({ student, trainerId, onBack }) {
             <a href={student.spotify_url} target="_blank" rel="noopener noreferrer"
               title="Ver playlist de treino no Spotify"
               className="flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center"
-              style={{ background: '#1DB95420' }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#1DB954">
+              style={{ background: 'rgba(var(--spotify-rgb),.125)' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--spotify)" aria-hidden="true">
                 <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
               </svg>
             </a>
@@ -182,7 +182,7 @@ function StudentDetail({ student, trainerId, onBack }) {
               className="flex-shrink-0 flex-1 py-2 rounded-lg text-xs font-semibold transition-all"
               style={{
                 background: tab===t ? 'var(--card)' : 'transparent',
-                color:      tab===t ? 'var(--accent)' : 'var(--text-3)',
+                color:      tab===t ? 'var(--accent-text)' : 'var(--text-3)',
                 border:     tab===t ? '1px solid var(--border)' : '1px solid transparent',
                 minWidth:   60,
               }}>
@@ -283,11 +283,11 @@ function ChatTrainer({ studentId, trainerId }) {
         })}
       </div>
       <div className="flex gap-2 pt-2" style={{ borderTop:'1px solid var(--border)' }}>
-        <input className="f-input flex-1" placeholder="Mensagem para o aluno..." value={input}
+        <input className="f-input flex-1" aria-label="Mensagem para o aluno" placeholder="Mensagem para o aluno..." value={input}
           onChange={e => setInput(e.target.value)} onKeyDown={e => e.key==='Enter' && send()}/>
-        <button onClick={send} className="w-11 h-11 rounded-xl flex items-center justify-center"
+        <button onClick={send} aria-label="Enviar mensagem" className="w-11 h-11 rounded-xl flex items-center justify-center"
           style={{ background:'var(--accent)' }}>
-          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2" aria-hidden="true">
             <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
           </svg>
         </button>
@@ -347,25 +347,25 @@ function GoalsTrainer({ studentId }) {
       <div className="grid grid-cols-2 gap-3">
         {weeklyGoal?.weekly_goal && (
           <div className="f-card p-3 text-center">
-            <div className="font-display text-xl" style={{ color: 'var(--accent)' }}>{weeklyGoal.weekly_goal}x</div>
+            <div className="font-display text-xl" style={{ color: 'var(--accent-text)' }}>{weeklyGoal.weekly_goal}x</div>
             <div className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>Treinos/semana (meta)</div>
           </div>
         )}
         {goals?.weekly_sessions && (
           <div className="f-card p-3 text-center">
-            <div className="font-display text-xl" style={{ color: 'var(--accent)' }}>{goals.weekly_sessions}x</div>
+            <div className="font-display text-xl" style={{ color: 'var(--accent-text)' }}>{goals.weekly_sessions}x</div>
             <div className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>Sessões planejadas</div>
           </div>
         )}
         {goals?.target_weight && (
           <div className="f-card p-3 text-center">
-            <div className="font-display text-xl" style={{ color: 'var(--accent)' }}>{goals.target_weight}kg</div>
+            <div className="font-display text-xl" style={{ color: 'var(--accent-text)' }}>{goals.target_weight}kg</div>
             <div className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>Peso alvo</div>
           </div>
         )}
         {goals?.target_body_fat && (
           <div className="f-card p-3 text-center">
-            <div className="font-display text-xl" style={{ color: 'var(--accent)' }}>{goals.target_body_fat}%</div>
+            <div className="font-display text-xl" style={{ color: 'var(--accent-text)' }}>{goals.target_body_fat}%</div>
             <div className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>% Gordura alvo</div>
           </div>
         )}
@@ -411,8 +411,8 @@ function AssessmentsTrainer({ studentId, trainerId }) {
         <div key={a.id} className="f-card p-4">
           <p className="font-semibold text-sm mb-2" style={{ color:'var(--text-1)' }}>{new Date(a.date+'T12:00').toLocaleDateString('pt-BR')}</p>
           <div className="flex gap-3">
-            {a.weight && <div className="text-center flex-1"><p className="font-display text-xl" style={{ color:'var(--accent)' }}>{a.weight}kg</p><p className="text-xs" style={{ color:'var(--text-3)' }}>Peso</p></div>}
-            {a.body_fat && <div className="text-center flex-1"><p className="font-display text-xl" style={{ color:'var(--accent)' }}>{a.body_fat}%</p><p className="text-xs" style={{ color:'var(--text-3)' }}>Gordura</p></div>}
+            {a.weight && <div className="text-center flex-1"><p className="font-display text-xl" style={{ color:'var(--accent-text)' }}>{a.weight}kg</p><p className="text-xs" style={{ color:'var(--text-3)' }}>Peso</p></div>}
+            {a.body_fat && <div className="text-center flex-1"><p className="font-display text-xl" style={{ color:'var(--accent-text)' }}>{a.body_fat}%</p><p className="text-xs" style={{ color:'var(--text-3)' }}>Gordura</p></div>}
           </div>
           {a.notes && <p className="text-sm mt-2 italic" style={{ color:'var(--text-3)' }}>&ldquo;{a.notes}&rdquo;</p>}
         </div>
@@ -471,12 +471,12 @@ function InactiveStudentAlert({ students, inactiveStudentIds, lastWorkoutMap, on
 
   return (
     <div className="f-card p-4 animate-slide-up"
-      style={{ borderColor:'rgba(248,113,113,.3)', background:'rgba(248,113,113,.04)' }}>
+      style={{ borderColor:'rgba(var(--danger-rgb), .3)', background:'rgba(var(--danger-rgb), .04)' }}>
       <div className="flex items-center gap-2 mb-3">
-        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#f87171" strokeWidth="2">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="var(--danger)" strokeWidth="2" aria-hidden="true">
           <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
-        <p className="text-sm font-semibold" style={{ color:'#f87171' }}>
+        <p className="text-sm font-semibold" style={{ color:'var(--danger)' }}>
           {inactiveStudents.length} aluno{inactiveStudents.length !== 1 ? 's' : ''} sem treinar há +7 dias
         </p>
       </div>
@@ -484,10 +484,10 @@ function InactiveStudentAlert({ students, inactiveStudentIds, lastWorkoutMap, on
         {inactiveStudents.slice(0, 3).map(s => (
           <button key={s.id} onClick={() => onSelect(s)}
             className="w-full flex items-center gap-3 text-left py-2 px-1 rounded-lg transition-all"
-            onMouseEnter={e => e.currentTarget.style.background='rgba(248,113,113,.08)'}
+            onMouseEnter={e => e.currentTarget.style.background='rgba(var(--danger-rgb), .08)'}
             onMouseLeave={e => e.currentTarget.style.background='transparent'}>
             <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ background:'rgba(248,113,113,.15)', fontSize:12, fontWeight:700, color:'#f87171' }}>
+              style={{ background:'rgba(var(--danger-rgb), .15)', fontSize:12, fontWeight:700, color:'var(--danger)' }}>
               {(s.name || '?').charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
@@ -498,7 +498,7 @@ function InactiveStudentAlert({ students, inactiveStudentIds, lastWorkoutMap, on
                   : 'Nunca treinou no app'}
               </p>
             </div>
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2" aria-hidden="true">
               <path d="M9 18l6-6-6-6"/>
             </svg>
           </button>
@@ -574,7 +574,7 @@ function PriorityActions({ students, dashStats, onSelect }) {
 
   return (
     <div className="f-card p-4" style={{ borderColor: 'rgba(var(--accent-rgb),.25)' }}>
-      <p className="text-xs font-semibold mb-3 flex items-center gap-1.5" style={{ color: 'var(--accent)' }}>
+      <p className="text-xs font-semibold mb-3 flex items-center gap-1.5" style={{ color: 'var(--accent-text)' }}>
         ✅ Hoje você devia
       </p>
       <div className="space-y-1">
@@ -588,7 +588,7 @@ function PriorityActions({ students, dashStats, onSelect }) {
               <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-1)' }}>{a.text}</p>
               <p className="text-xs" style={{ color: 'var(--text-3)' }}>{a.detail}</p>
             </div>
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2" className="flex-shrink-0">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2" className="flex-shrink-0" aria-hidden="true">
               <path d="M9 18l6-6-6-6"/>
             </svg>
           </button>
@@ -610,10 +610,10 @@ function ConsistencyRanking({ students, ranking, onSelect }) {
   const medals = ['🥇', '🥈', '🥉']
 
   return (
-    <div className="f-card p-4 animate-slide-up" style={{ borderColor: 'rgba(250,204,21,.25)', background: 'rgba(250,204,21,.03)' }}>
+    <div className="f-card p-4 animate-slide-up" style={{ borderColor: 'rgba(var(--warning-rgb), .25)', background: 'rgba(var(--warning-rgb), .03)' }}>
       <div className="flex items-center gap-2 mb-3">
         <span className="section-index">STREAK</span>
-        <p className="text-sm font-semibold" style={{ color: '#facc15' }}>Ranking de consistência</p>
+        <p className="text-sm font-semibold" style={{ color: 'var(--warning)' }}>Ranking de consistência</p>
       </div>
       <div className="space-y-2">
         {top.map((r, i) => {
@@ -622,7 +622,7 @@ function ConsistencyRanking({ students, ranking, onSelect }) {
           return (
             <button key={r.studentId} onClick={() => onSelect(s)}
               className="w-full flex items-center gap-3 text-left py-2 px-1 rounded-lg transition-all"
-              onMouseEnter={e => e.currentTarget.style.background='rgba(250,204,21,.06)'}
+              onMouseEnter={e => e.currentTarget.style.background='rgba(var(--warning-rgb), .06)'}
               onMouseLeave={e => e.currentTarget.style.background='transparent'}>
               <div className="w-7 text-center flex-shrink-0 text-sm">{medals[i] || `${i + 1}º`}</div>
               <div className="flex-1 min-w-0">
@@ -660,9 +660,9 @@ function RecentPRsPanel({ newPRs, students }) {
     <div className="space-y-2">
       {newPRs.map((pr, i) => (
         <div key={`${pr.user_id}-${pr.exercise}-${i}`} className="f-card p-3.5 flex items-center gap-3"
-          style={{ borderColor: 'rgba(250,204,21,.2)', background: 'rgba(250,204,21,.03)' }}>
+          style={{ borderColor: 'rgba(var(--warning-rgb), .2)', background: 'rgba(var(--warning-rgb), .03)' }}>
           <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-base"
-            style={{ background: 'rgba(250,204,21,.12)' }}>
+            style={{ background: 'rgba(var(--warning-rgb), .12)' }}>
             PR
           </div>
           <div className="flex-1 min-w-0">
@@ -789,7 +789,7 @@ export default function PersonalDashboardView() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color:'var(--text-1)' }}>Meus Alunos</h1>
-          <p className="text-sm mt-0.5" style={{ color: atLimit ? '#f87171' : 'var(--text-3)' }}>
+          <p className="text-sm mt-0.5" style={{ color: atLimit ? 'var(--danger)' : 'var(--text-3)' }}>
             {students.length} / {studentLimit} alunos
           </p>
         </div>
@@ -803,7 +803,7 @@ export default function PersonalDashboardView() {
       </div>
 
       {atLimit && (
-        <div className="f-card p-3.5 text-sm" style={{ borderColor: 'rgba(248,113,113,.3)', background: 'rgba(248,113,113,.05)', color: '#f87171' }}>
+        <div className="f-card p-3.5 text-sm" style={{ borderColor: 'rgba(var(--danger-rgb), .3)', background: 'rgba(var(--danger-rgb), .05)', color: 'var(--danger)' }}>
           Você atingiu o limite de {studentLimit} alunos do seu plano.{' '}
           <a href="/app/subscription" style={{ textDecoration: 'underline', fontWeight: 600 }}>Fazer upgrade</a>
         </div>
@@ -816,39 +816,39 @@ export default function PersonalDashboardView() {
             key: 'all', label: 'Alunos',
             value: students.length,
             icon: (
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
                 <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
               </svg>
             ),
-            color: 'var(--accent)', bg: 'rgba(var(--accent-rgb),.08)', border: 'rgba(var(--accent-rgb),.2)',
+            color: 'var(--accent-text)', bg: 'rgba(var(--accent-rgb),.08)', border: 'rgba(var(--accent-rgb),.2)',
           },
           {
             key: 'inactive', label: 'Sem treinar há 7+ dias',
             value: dashStats?.inactiveCount ?? '—',
             icon: (
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
               </svg>
             ),
-            color: '#f87171', bg: 'rgba(248,113,113,.08)', border: 'rgba(248,113,113,.25)',
+            color: 'var(--danger)', bg: 'rgba(var(--danger-rgb), .08)', border: 'rgba(var(--danger-rgb), .25)',
             urgent: (dashStats?.inactiveCount ?? 0) > 0,
           },
           {
             key: 'prs', label: 'Novos PRs (7 dias)',
             value: dashStats?.newPRsCount ?? '—',
             icon: (
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
               </svg>
             ),
-            color: '#facc15', bg: 'rgba(250,204,21,.08)', border: 'rgba(250,204,21,.2)',
+            color: 'var(--warning)', bg: 'rgba(var(--warning-rgb), .08)', border: 'rgba(var(--warning-rgb), .2)',
           },
           {
             key: 'pending_assessment', label: 'Avaliações pendentes',
             value: dashStats?.pendingAssessments ?? '—',
             icon: (
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
               </svg>
             ),
@@ -869,7 +869,7 @@ export default function PersonalDashboardView() {
                 {s.icon}
               </div>
               {s.urgent && (
-                <span className="w-2 h-2 rounded-full" style={{ background: s.color, boxShadow: `0 0 6px ${s.color}` }}/>
+                <span className="w-2 h-2 rounded-full" aria-hidden="true" style={{ background: s.color, boxShadow: `0 0 6px ${s.color}` }}/>
               )}
             </div>
             <div className="font-display text-2xl leading-none" style={{ color: s.color }}>{s.value}</div>
@@ -892,7 +892,7 @@ export default function PersonalDashboardView() {
           </div>
           <div className="f-card p-3.5">
             <p className="text-xs mb-1" style={{ color: 'var(--text-3)' }}>Adesão aos treinos</p>
-            <p className="font-display text-xl" style={{ color: dashStats?.adherenceRate != null && dashStats.adherenceRate < 50 ? '#f87171' : 'var(--text-1)' }}>
+            <p className="font-display text-xl" style={{ color: dashStats?.adherenceRate != null && dashStats.adherenceRate < 50 ? 'var(--danger)' : 'var(--text-1)' }}>
               {dashStats?.adherenceRate != null ? `${dashStats.adherenceRate}%` : '—'}
             </p>
           </div>
@@ -927,7 +927,7 @@ export default function PersonalDashboardView() {
       {filterView !== 'all' && (
         <div className="flex items-center justify-between f-card px-4 py-2.5"
           style={{ borderColor: 'rgba(var(--accent-rgb),.25)', background: 'rgba(var(--accent-rgb),.04)' }}>
-          <p className="text-xs font-semibold" style={{ color: 'var(--accent)' }}>
+          <p className="text-xs font-semibold" style={{ color: 'var(--accent-text)' }}>
             {filterView === 'inactive'           && `Mostrando ${dashStats?.inactiveCount ?? 0} aluno(s) inativo(s)`}
             {filterView === 'pending_assessment'  && `Mostrando ${dashStats?.pendingAssessments ?? 0} aluno(s) com avaliação pendente`}
             {filterView === 'prs'                 && `${dashStats?.newPRsCount ?? 0} PR(s) batidos nos últimos 7 dias`}

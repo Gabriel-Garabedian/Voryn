@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useState, useEffect } from 'react'
+import React, { lazy, Suspense, useState, useEffect, useRef } from 'react'
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { supabase } from '@/lib/supabase'
@@ -55,14 +55,14 @@ const MORE_EXTRAS = [
 function NavIcon({ type, active }) {
   const w = active ? 2.5 : 1.8
   const icons = {
-    home:     <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w}><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
-    routine:  <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w}><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg>,
-    workout:  <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w} strokeLinecap="round"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg>,
-    history:  <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w} strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>,
-    evolution: <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w} strokeLinecap="round" strokeLinejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg>,
-    more:     <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w}><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/></svg>,
-    profile:  <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w}><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
-    students: <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w}><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>,
+    home:     <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w} aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+    routine:  <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w} aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg>,
+    workout:  <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w} strokeLinecap="round" aria-hidden="true"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg>,
+    history:  <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>,
+    evolution: <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg>,
+    more:     <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w} aria-hidden="true"><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/></svg>,
+    profile:  <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w} aria-hidden="true"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+    students: <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={w} aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>,
   }
   return icons[type] || null
 }
@@ -78,31 +78,94 @@ function MoreIcon({ type }) {
     community: <><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 20a6 6 0 0112 0M15 20a4 4 0 018 0"/></>,
     personal: <><circle cx="12" cy="8" r="3"/><path d="M5 21a7 7 0 0114 0"/></>,
   }
-  return <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">{paths[type]}</svg>
+  return <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">{paths[type]}</svg>
 }
 
-function MoreSheet({ open, onClose, navigate, base }) {
+// Folha "Mais opções". É a ÚNICA rota para 6 telas (Rotina, Metas,
+// Conquistas, Progresso, Comunidade, Personal), então precisa se comportar
+// como um diálogo de verdade: fechar com Escape, prender o Tab dentro do
+// painel, devolver o foco ao botão que a abriu e marcar a tela atual.
+const MORE_FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+
+export function MoreSheet({ open, onClose, navigate, base, currentPath, triggerRef }) {
+  const panelRef = useRef(null)
+  const restoreFocusRef = useRef(null)
+  // onClose é uma arrow inline (nova a cada render do AppShell). Como
+  // dependência do efeito abaixo, todo re-render com a folha aberta devolvia
+  // o foco ao botão e logo o puxava para o 1º item. Mesma proteção do hook.
+  const onCloseRef = useRef(onClose)
+  useEffect(() => { onCloseRef.current = onClose }, [onClose])
+
+  useEffect(() => {
+    if (!open) return
+    // Guarda quem tinha o foco antes de abrir (o botão "Mais opções") para
+    // devolver o foco quando a folha fechar.
+    restoreFocusRef.current = triggerRef?.current || document.activeElement
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    const onKeyDown = event => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        onCloseRef.current()
+        return
+      }
+      if (event.key !== 'Tab') return
+      // Focus trap: o Tab cicla apenas entre os botões do painel, para o
+      // teclado não conseguir "vazar" para a tela que está atrás.
+      const items = panelRef.current?.querySelectorAll(MORE_FOCUSABLE)
+      if (!items?.length) return
+      const list = Array.from(items)
+      const first = list[0]
+      const last = list[list.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+
+    document.addEventListener('keydown', onKeyDown)
+    requestAnimationFrame(() => {
+      panelRef.current?.querySelector(MORE_FOCUSABLE)?.focus()
+    })
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      document.body.style.overflow = previousOverflow
+      restoreFocusRef.current?.focus?.()
+    }
+  }, [open, triggerRef])
+
   if (!open) return null
+
   return (
     <div className="fixed inset-0 z-50" onClick={onClose}>
       <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,.65)', backdropFilter: 'blur(6px)' }}/>
-      <div role="dialog" aria-modal="true" aria-labelledby="more-options-title" className="absolute bottom-0 left-0 right-0 max-w-2xl mx-auto slide-in-bottom glass-panel"
+      <div role="dialog" aria-modal="true" aria-labelledby="more-options-title" ref={panelRef}
+        className="absolute bottom-0 left-0 right-0 max-w-2xl mx-auto slide-in-bottom glass-panel"
         style={{ borderRadius: '24px 24px 0 0', borderBottom: 'none', padding: '12px 20px 40px' }}
         onClick={e => e.stopPropagation()}>
         <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: 'var(--border)' }}/>
         <p id="more-options-title" className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--text-3)' }}>Mais opções</p>
         <div className="grid grid-cols-3 gap-3">
-          {MORE_EXTRAS.map(e => (
-            <button key={e.path}
-              onClick={() => { navigate(`${base}/${e.path}`); onClose() }}
-              className="f-card p-4 flex flex-col items-center gap-2 transition-all"
-              style={{ cursor: 'pointer' }}
-              onMouseEnter={ev => ev.currentTarget.style.borderColor='var(--accent)'}
-              onMouseLeave={ev => ev.currentTarget.style.borderColor='var(--border)'}>
-              <span className="f-more-icon"><MoreIcon type={e.icon}/></span>
-              <span className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>{e.label}</span>
-            </button>
-          ))}
+          {MORE_EXTRAS.map(e => {
+            const active = currentPath === `${base}/${e.path}`
+            return (
+              <button key={e.path}
+                onClick={() => { navigate(`${base}/${e.path}`); onClose() }}
+                className="f-card p-4 flex flex-col items-center gap-2 transition-all"
+                style={{ cursor: 'pointer' }}
+                aria-current={active ? 'page' : undefined}
+                onMouseEnter={ev => ev.currentTarget.style.borderColor='var(--accent)'}
+                onMouseLeave={ev => ev.currentTarget.style.borderColor='var(--border)'}>
+                <span className="f-more-icon" aria-hidden="true"><MoreIcon type={e.icon}/></span>
+                <span className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>{e.label}</span>
+              </button>
+            )
+          })}
         </div>
       </div>
     </div>
@@ -114,6 +177,7 @@ export default function AppShell() {
   const navigate  = useNavigate()
   const location  = useLocation()
   const [moreOpen,    setMoreOpen]    = useState(false)
+  const moreTriggerRef = useRef(null)
   const [showPushPrompt, setShowPushPrompt] = useState(false)
   // Usado só para decidir a mensagem certa no PaywallGate: se o aluno tem
   // (ou já teve) um vínculo de personal registrado, o motivo do bloqueio é
@@ -234,7 +298,11 @@ export default function AppShell() {
 
   return (
     <div className="app-shell h-screen flex flex-col" style={{ background: 'var(--bg)' }}>
-      <MoreSheet open={moreOpen} onClose={() => setMoreOpen(false)} navigate={navigate} base={base}/>
+      {/* Skip-link: primeiro elemento focável da página. Pula o cabeçalho
+          e a dock para o conteúdo principal (WCAG 2.4.1 / 2.4.11). */}
+      <a href="#main-content" className="skip-link">Pular para o conteúdo</a>
+
+      <MoreSheet open={moreOpen} onClose={() => setMoreOpen(false)} navigate={navigate} base={base} currentPath={location.pathname} triggerRef={moreTriggerRef}/>
 
       {/* Push prompt */}
       {showPushPrompt && (
@@ -254,21 +322,21 @@ export default function AppShell() {
           </button>
           <div className="flex items-center gap-2.5">
             <span className="app-status-pill hidden sm:inline-flex">
-              <span />
+              <span aria-hidden="true" />
               Em movimento
             </span>
             <span className="hidden sm:block text-xs text-right" style={{ color: 'var(--text-3)' }}>
               Olá, <strong style={{ color: 'var(--text-2)' }}>{displayName}</strong>
             </span>
             {!isPersonal && (
-              <button onClick={() => setMoreOpen(true)} aria-label="Mais opções"
+              <button ref={moreTriggerRef} onClick={() => setMoreOpen(true)} aria-label="Mais opções"
                 className="w-10 h-10 rounded-full flex items-center justify-center border cursor-pointer"
                 style={{
                   background: onMoreScreen ? 'rgba(var(--accent-rgb),.16)' : 'transparent',
                   color: onMoreScreen ? 'var(--accent-2)' : 'var(--text-2)',
                   borderColor: onMoreScreen ? 'rgba(var(--accent-rgb),.35)' : 'var(--border)',
                 }}>
-                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round">
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" aria-hidden="true">
                   <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
                   <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
                 </svg>
@@ -277,7 +345,7 @@ export default function AppShell() {
             <button onClick={() => navigate(`${base}/profile`)} className="profile-chip w-10 h-10 rounded-full flex items-center justify-center border cursor-pointer font-display text-lg" style={{ background: 'rgba(var(--accent-rgb),.16)', color: 'var(--accent-2)', borderColor: 'rgba(var(--accent-rgb),.35)' }} aria-label="Abrir perfil">
               {displayName.charAt(0).toUpperCase()}
             </button>
-            <span className="w-2 h-2 rounded-full" title="Status online" style={{ background: 'var(--success)', boxShadow: '0 0 10px rgba(61,220,151,.7)' }} />
+            <span className="w-2 h-2 rounded-full" title="Status online" aria-hidden="true" style={{ background: 'var(--success)', boxShadow: '0 0 10px rgba(61,220,151,.7)' }} />
             {pendingSync > 0 && (
               <span className="app-sync-pill" title={`${pendingSync} treino(s) aguardando sincronização`}>
                 {pendingSync} pendente{pendingSync > 1 ? 's' : ''}
@@ -289,7 +357,7 @@ export default function AppShell() {
 
       {/* Main content */}
       <div className="app-content flex-1 overflow-y-auto overflow-x-hidden">
-        <div className="app-content__inner max-w-2xl mx-auto">
+        <main id="main-content" tabIndex={-1} className="app-content__inner max-w-2xl mx-auto">
           <TrialEndingBanner hidden={onSubscriptionPage} />
           <Suspense fallback={<div className="flex-1"><LoadingScreen /></div>}>
             <Routes>
@@ -308,7 +376,7 @@ export default function AppShell() {
             <Route path="onboarding"     element={<OnboardingView />} />
             </Routes>
           </Suspense>
-        </div>
+        </main>
       </div>
 
       {/* Bottom Nav */}
@@ -345,7 +413,7 @@ export default function AppShell() {
                 aria-current={active ? 'page' : undefined}
                 style={{ color: active ? 'var(--accent-2)' : 'var(--muted)', border: 'none', background: active ? 'rgba(var(--accent-rgb),.1)' : 'transparent', cursor: 'pointer' }}>
                 {active && (
-                  <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-7 h-1 rounded-full"
+                  <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-7 h-1 rounded-full" aria-hidden="true"
                     style={{ background: 'var(--accent)', boxShadow: '0 0 10px rgba(var(--accent-rgb),.7)' }}/>
                 )}
                 <div style={{ transform: active ? 'scale(1.12)' : 'scale(1)', transition: 'transform .15s' }}>

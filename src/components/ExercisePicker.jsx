@@ -2,14 +2,16 @@ import React, { useState, useMemo, useRef, useEffect } from 'react'
 import { searchExercises, MUSCLE_GROUPS, EXERCISE_LIBRARY } from '@/data/exercises'
 import ExerciseDetail from '@/components/ExerciseDetail'
 import MuscleTargetImage from '@/components/MuscleTargetImage'
+import { useDialogA11y } from '@/components/ui/useDialogA11y'
 
-const AC = 'var(--accent)'
+const AC  = 'var(--accent)'
+const ACT = 'var(--accent-text)'
 
 const TYPE_LABEL = { compound: 'Composto', isolation: 'Isolado', cardio: 'Cardio' }
 const TYPE_COLOR = {
   compound:  { bg: 'rgba(var(--accent-rgb),.1)',  color: 'var(--accent-2)' },
-  isolation: { bg: 'rgba(74,222,128,.08)', color: '#4ade80' },
-  cardio:    { bg: 'rgba(248,113,113,.1)', color: '#f87171' },
+  isolation: { bg: 'rgba(var(--success-rgb), .08)', color: 'var(--success)' },
+  cardio:    { bg: 'rgba(var(--danger-rgb), .1)', color: 'var(--danger)' },
 }
 
 export default function ExercisePicker({ onSelect, onClose, onCustom, initialMuscle = '' }) {
@@ -20,11 +22,17 @@ export default function ExercisePicker({ onSelect, onClose, onCustom, initialMus
   const [type, setType] = useState('')
   const [detailExercise, setDetailExercise] = useState(null) // exercício aberto no modal de instruções
   const inputRef = useRef(null)
+  const panelRef = useRef(null)
 
   useEffect(() => {
     const timer = setTimeout(() => inputRef.current?.focus(), 120)
     return () => clearTimeout(timer)
   }, [])
+
+  // Diálogo acessível: Escape fecha, Tab fica preso no painel e o foco
+  // volta para o botão que abriu o picker. O foco inicial é o campo de
+  // busca, que é o que o usuário quer ao abrir.
+  useDialogA11y(true, () => (detailExercise ? setDetailExercise(null) : onClose()), panelRef, inputRef)
 
   const equipments = useMemo(() => [...new Set(EXERCISE_LIBRARY.map(ex => ex.equipment).filter(Boolean))].sort(), [])
   const results = useMemo(
@@ -38,22 +46,25 @@ export default function ExercisePicker({ onSelect, onClose, onCustom, initialMus
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col" style={{ background: 'var(--bg)' }}>
+    <div ref={panelRef} role="dialog" aria-modal="true" aria-label="Selecionar exercício"
+      className="fixed inset-0 z-50 flex flex-col" style={{ background: 'var(--bg)' }}>
       {/* Header */}
       <div className="flex items-center gap-3 px-4 pt-5 pb-3"
         style={{ borderBottom: '1px solid var(--border)', background: 'var(--surface)' }}>
-        <button onClick={onClose} style={{ color: 'var(--text-3)', flexShrink: 0 }}>
-          <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <button onClick={onClose} aria-label="Fechar seletor de exercícios" className="icon-btn" style={{ color: 'var(--text-3)' }}>
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <path d="M15 18l-6-6 6-6"/>
           </svg>
         </button>
         <div className="flex-1 relative">
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2" width="16" height="16"
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2" width="16" height="16" aria-hidden="true"
             fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2">
             <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
           </svg>
           <input
             ref={inputRef}
+            type="search"
+            aria-label="Buscar exercício"
             className="f-input pl-9 py-2.5 text-sm"
             placeholder="Buscar exercício..."
             value={query}
@@ -122,14 +133,14 @@ export default function ExercisePicker({ onSelect, onClose, onCustom, initialMus
             style={{ borderStyle: 'dashed', borderColor: 'rgba(var(--accent-rgb),.35)' }}>
             <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
               style={{ background: 'rgba(var(--accent-rgb),.1)', border: '1px solid rgba(var(--accent-rgb),.25)' }}>
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke={AC} strokeWidth="2">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke={ACT} strokeWidth="2" aria-hidden="true">
                 <circle cx="12" cy="12" r="10"/>
                 <line x1="12" y1="8" x2="12" y2="16"/>
                 <line x1="8" y1="12" x2="16" y2="12"/>
               </svg>
             </div>
             <div>
-              <p className="text-sm font-semibold" style={{ color: AC }}>
+              <p className="text-sm font-semibold" style={{ color: ACT }}>
                 Adicionar &quot;{query.trim()}&quot;
               </p>
               <p className="text-xs" style={{ color: 'var(--text-3)' }}>Exercício personalizado</p>
@@ -170,9 +181,9 @@ export default function ExercisePicker({ onSelect, onClose, onCustom, initialMus
               </span>
               <button onClick={() => onSelect(ex)}
                 className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all"
-                style={{ background: 'rgba(var(--accent-rgb),.1)', color: AC, border: '1px solid rgba(var(--accent-rgb),.2)' }}
+                style={{ background: 'rgba(var(--accent-rgb),.1)', color: ACT, border: '1px solid rgba(var(--accent-rgb),.2)' }}
                 title="Adicionar direto, sem ver instruções">
-                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
                   <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
               </button>

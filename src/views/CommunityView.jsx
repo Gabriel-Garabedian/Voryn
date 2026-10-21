@@ -228,7 +228,7 @@ function CommunityDetail({ community, userId, onBack, onLeft }) {
   return (
     <div className="app-view view-community-detail px-4 pt-6 pb-8">
       <button onClick={onBack} className="flex items-center gap-2 text-sm mb-4" style={{ color: 'var(--text-3)' }}>
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
           <polyline points="15 18 9 12 15 6"/>
         </svg>
         Voltar
@@ -275,7 +275,7 @@ function CommunityDetail({ community, userId, onBack, onLeft }) {
               {activity.map(a => (
                 <div key={a.user_id} className="f-card p-3 flex items-center justify-between">
                   <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>{a.user_name}</span>
-                  <span className="text-xs" style={{ color: a.workouts_7d > 0 ? 'var(--accent)' : 'var(--text-3)' }}>
+                  <span className="text-xs" style={{ color: a.workouts_7d > 0 ? 'var(--accent-text)' : 'var(--text-3)' }}>
                     {a.workouts_7d} treino{a.workouts_7d !== 1 ? 's' : ''} esta semana
                   </span>
                 </div>
@@ -311,11 +311,11 @@ function CommunityDetail({ community, userId, onBack, onLeft }) {
           <div className="mt-8 pt-4" style={{ borderTop: '1px solid var(--border)' }}>
             {!confirmLeave ? (
               <button onClick={() => setConfirmLeave(true)}
-                className="text-xs" style={{ color: 'rgba(239,68,68,.6)' }}>
+                className="text-xs" style={{ color: 'rgba(var(--danger-rgb), .6)' }}>
                 {isCreator ? 'Excluir comunidade' : 'Sair do grupo'}
               </button>
             ) : (
-              <div className="f-card p-3.5 space-y-2" style={{ borderColor: 'rgba(239,68,68,.3)' }}>
+              <div className="f-card p-3.5 space-y-2" style={{ borderColor: 'rgba(var(--danger-rgb), .3)' }}>
                 <p className="text-xs" style={{ color: 'var(--text-2)' }}>
                   {isCreator
                     ? 'Como você criou o grupo, sair remove sua participação, mas o grupo continua existindo para os outros membros.'
@@ -414,11 +414,11 @@ function ChatCommunity({ communityId, userId, members }) {
         <div ref={bottomRef}/>
       </div>
       <div className="flex gap-2 pt-2" style={{ borderTop: '1px solid var(--border)' }}>
-        <input className="f-input flex-1" placeholder="Mensagem para o grupo..." value={input}
+        <input className="f-input flex-1" aria-label="Mensagem para o grupo" placeholder="Mensagem para o grupo..." value={input}
           onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()}/>
-        <button onClick={send} className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+        <button onClick={send} aria-label="Enviar mensagem" className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
           style={{ background: 'var(--accent)' }}>
-          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2" aria-hidden="true">
             <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
           </svg>
         </button>
@@ -500,12 +500,12 @@ function FriendsTab({ userId, onSelect }) {
             <button key={f.friend_id} onClick={() => onSelect(f)}
               className="f-card w-full p-4 flex items-center gap-3 text-left">
               <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 font-display text-lg"
-                style={{ background: 'rgba(var(--accent-rgb),.1)', color: 'var(--accent)' }}>
+                style={{ background: 'rgba(var(--accent-rgb),.1)', color: 'var(--accent-text)' }}>
                 {f.friend_name?.charAt(0).toUpperCase() || '?'}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-sm truncate" style={{ color: 'var(--text-1)' }}>{f.friend_name}</p>
-                <p className="text-xs" style={{ color: f.workouts_7d > 0 ? 'var(--accent)' : 'var(--text-3)' }}>
+                <p className="text-xs" style={{ color: f.workouts_7d > 0 ? 'var(--accent-text)' : 'var(--text-3)' }}>
                   {f.workouts_7d} treino{f.workouts_7d !== 1 ? 's' : ''} esta semana
                 </p>
               </div>
@@ -542,7 +542,7 @@ function FriendDetail({ friend, onBack }) {
   return (
     <div className="px-4 pt-6 pb-8">
       <button onClick={onBack} className="flex items-center gap-2 text-sm mb-4" style={{ color: 'var(--text-3)' }}>
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
           <polyline points="15 18 9 12 15 6"/>
         </svg>
         Voltar
@@ -550,7 +550,7 @@ function FriendDetail({ friend, onBack }) {
 
       <div className="flex items-center gap-3 mb-4">
         <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 font-display text-2xl"
-          style={{ background: 'rgba(var(--accent-rgb),.1)', color: 'var(--accent)' }}>
+          style={{ background: 'rgba(var(--accent-rgb),.1)', color: 'var(--accent-text)' }}>
           {friend.friend_name?.charAt(0).toUpperCase() || '?'}
         </div>
         <div>
@@ -583,8 +583,8 @@ function FriendDetail({ friend, onBack }) {
           {friend.spotify_url && (
             <a href={friend.spotify_url} target="_blank" rel="noopener noreferrer"
               className="f-card p-3.5 mb-4 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#1DB95420' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="#1DB954">
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(var(--spotify-rgb),.125)' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--spotify)" aria-hidden="true">
                   <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
                 </svg>
               </div>
@@ -619,11 +619,11 @@ function FriendDetail({ friend, onBack }) {
           <div className="mt-8 pt-4" style={{ borderTop: '1px solid var(--border)' }}>
             {!confirmRemove ? (
               <button onClick={() => setConfirmRemove(true)}
-                className="text-xs" style={{ color: 'rgba(239,68,68,.6)' }}>
+                className="text-xs" style={{ color: 'rgba(var(--danger-rgb), .6)' }}>
                 Desfazer conexão
               </button>
             ) : (
-              <div className="f-card p-3.5 space-y-2" style={{ borderColor: 'rgba(239,68,68,.3)' }}>
+              <div className="f-card p-3.5 space-y-2" style={{ borderColor: 'rgba(var(--danger-rgb), .3)' }}>
                 <p className="text-xs" style={{ color: 'var(--text-2)' }}>
                   Vocês podem se conectar de novo depois, se alguém mandar o link.
                 </p>
@@ -704,11 +704,11 @@ function ChatFriend({ myId, friendId, friendName }) {
         <div ref={bottomRef}/>
       </div>
       <div className="flex gap-2 pt-2" style={{ borderTop: '1px solid var(--border)' }}>
-        <input className="f-input flex-1" placeholder={`Mensagem para ${friendName?.split(' ')[0] || 'ele'}...`} value={input}
+        <input className="f-input flex-1" aria-label={`Mensagem para ${friendName?.split(' ')[0] || 'seu contato'}`} placeholder={`Mensagem para ${friendName?.split(' ')[0] || 'ele'}...`} value={input}
           onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()}/>
-        <button onClick={send} className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+        <button onClick={send} aria-label="Enviar mensagem" className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
           style={{ background: 'var(--accent)' }}>
-          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2" aria-hidden="true">
             <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
           </svg>
         </button>

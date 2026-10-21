@@ -31,9 +31,9 @@ export default function NotificationPrompt({ onDismiss }) {
 
   if (state === 'granted') return (
     <div className="f-card mx-4 p-4 flex items-center gap-3 animate-slide-up"
-      style={{ borderColor:'rgba(74,222,128,.3)', background:'rgba(74,222,128,.06)' }}>
+      style={{ borderColor:'rgba(var(--success-rgb), .3)', background:'rgba(var(--success-rgb), .06)' }}>
       <span className="text-2xl">🔔</span>
-      <p className="text-sm font-semibold" style={{ color:'#4ade80' }}>
+      <p className="text-sm font-semibold" style={{ color:'var(--success)' }}>
         Notificações ativadas! Vamos te lembrar de treinar. 💪
       </p>
     </div>
@@ -41,7 +41,7 @@ export default function NotificationPrompt({ onDismiss }) {
 
   if (state === 'denied') return (
     <div className="f-card mx-4 p-4 flex items-center gap-3"
-      style={{ borderColor:'rgba(248,113,113,.2)' }}>
+      style={{ borderColor:'rgba(var(--danger-rgb), .2)' }}>
       <span className="text-xl">😔</span>
       <p className="text-sm" style={{ color:'var(--text-3)' }}>
         Sem problema. Você pode ativar nas configurações do navegador depois.
@@ -55,7 +55,7 @@ export default function NotificationPrompt({ onDismiss }) {
       <div className="flex items-start gap-3 mb-3">
         <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
           style={{ background:'rgba(var(--accent-rgb),.12)', border:'1px solid rgba(var(--accent-rgb),.25)' }}>
-          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2" aria-hidden="true">
             <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
           </svg>
         </div>
@@ -67,8 +67,8 @@ export default function NotificationPrompt({ onDismiss }) {
             Receba notificações para manter sua sequência e não perder treinos.
           </p>
         </div>
-        <button onClick={onDismiss} style={{ color:'var(--text-3)', flexShrink:0 }}>
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <button onClick={onDismiss} aria-label="Dispensar aviso de notificações" className="icon-btn" style={{ color:'var(--text-3)' }}>
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
         </button>

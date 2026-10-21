@@ -99,7 +99,8 @@ export default function OnboardingView() {
     }
   }
 
-  const AC = 'var(--accent)'
+  const AC  = 'var(--accent)'
+  const ACT = 'var(--accent-text)'
 
   return (
     <div className="app-view onboarding-view min-h-screen flex flex-col items-center justify-center px-6 py-10"
@@ -149,7 +150,7 @@ export default function OnboardingView() {
                   </div>
                   {goal === g.id && (
                     <svg className="ml-auto flex-shrink-0" width="16" height="16" fill="none" viewBox="0 0 24 24"
-                      stroke={AC} strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      stroke={ACT} strokeWidth="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
                   )}
                 </button>
               ))}
@@ -171,7 +172,7 @@ export default function OnboardingView() {
             </p>
             <div className="f-card px-4 py-3 mb-4 flex items-center gap-3"
               style={{ borderColor:'rgba(var(--accent-rgb),.2)', background:'rgba(var(--accent-rgb),.04)' }}>
-              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth="2">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2" aria-hidden="true">
                 <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
               </svg>
               <p className="text-xs leading-relaxed" style={{ color:'var(--text-3)' }}>
@@ -188,7 +189,7 @@ export default function OnboardingView() {
                     borderColor: preset === i ? AC : 'var(--border)',
                     background:  preset === i ? 'rgba(var(--accent-rgb),.06)' : 'var(--card)',
                   }}>
-                  <p className="font-semibold text-sm" style={{ color: preset===i ? AC : 'var(--text-1)' }}>
+                  <p className="font-semibold text-sm" style={{ color: preset===i ? ACT : 'var(--text-1)' }}>
                     {p.label}
                   </p>
                 </button>
@@ -199,7 +200,7 @@ export default function OnboardingView() {
                   borderColor: preset === 3 ? AC : 'var(--border)',
                   background:  preset === 3 ? 'rgba(var(--accent-rgb),.06)' : 'var(--card)',
                 }}>
-                <p className="font-semibold text-sm" style={{ color: preset===3 ? AC : 'var(--text-1)' }}>
+                <p className="font-semibold text-sm" style={{ color: preset===3 ? ACT : 'var(--text-1)' }}>
                   Personalizado
                 </p>
               </button>
@@ -274,8 +275,8 @@ export default function OnboardingView() {
               </div>
             </div>
 
-            <div className="f-card p-4 mb-6" style={{ background: 'rgba(74,222,128,.05)', borderColor: 'rgba(74,222,128,.2)' }}>
-              <p className="text-sm" style={{ color: '#4ade80' }}>
+            <div className="f-card p-4 mb-6" style={{ background: 'rgba(var(--success-rgb), .05)', borderColor: 'rgba(var(--success-rgb), .2)' }}>
+              <p className="text-sm" style={{ color: 'var(--success)' }}>
                 Você tem <strong>14 dias grátis</strong> para explorar tudo. Sem cartão necessário.
               </p>
             </div>

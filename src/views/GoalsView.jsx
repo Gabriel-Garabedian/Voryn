@@ -44,17 +44,17 @@ function WeeklyGoalRing({ current, goal }) {
 
   return (
     <div className="relative w-28 h-28 mx-auto">
-      <svg className="w-full h-full" style={{ transform: 'rotate(-90deg)' }} viewBox="0 0 100 100">
+      <svg className="w-full h-full" style={{ transform: 'rotate(-90deg)' }} viewBox="0 0 100 100" aria-hidden="true">
         <circle cx="50" cy="50" r={r} fill="none" stroke="var(--border)" strokeWidth="8"/>
         <circle cx="50" cy="50" r={r} fill="none"
-          stroke={met ? '#4ade80' : 'var(--accent)'}
+          stroke={met ? 'var(--success)' : 'var(--accent)'}
           strokeWidth="8" strokeLinecap="round"
           strokeDasharray={circ}
           strokeDashoffset={circ - pct * circ}
           style={{ transition: 'stroke-dashoffset .8s ease, stroke .3s' }}/>
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-display text-3xl leading-none" style={{ color: met ? '#4ade80' : 'var(--accent)' }}>
+        <span className="font-display text-3xl leading-none" style={{ color: met ? 'var(--success)' : 'var(--accent-text)' }}>
           {current}
         </span>
         <span className="text-xs" style={{ color: 'var(--text-3)' }}>/{goal}</span>
@@ -152,12 +152,12 @@ export default function GoalsView() {
       </div>
 
       {/* Weekly goal ring */}
-      <div className="f-card p-6" style={goalMet ? { borderColor: 'rgba(74,222,128,.4)', background: 'rgba(74,222,128,.03)' } : {}}>
+      <div className="f-card p-6" style={goalMet ? { borderColor: 'rgba(var(--success-rgb), .4)', background: 'rgba(var(--success-rgb), .03)' } : {}}>
         <p className="text-xs font-semibold uppercase tracking-widest text-center mb-4" style={{ color: 'var(--text-3)' }}>
           Meta Semanal
         </p>
         <WeeklyGoalRing current={weekCount} goal={weeklyGoal}/>
-        <p className="text-center mt-3 font-semibold text-sm" style={{ color: goalMet ? '#4ade80' : 'var(--text-1)' }}>
+        <p className="text-center mt-3 font-semibold text-sm" style={{ color: goalMet ? 'var(--success)' : 'var(--text-1)' }}>
           {goalMet ? 'Meta atingida esta semana!' : `Faltam ${weeklyGoal - weekCount} treino${weeklyGoal - weekCount !== 1 ? 's' : ''} para sua meta`}
         </p>
 
@@ -193,7 +193,7 @@ export default function GoalsView() {
           <p className="f-label">Metas de Longo Prazo</p>
           <button onClick={() => setShowGoalEdit(!showGoalEdit)}
             className="text-xs font-semibold px-3 py-1.5 rounded-lg"
-            style={{ background: 'rgba(var(--accent-rgb),.1)', color: 'var(--accent)', border: '1px solid rgba(var(--accent-rgb),.2)' }}>
+            style={{ background: 'rgba(var(--accent-rgb),.1)', color: 'var(--accent-text)', border: '1px solid rgba(var(--accent-rgb),.2)' }}>
             {showGoalEdit ? 'Fechar' : goals ? 'Editar' : '+ Definir'}
           </button>
         </div>
@@ -248,12 +248,12 @@ export default function GoalsView() {
                 <div className="flex gap-4 mt-2">
                   {goals.target_weight && (
                     <span className="text-xs" style={{ color: 'var(--text-3)' }}>
-                      Peso: <span style={{ color: 'var(--accent)', fontWeight: 700 }}>{goals.target_weight}kg</span>
+                      Peso: <span style={{ color: 'var(--accent-text)', fontWeight: 700 }}>{goals.target_weight}kg</span>
                     </span>
                   )}
                   {goals.target_body_fat && (
                     <span className="text-xs" style={{ color: 'var(--text-3)' }}>
-                      Gordura: <span style={{ color: 'var(--accent)', fontWeight: 700 }}>{goals.target_body_fat}%</span>
+                      Gordura: <span style={{ color: 'var(--accent-text)', fontWeight: 700 }}>{goals.target_body_fat}%</span>
                     </span>
                   )}
                 </div>
@@ -278,9 +278,9 @@ export default function GoalsView() {
             <p className="f-label">Peso & Composição Corporal</p>
             {lastWeight && (
               <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>
-                Atual: <span style={{ color: 'var(--accent)', fontWeight: 700 }}>{lastWeight}kg</span>
+                Atual: <span style={{ color: 'var(--accent-text)', fontWeight: 700 }}>{lastWeight}kg</span>
                 {weightDiff && (
-                  <span style={{ color: parseFloat(weightDiff) < 0 ? '#4ade80' : '#f87171', marginLeft: 6 }}>
+                  <span style={{ color: parseFloat(weightDiff) < 0 ? 'var(--success)' : 'var(--danger)', marginLeft: 6 }}>
                     {parseFloat(weightDiff) > 0 ? '+' : ''}{weightDiff}kg
                   </span>
                 )}
@@ -289,14 +289,14 @@ export default function GoalsView() {
           </div>
           <button onClick={() => setShowAddBody(!showAddBody)}
             className="text-xs font-semibold px-3 py-1.5 rounded-lg"
-            style={{ background: 'rgba(var(--accent-rgb),.1)', color: 'var(--accent)', border: '1px solid rgba(var(--accent-rgb),.2)' }}>
+            style={{ background: 'rgba(var(--accent-rgb),.1)', color: 'var(--accent-text)', border: '1px solid rgba(var(--accent-rgb),.2)' }}>
             + Registrar
           </button>
         </div>
 
         {showAddBody && (
           <div className="f-card p-4 space-y-3 mb-3 scale-in" style={{ borderColor: 'rgba(var(--accent-rgb),.3)' }}>
-            <p className="font-display text-base uppercase tracking-widest" style={{ color: 'var(--accent)' }}>
+            <p className="font-display text-base uppercase tracking-widest" style={{ color: 'var(--accent-text)' }}>
               Novo Registro
             </p>
             <div className="grid grid-cols-3 gap-2">
@@ -347,7 +347,7 @@ export default function GoalsView() {
               <div key={log.id || i} className="f-card px-4 py-3 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl flex flex-col items-center justify-center flex-shrink-0"
                   style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-                  <span className="font-display text-sm" style={{ color: 'var(--accent)' }}>
+                  <span className="font-display text-sm" style={{ color: 'var(--accent-text)' }}>
                     {log.date?.slice(8)}
                   </span>
                   <span className="text-xs uppercase" style={{ color: 'var(--text-3)' }}>
@@ -356,7 +356,7 @@ export default function GoalsView() {
                 </div>
                 <div className="flex-1">
                   {log.weight && (
-                    <span className="font-display text-lg" style={{ color: 'var(--accent)' }}>{log.weight}kg</span>
+                    <span className="font-display text-lg" style={{ color: 'var(--accent-text)' }}>{log.weight}kg</span>
                   )}
                   {log.body_fat && (
                     <span className="text-sm ml-2" style={{ color: 'var(--text-3)' }}>{log.body_fat}% gordura</span>

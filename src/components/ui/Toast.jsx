@@ -4,22 +4,22 @@ const ToastContext = createContext(null)
 
 const ICONS = {
   success: (
-    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
       <polyline points="20 6 9 17 4 12"/>
     </svg>
   ),
   error: (
-    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
       <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
     </svg>
   ),
   info: (
-    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
       <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
     </svg>
   ),
   loading: (
-    <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none">
+    <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3"/>
       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
     </svg>
@@ -27,8 +27,8 @@ const ICONS = {
 }
 
 const STYLES = {
-  success: { bg: 'rgba(74,222,128,.12)', border: 'rgba(74,222,128,.3)', color: '#4ade80' },
-  error:   { bg: 'rgba(248,113,113,.12)', border: 'rgba(248,113,113,.3)', color: '#f87171' },
+  success: { bg: 'rgba(var(--success-rgb), .12)', border: 'rgba(var(--success-rgb), .3)', color: 'var(--success)' },
+  error:   { bg: 'rgba(var(--danger-rgb), .12)', border: 'rgba(var(--danger-rgb), .3)', color: 'var(--danger)' },
   info:    { bg: 'rgba(var(--accent-rgb),.12)', border: 'rgba(var(--accent-rgb),.3)', color: 'var(--accent-2)' },
   loading: { bg: 'rgba(var(--accent-rgb),.12)', border: 'rgba(var(--accent-rgb),.3)', color: 'var(--accent-2)' },
 }
@@ -90,7 +90,7 @@ function ToastItem({ toast, onRemove }) {
             border: 0, borderRadius: 8, color: 'var(--text-3)', background: 'transparent', cursor: 'pointer',
           }}
         >
-          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
         </button>

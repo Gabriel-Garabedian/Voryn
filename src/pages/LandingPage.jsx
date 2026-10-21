@@ -10,7 +10,7 @@ gsap.registerPlugin(ScrollTrigger, useGSAP)
 function Check() {
   return (
     <svg width="15" height="15" fill="none" viewBox="0 0 24 24"
-      stroke="var(--accent)" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 2 }}>
+      stroke="var(--accent-text)" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 2 }} aria-hidden="true">
       <polyline points="20 6 9 17 4 12"/>
     </svg>
   )
@@ -87,9 +87,9 @@ function Nav() {
           aria-expanded={menuOpen}
           style={{ display: 'none', background: 'none', border: 'none', padding: 8, color: '#fff', cursor: 'pointer' }}>
           {menuOpen ? (
-            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
           ) : (
-            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path strokeLinecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
           )}
         </button>
       </div>
@@ -278,7 +278,7 @@ function Testimonials() {
             <div key={t.name} className="lp-testimonial-card" style={{ background: '#18181f', border: '1px solid rgba(255,255,255,.06)', borderRadius: 20, padding: '28px 24px' }}>
               <div style={{ display: 'flex', gap: 2, marginBottom: 16 }}>
                 {Array.from({ length: t.stars }).map((_, i) => (
-                  <span key={i} style={{ color: 'var(--accent)', fontSize: 16 }}>★</span>
+                  <span key={i} style={{ color: 'var(--accent-text)', fontSize: 16 }}>★</span>
                 ))}
               </div>
               <p style={{ fontSize: 15, color: 'rgba(255,255,255,.7)', lineHeight: 1.7, marginBottom: 20, fontWeight: 300, fontStyle: 'italic' }}>
@@ -307,8 +307,8 @@ function Pricing() {
           <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(48px,7vw,88px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', marginBottom: 14, fontWeight: 800 }}>
             ESCOLHA SEU<br/>PLANO.
           </h2>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(74,222,128,.08)', border: '1px solid rgba(74,222,128,.2)', borderRadius: 99, padding: '8px 18px', fontSize: 13, color: '#4ade80', marginTop: 8 }}>
-            <span style={{ width: 7, height: 7, background: '#4ade80', borderRadius: '50%', display: 'inline-block' }}/>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(var(--success-rgb), .08)', border: '1px solid rgba(var(--success-rgb), .2)', borderRadius: 99, padding: '8px 18px', fontSize: 13, color: 'var(--success)', marginTop: 8 }}>
+            <span aria-hidden="true" style={{ width: 7, height: 7, background: 'var(--success)', borderRadius: '50%', display: 'inline-block' }}/>
             14 dias grátis em todos os planos — sem cartão necessário
           </div>
         </div>

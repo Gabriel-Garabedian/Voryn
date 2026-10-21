@@ -1,5 +1,6 @@
 import React, { Suspense, lazy } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
+import { MotionConfig } from 'motion/react'
 import { useAuth } from '@/context/AuthContext'
 import LoadingScreen from '@/components/ui/LoadingScreen'
 import IOSInstallBanner from '@/components/ui/IOSInstallBanner'
@@ -39,7 +40,10 @@ export default function App() {
   if (loading) return <LoadingScreen />
 
   return (
-    <>
+    // reducedMotion="user": respeita a preferência do sistema operacional
+    // (prefers-reduced-motion). Cobre todas as animações do motion/react
+    // de uma vez — transições de página, modais e microinterações.
+    <MotionConfig reducedMotion="user">
       <Suspense fallback={<LoadingScreen />}>
         <Routes>
           <Route path="/"                 element={<LandingPage />} />
@@ -61,6 +65,6 @@ export default function App() {
           a usar Compartilhar → Adicionar à Tela de Início, já que o iOS
           nunca mostra prompt automático de instalação como o Android. */}
       <IOSInstallBanner />
-    </>
+    </MotionConfig>
   )
 }

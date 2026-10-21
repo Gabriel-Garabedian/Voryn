@@ -43,7 +43,7 @@ export default function AdminShell() {
             {tabs.map(t => (
               <button key={t.path} onClick={() => navigate(t.path)}
                 className="text-sm font-medium transition-colors px-2 py-1.5 rounded-lg hover:bg-[rgba(var(--accent-rgb),.08)]"
-                style={{ color: location.pathname === t.path ? 'var(--accent)' : 'var(--text-3)', border: 'none', background: 'none', cursor: 'pointer' }}>
+                style={{ color: location.pathname === t.path ? 'var(--accent-text)' : 'var(--text-3)', border: 'none', background: 'none', cursor: 'pointer' }}>
                 {t.label}
               </button>
             ))}
@@ -72,7 +72,7 @@ export default function AdminShell() {
 function StatCard({ label, value, sub, color }) {
   return (
     <div className="f-card p-5">
-      <div className="font-display text-4xl leading-none mb-1" style={{ color: color || 'var(--accent)' }}>
+      <div className="font-display text-4xl leading-none mb-1" style={{ color: color || 'var(--accent-text)' }}>
         {value}
       </div>
       <div className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>{label}</div>
@@ -126,14 +126,14 @@ function AdminDashboard() {
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard label="Usuários Total" value={stats.totalUsers} sub={`+${stats.newThisMonth} este mês`}/>
-        <StatCard label="Alunos" value={stats.totalStudents} color="var(--accent-2)"/>
-        <StatCard label="Personais" value={stats.totalPersonals} color="#7c3aed"/>
-        <StatCard label="MRR Estimado" value={`R$${stats.mrr}`} color="#4ade80" sub="receita mensal"/>
+        <StatCard label="Alunos" value={stats.totalStudents} color="var(--accent-text)"/>
+        <StatCard label="Personais" value={stats.totalPersonals} color="var(--accent-text)"/>
+        <StatCard label="MRR Estimado" value={`R$${stats.mrr}`} color="var(--success)" sub="receita mensal"/>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Assinaturas Ativas" value={stats.activeSubs} color="#4ade80"/>
-        <StatCard label="Em Trial" value={stats.trialingSubs} color="#facc15"/>
-        <StatCard label="Canceladas" value={stats.canceledSubs} color="#f87171"/>
+        <StatCard label="Assinaturas Ativas" value={stats.activeSubs} color="var(--success)"/>
+        <StatCard label="Em Trial" value={stats.trialingSubs} color="var(--warning)"/>
+        <StatCard label="Canceladas" value={stats.canceledSubs} color="var(--danger)"/>
         <StatCard label="Total Treinos" value={stats.totalWorkouts}/>
       </div>
 
@@ -178,9 +178,9 @@ function AdminDashboard() {
         </h3>
         <div className="grid grid-cols-3 gap-4">
           {[
-            { plan: 'Aluno',       price: PLANS.student.price,      color: '#7c3aed' },
-            { plan: 'Personal',    price: PLANS.personal.price,     color: '#9333ea' },
-            { plan: 'Personal Pro',price: PLANS.personal_pro.price, color: '#a855f7' },
+            { plan: 'Aluno',       price: PLANS.student.price,      color: 'var(--price-1)' },
+            { plan: 'Personal',    price: PLANS.personal.price,     color: 'var(--price-2)' },
+            { plan: 'Personal Pro',price: PLANS.personal_pro.price, color: 'var(--price-3)' },
           ].map(p => (
             <div key={p.plan} className="text-center p-4 rounded-xl"
               style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
@@ -203,7 +203,7 @@ function AdminDashboard() {
             <div key={u.id} className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
                 style={{ background: 'rgba(var(--accent-rgb),.1)', border: '1px solid rgba(var(--accent-rgb),.2)' }}>
-                <span className="font-display text-sm" style={{ color: 'var(--accent)' }}>
+                <span className="font-display text-sm" style={{ color: 'var(--accent-text)' }}>
                   {u.name?.charAt(0)?.toUpperCase()}
                 </span>
               </div>
@@ -323,7 +323,7 @@ function AdminUsers() {
                   <td style={{ padding: '12px 16px' }}>
                     <div className="flex items-center gap-2">
                       <div style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(var(--accent-rgb),.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <span style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: 14, color: 'var(--accent)' }}>
+                        <span style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: 14, color: 'var(--accent-text)' }}>
                           {u.name?.charAt(0)?.toUpperCase()}
                         </span>
                       </div>
@@ -361,7 +361,7 @@ function AdminUsers() {
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     <button onClick={() => deleteUser(u)}
-                      style={{ fontSize: 11, padding: '4px 10px', borderRadius: 8, background: 'rgba(239,68,68,.1)', color: '#f87171', border: '1px solid rgba(239,68,68,.2)', cursor: 'pointer' }}>
+                      style={{ fontSize: 11, padding: '4px 10px', borderRadius: 8, background: 'rgba(var(--danger-rgb), .1)', color: 'var(--danger)', border: '1px solid rgba(var(--danger-rgb), .2)', cursor: 'pointer' }}>
                       Excluir
                     </button>
                   </td>
@@ -419,15 +419,15 @@ function AdminSubs() {
           Assinaturas
         </h1>
         <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>
-          MRR atual: <span style={{ color: 'var(--accent)', fontWeight: 700 }}>R${mrr.toFixed(2).replace('.', ',')}</span>
+          MRR atual: <span style={{ color: 'var(--accent-text)', fontWeight: 700 }}>R${mrr.toFixed(2).replace('.', ',')}</span>
         </p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Ativas"    value={byStatus.active}   color="#4ade80"/>
-        <StatCard label="Trials"    value={byStatus.trialing} color="#facc15"/>
-        <StatCard label="Canceladas"value={byStatus.canceled} color="#f87171"/>
-        <StatCard label="MRR"       value={`R$${mrr.toFixed(2).replace('.',',')}`} color="var(--accent)"/>
+        <StatCard label="Ativas"    value={byStatus.active}   color="var(--success)"/>
+        <StatCard label="Trials"    value={byStatus.trialing} color="var(--warning)"/>
+        <StatCard label="Canceladas"value={byStatus.canceled} color="var(--danger)"/>
+        <StatCard label="MRR"       value={`R$${mrr.toFixed(2).replace('.',',')}`} color="var(--accent-text)"/>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
@@ -447,7 +447,7 @@ function AdminSubs() {
                     height: '100%', background: 'var(--accent)', borderRadius: 3
                   }}/>
                 </div>
-                <span className="font-display text-lg w-8 text-right" style={{ color: 'var(--accent)' }}>{c}</span>
+                <span className="font-display text-lg w-8 text-right" style={{ color: 'var(--accent-text)' }}>{c}</span>
               </div>
             </div>
           ))}
@@ -466,14 +466,14 @@ function AdminSubs() {
               <span className="text-sm" style={{ color: 'var(--text-2)' }}>
                 {p.label} × {p.count}
               </span>
-              <span className="font-semibold text-sm" style={{ color: 'var(--accent)' }}>
+              <span className="font-semibold text-sm" style={{ color: 'var(--accent-text)' }}>
                 R${(p.count * p.price).toFixed(2).replace('.', ',')}
               </span>
             </div>
           ))}
           <div className="flex items-center justify-between pt-3 mt-1">
             <span className="font-semibold text-sm" style={{ color: 'var(--text-1)' }}>Total MRR</span>
-            <span className="font-display text-2xl" style={{ color: 'var(--accent)' }}>
+            <span className="font-display text-2xl" style={{ color: 'var(--accent-text)' }}>
               R${mrr.toFixed(2).replace('.', ',')}
             </span>
           </div>

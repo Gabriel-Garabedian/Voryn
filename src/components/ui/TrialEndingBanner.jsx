@@ -52,14 +52,14 @@ export default function TrialEndingBanner({ hidden = false }) {
   return (
     <div className="mx-4 mt-4 flex items-center gap-3 px-4 py-3 rounded-xl"
       style={{ background: 'rgba(var(--accent-rgb),.1)', border: '1px solid rgba(var(--accent-rgb),.3)' }}>
-      <span className="text-lg flex-shrink-0">⏳</span>
+      <span className="text-lg flex-shrink-0" aria-hidden="true">⏳</span>
       <button onClick={() => navigate('/app/subscription')} className="flex-1 text-left">
         <p className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>{label}</p>
         <p className="text-xs" style={{ color: 'var(--text-3)' }}>Toque para assinar e manter seu histórico</p>
       </button>
       <button onClick={handleDismiss} aria-label="Dispensar"
-        className="flex-shrink-0 p-1" style={{ color: 'var(--text-3)' }}>
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        className="icon-btn" style={{ color: 'var(--text-3)' }}>
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>

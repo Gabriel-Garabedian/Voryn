@@ -6,7 +6,7 @@ function LegalLayout({ title, children }) {
     <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
       <div className="max-w-2xl mx-auto px-6 py-16">
         <Link to="/" className="flex items-center gap-2 text-sm mb-10" style={{ color: 'var(--text-3)' }}>
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <path d="M15 18l-6-6 6-6"/>
           </svg>
           Voltar
@@ -36,7 +36,7 @@ function P({ children }) {
   return <p className="mb-3" style={{ color: 'var(--text-2)' }}>{children}</p>
 }
 function Li({ children }) {
-  return <li className="flex items-start gap-2 mb-1"><span style={{ color: 'var(--accent)' }}>·</span>{children}</li>
+  return <li className="flex items-start gap-2 mb-1"><span style={{ color: 'var(--accent-text)' }}>·</span>{children}</li>
 }
 
 export function PrivacyPolicyPage() {
