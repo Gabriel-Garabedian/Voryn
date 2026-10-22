@@ -1,4 +1,3 @@
-import '@/styles/insights-screens.css'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
@@ -69,9 +68,10 @@ export default function SubscriptionView() {
   }
 
   return (
-    <div className="app-view vr-secondary view-subscription px-4 pt-6 pb-10 space-y-6">
+    <div className="app-view view-subscription px-4 pt-6 pb-10 space-y-6">
       <div>
-        <h1 className="vr-screen-title" style={{ color: 'var(--text-1)' }}>
+        <p className="view-kicker">Access control / 11</p>
+        <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
           Assinatura
         </h1>
         <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>Gerencie seu plano e pagamentos</p>
@@ -83,7 +83,7 @@ export default function SubscriptionView() {
         <div className="flex items-start justify-between mb-4">
           <div>
             <p className="f-label mb-1">Plano atual</p>
-            <h2 className="vr-section-title" style={{ color: 'var(--text-1)' }}>
+            <h2 className="font-display text-2xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
               {accessViaTrainer ? 'Acesso via Personal' : (current?.name || 'Plano Grátis')}
             </h2>
             {current && !accessViaTrainer && (
@@ -176,8 +176,8 @@ export default function SubscriptionView() {
         <p className="f-label mb-3">Pagamento</p>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center"
-            style={{ color: 'var(--text-3)' }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M2 9h20M6 15h4"/></svg>
+            style={{ background: 'rgba(0,158,227,.1)', border: '1px solid rgba(0,158,227,.2)' }}>
+            <span className="section-index">PAY</span>
           </div>
           <div>
             <p className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>Mercado Pago</p>

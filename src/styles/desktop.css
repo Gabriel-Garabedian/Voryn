@@ -1,0 +1,203 @@
+/* The original mobile interface is the baseline. These additions are hidden
+   there; every workspace adjustment below belongs to desktop only. */
+.desktop-nav-brand, .desktop-nav-caption, .desktop-nav-extras,
+.desktop-nav-account, .desktop-page-context { display: none; }
+
+@media (min-width: 1024px) {
+  /* 224px navigation + remaining workspace. Every screen and the header
+     share a 1120px content width and the same 32px minimum side gutters. */
+  .app-shell {
+    --desktop-sidebar: 224px;
+    --desktop-gap: 24px;
+    --desktop-pad: 32px;
+    display: grid !important;
+    grid-template-columns: var(--desktop-sidebar) minmax(0, 1fr);
+    grid-template-rows: 76px minmax(0, 1fr);
+    height: 100dvh;
+    min-height: 0;
+  }
+  .app-shell .app-header {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 0 var(--desktop-pad) !important;
+    display: flex;
+    align-items: center;
+  }
+  .app-shell .app-header > div { width: 100%; max-width: 1120px !important; margin-inline: auto; }
+  .app-shell .app-header .brand-hub, .app-shell .app-status-pill { display: none; }
+  .desktop-page-context { display: flex; align-items: center; gap: 12px; color: var(--text-3); font-size: 13px; }
+  .desktop-page-context strong { font-weight: 600; color: var(--text-1); }
+  .app-shell .app-content { grid-column: 2; grid-row: 2; min-width: 0; min-height: 0; scrollbar-gutter: stable; }
+  .app-shell .app-content__inner { width: 100%; max-width: 1184px !important; margin-inline: auto; padding: 32px var(--desktop-pad) 48px; }
+  .app-shell .app-view { width: 100%; max-width: none; padding: 0 0 32px; }
+  .app-shell .app-view > .px-4 { padding-inline: 0; }
+  .app-shell .app-view > .px-4.pt-6 { padding-top: 0; }
+  .app-shell .app-view > h1, .app-shell .app-view > div h1 { margin-top: 0; line-height: 1.25; }
+  .app-shell .app-view > *, .app-shell .app-view .animate-slide-up { animation: none; }
+  .app-shell .app-view .f-label { font-size: 13px; }
+  .app-shell .app-view .f-card { min-width: 0; }
+  .app-shell .app-view .f-card:not(button):not(a):hover { background: var(--card) !important; border-color: var(--border) !important; }
+
+  /* Same navigation, expanded for a pointer and a wider viewport. */
+  .app-shell .app-nav {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    position: relative;
+    min-height: 0;
+    padding: 0 !important;
+    border-right: 1px solid var(--border);
+    background: var(--surface) !important;
+  }
+  .app-shell .native-dock {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 4px;
+    width: 100%;
+    height: 100%;
+    max-width: none !important;
+    margin: 0;
+    padding: 24px 12px 16px !important;
+    overflow-y: auto !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+  .desktop-nav-brand { display: flex; align-items: center; gap: 12px; padding: 0 12px 24px; }
+  .desktop-nav-brand img { width: 32px; height: 32px; border-radius: 8px; }
+  .desktop-nav-brand .font-display { font-size: 26px; letter-spacing: .08em; color: var(--text-1); }
+  .theme-light .desktop-nav-brand img { filter: brightness(0); }
+  .desktop-nav-caption { display: block; padding: 8px 14px; color: var(--text-3); font-size: 12px; font-weight: 500; }
+  .app-shell .native-dock > button, .desktop-nav-extras .desktop-nav-link {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    margin: 0;
+    padding: 10px 14px !important;
+    border: 0;
+    border-radius: 10px !important;
+    background: transparent;
+    color: var(--text-3);
+    text-align: left;
+    cursor: pointer;
+  }
+  .app-shell .native-dock > button > span:first-child,
+  .app-shell .native-dock > button > div:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 20px !important;
+    height: 20px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: inherit !important;
+    transform: none !important;
+  }
+  .app-shell .native-dock > button > span:last-child,
+  .desktop-nav-link > span, .desktop-nav-account > span {
+    font: 500 13px/1.4 var(--font-body) !important;
+    letter-spacing: 0 !important;
+    text-transform: none;
+    color: inherit !important;
+  }
+  .app-shell .native-dock button svg { width: 19px; height: 19px; flex-shrink: 0; }
+  .app-shell .native-dock button:hover { background: var(--raised) !important; color: var(--text-1) !important; }
+  .app-shell .native-dock button[aria-current='page'] { background: var(--raised) !important; color: var(--text-1) !important; }
+  .desktop-nav-extras { display: flex; flex-direction: column; gap: 4px; margin-top: 16px; }
+  .app-shell .native-dock .desktop-nav-account { display: flex; margin-top: auto; padding-top: 14px !important; }
+
+  /* Home: compact paired rows, one gap, no reserved rows for absent data. */
+  .app-shell .home-view { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--desktop-gap); align-items: stretch; }
+  .app-shell .home-view > * { grid-area: auto; min-width: 0; margin: 0 !important; }
+  .app-shell .home-trial-banner, .app-shell .home-weekly-summary { grid-column: 1 / -1; order: -2; }
+  .app-shell .home-welcome { grid-column: 1; order: 0; align-self: center; }
+  .app-shell .home-week { grid-column: 2; order: 0; align-self: center; padding: 16px 20px; }
+  .app-shell .home-metrics { grid-column: 1 / -1; order: 1; min-height: 104px; align-items: center; padding: 20px 24px; }
+  .app-shell .home-focus { grid-column: 1; order: 2; display: flex; flex-direction: column; }
+  .app-shell .home-focus > p { display: none; }
+  .app-shell .home-focus > button { flex: 1; min-height: 136px; padding: 24px !important; }
+  .app-shell .home-next { grid-column: 2; order: 2; display: flex; align-items: center; padding: 24px; }
+  .app-shell .home-quick-actions { grid-column: 1 / -1; order: 3; }
+  .app-shell .home-quick-actions > .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .app-shell .home-quick-action { min-height: 80px; }
+  .app-shell .home-calendar { grid-column: 1; grid-row: span 2; order: 4; padding: 24px; }
+  .app-shell .home-recovery { grid-column: 2; order: 4; display: flex; flex-direction: column; padding: 24px; }
+  .app-shell .home-recovery > button { margin-top: auto; padding-top: 16px; }
+  .app-shell .home-streak { grid-column: 2; order: 5; padding: 20px 24px; }
+  .app-shell .home-notifications { grid-column: 1 / -1; order: 6; }
+  .app-shell .home-notifications:empty { display: none; }
+  .app-shell .home-view:not(:has(.home-recovery)) .home-calendar { grid-row: auto; }
+
+  /* The routine editor uses full rows, not a spare column for one button. */
+  .app-shell .routine-content { display: block; }
+  .app-shell .routine-content > * + * { margin-top: var(--desktop-gap); }
+  .app-shell .routine-view .schedule-rail { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; padding-bottom: 0; overflow: visible; }
+  .app-shell .routine-view .schedule-rail > button { width: 100%; min-width: 0; padding-block: 14px; border-radius: 12px !important; }
+  .app-shell .routine-content > .f-card:first-child { padding: 24px !important; }
+  .app-shell .routine-view .exercise-list .f-card { padding: 18px 20px !important; }
+  .app-shell .routine-view .exercise-list .f-card > .flex { gap: 20px; }
+  .app-shell .routine-view .exercise-list .flex-1.min-w-0 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, .75fr); align-items: center; gap: 24px; }
+  .app-shell .routine-view .exercise-list .flex-1.min-w-0 > p { margin: 0; }
+  .app-shell .routine-view .exercise-list .flex-1.min-w-0 > p > span { color: var(--text-2) !important; }
+  .app-shell .routine-view .exercise-list .muscle-target-chip { display: none; }
+  .app-shell .routine-view .exercise-list + button { min-height: 52px; }
+
+  /* Load and session volume share a row, with their selector above both. */
+  .desktop-evolution-charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--desktop-gap); align-items: start; }
+  .desktop-evolution-charts > * { min-width: 0; margin-top: 0 !important; }
+  .desktop-evolution-charts > :first-child { grid-column: 1 / -1; }
+  .desktop-evolution-charts .f-card { padding: 24px !important; }
+  .desktop-evolution-charts .recharts-responsive-container { height: 200px !important; }
+  .desktop-evolution-charts .f-card > .flex { flex-wrap: wrap; gap: 12px; }
+
+  /* Profile overview and settings use the same two-column rhythm. */
+  .app-shell .view-profile { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--desktop-gap); align-items: start; }
+  .app-shell .view-profile > * { margin-top: 0 !important; min-width: 0; }
+  .app-shell .view-profile > h1 { grid-column: 1 / -1; }
+  .desktop-profile-identity { grid-column: 1; align-self: center; }
+  .desktop-profile-stats { grid-column: 2; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .desktop-profile-achievements { grid-column: 1; }
+  .desktop-profile-volume { grid-column: 2; min-height: 72px; }
+  .desktop-profile-section { padding-top: 24px !important; }
+  .desktop-profile-section .grid-cols-4 { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .desktop-profile-section .grid-cols-4 > button { aspect-ratio: auto; height: 44px; min-height: 44px; border-radius: 10px; }
+  .desktop-profile-version { grid-column: 1 / -1; }
+  .app-shell .view-history > .kpi-row { padding: 20px 24px; min-height: 100px; align-items: center; }
+  .app-shell .view-history > .flex.gap-2 { gap: 12px; }
+  .app-shell .view-history > .flex.gap-2 button { min-height: 40px; }
+  .app-shell .view-goals { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--desktop-gap); align-items: start; }
+  .app-shell .view-goals > * { margin: 0 !important; min-width: 0; }
+  .app-shell .view-goals > :first-child, .app-shell .view-goals > .f-card { grid-column: 1 / -1; }
+  .app-shell .view-achievements > .grid-cols-2 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .app-shell .view-community > .flex.gap-2 { max-width: 420px; }
+  .app-shell .view-subscription > div > .space-y-3 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .app-shell .view-subscription > div > .space-y-3 > * { margin: 0; }
+  .app-shell .personal-dashboard-view > .grid-cols-2 { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+
+  /* Active training is a working desk: a stable summary beside set entry. */
+  .app-shell.app-shell--workout { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+  .app-shell--workout .app-header, .app-shell--workout .app-nav { display: none !important; }
+  .app-shell--workout .app-content { grid-column: 1; grid-row: 1; }
+  .app-shell .workout-view { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: var(--desktop-gap); align-items: start; }
+  .desktop-workout-topbar { grid-column: 1 / -1; padding: 0 0 12px; }
+  .app-shell .workout-view > .native-header { grid-column: 1; grid-row: 2 / span 2; position: sticky; top: 0; padding: 24px; border-radius: var(--radius-lg) !important; }
+  .app-shell .workout-view .workout-exercises { grid-column: 2; display: flex; flex-direction: column; gap: 16px; padding: 0; margin: 0; }
+  .app-shell .workout-view .workout-exercises > * { width: 100%; margin: 0 !important; min-width: 0; }
+  .app-shell .workout-view .workout-exercises > .glass-card { border-radius: var(--radius-lg); }
+  .app-shell .workout-view .workout-set-row .f-input { min-height: 48px; font-size: 16px; }
+  .app-shell .desktop-workout-action { min-height: 44px; color: var(--text-2) !important; border-color: var(--line-strong) !important; }
+  .app-shell .desktop-workout-remove { min-height: 32px; color: var(--text-3) !important; }
+  .app-shell .workout-view .workout-progression-hint__action { color: var(--text-1); }
+  .desktop-workout-footer { grid-column: 2; padding: 0; margin-top: 0; }
+  .app-shell .workout-picker > div > .space-y-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .app-shell .workout-picker > div > .space-y-2 > button { margin: 0; min-height: 104px; }
+}

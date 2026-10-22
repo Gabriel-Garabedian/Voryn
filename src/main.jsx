@@ -6,7 +6,7 @@ import { AuthProvider } from './context/AuthContext.jsx'
 import { ToastProvider } from './components/ui/Toast.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 import './index.css'
-import './styles/app-system.css'
+import './styles/desktop.css'
 import { initSentry, captureError } from './lib/sentry'
 initSentry()
 

@@ -1,4 +1,3 @@
-import '@/styles/insights-screens.css'
 import React, { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { progressPhotoService } from '@/services/progressPhotos'
@@ -80,7 +79,7 @@ function UploadCard({ studentId, onUploaded }) {
 
   return (
     <div className="f-card p-4 space-y-3" style={{ borderColor: 'rgba(var(--accent-rgb),.25)' }}>
-      <p className="text-sm font-semibold" style={{ color: ACT }}>
+      <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: ACT }}>
         Nova foto de progresso
       </p>
 
@@ -258,8 +257,10 @@ function PhotoCard({ photo, onDelete }) {
       style={{ aspectRatio: '3/4', background: 'var(--surface)' }}>
       <img src={photo.photo_url} alt={photo.caption || cat.label}
         className="w-full h-full object-cover"/>
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"/>
       {/* Info */}
-      <div className="absolute bottom-0 left-0 right-0 p-2" style={{ background: 'rgba(0,0,0,.78)' }}>
+      <div className="absolute bottom-0 left-0 right-0 p-2">
         <p className="text-xs font-semibold text-white">
           {new Date(photo.taken_at + 'T12:00').toLocaleDateString('pt-BR', { day:'numeric', month:'short' })}
         </p>
@@ -353,12 +354,13 @@ export default function ProgressPhotosView({ studentId: propStudentId, readOnly 
   if (compare) return <CompareModal photos={photos} onClose={() => setCompare(false)}/>
 
   return (
-    <div className="app-view vr-secondary view-photos pb-8">
+    <div className="app-view view-photos pb-8">
       {/* Header */}
       <div className="px-4 pt-6 pb-4">
         <div className="flex items-center justify-between mb-1">
           <div>
-            <h1 className="vr-screen-title" style={{ color: 'var(--text-1)' }}>
+            <p className="view-kicker">Visual log / 08</p>
+            <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
               Progresso
             </h1>
           </div>
@@ -381,11 +383,11 @@ export default function ProgressPhotosView({ studentId: propStudentId, readOnly 
       {/* Tabs */}
       <div className="flex gap-1 mx-4 mb-4 p-1 rounded-xl" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
         {[['timeline','Linha do Tempo'],['upload','+ Adicionar']].map(([key, label]) => (
-          <button key={key} aria-pressed={tab === key} onClick={() => setTab(key)}
+          <button key={key} onClick={() => setTab(key)}
             className="flex-1 py-2 rounded-lg text-xs font-semibold transition-all"
             style={{
               background: tab === key ? 'var(--card)' : 'transparent',
-              color:      tab === key ? 'var(--text-1)' : 'var(--text-3)',
+              color:      tab === key ? ACT : 'var(--text-3)',
               border:     tab === key ? '1px solid var(--border)' : '1px solid transparent',
             }}>
             {label}
@@ -402,12 +404,12 @@ export default function ProgressPhotosView({ studentId: propStudentId, readOnly 
             {photos.length > 0 && (
               <div className="flex gap-2 mb-4 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
                 {[{ key: 'all', label: 'Todas' }, ...CATEGORIES].map(c => (
-                  <button key={c.key} aria-pressed={selCat === c.key} onClick={() => setSelCat(c.key)}
+                  <button key={c.key} onClick={() => setSelCat(c.key)}
                     className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
                     style={{
-                      background: selCat === c.key ? 'var(--raised)' : 'var(--card)',
-                      color:      selCat === c.key ? 'var(--text-1)' : 'var(--text-3)',
-                      border:     `1px solid ${selCat === c.key ? 'var(--line-strong)' : 'var(--border)'}`,
+                      background: selCat === c.key ? AC : 'var(--card)',
+                      color:      selCat === c.key ? '#fff' : 'var(--text-3)',
+                      border:     `1px solid ${selCat === c.key ? AC : 'var(--border)'}`,
                     }}>
                     {c.label}
                   </button>
@@ -421,7 +423,7 @@ export default function ProgressPhotosView({ studentId: propStudentId, readOnly 
               <div className="text-center py-12">
                 <div className="w-20 h-20 rounded-3xl mx-auto mb-4 flex items-center justify-center text-4xl"
                   style={{ background: 'rgba(var(--accent-rgb),.06)', border: '1px dashed rgba(var(--accent-rgb),.2)' }}>
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H3v13h18V7h-4z"/><circle cx="12" cy="13" r="3"/></svg>
+                  <span className="section-index">PHOTO LOG</span>
                 </div>
                 <p className="font-semibold text-sm mb-2" style={{ color: 'var(--text-2)' }}>
                   {photos.length === 0 ? 'Nenhuma foto ainda' : 'Nenhuma foto nesta categoria'}

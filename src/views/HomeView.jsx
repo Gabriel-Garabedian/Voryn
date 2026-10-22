@@ -3,10 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { workoutLogService, routineService, notificationService } from '@/services'
 import { calcStreak, calcBestStreak, getRecoverySnapshot, getRoutineDates, localDateKey, getSubscription } from '@/utils/helpers'
-import { SkeletonBox } from '@/components/ui/Skeleton'
+import { SkeletonHome } from '@/components/ui/Skeleton'
 import { Chevron } from '@/components/ui'
 import WorkoutLogModal from '@/components/WorkoutLogModal'
-import '@/styles/training-screens.css'
 
 const AC  = 'var(--accent)'
 const ACT = 'var(--accent-text)'
@@ -95,7 +94,7 @@ function QuickActions({ navigate }) {
   return (
     <section className="home-quick-actions" aria-labelledby="home-quick-actions-title">
       <h2 id="home-quick-actions-title" className="text-lg font-semibold mb-2" style={{ color: 'var(--text-1)' }}>
-        Seu acompanhamento
+        Continue sua jornada
       </h2>
       <div className="grid grid-cols-2 gap-2">
         {actions.map(action => (
@@ -320,15 +319,7 @@ export default function HomeView() {
     ? Math.max(0, Math.ceil((new Date(trialEnds) - new Date()) / 86400000))
     : 0
 
-  if (loading) return (
-    <div className="app-view home-view vr-home px-4 pt-6 pb-6" aria-busy="true" aria-label="Carregando seu treino">
-      <div className="home-welcome space-y-2"><SkeletonBox width={90} height={14}/><SkeletonBox width={180} height={32}/></div>
-      <section className="home-focus space-y-3"><h2 className="text-sm font-semibold">Seu próximo movimento</h2><SkeletonBox height={230}/></section>
-      <div className="vr-session-overview"><SkeletonBox height={64}/><SkeletonBox height={96}/><SkeletonBox height={92}/></div>
-      <section className="home-quick-actions space-y-3"><h2 className="text-lg font-semibold">Seu acompanhamento</h2><SkeletonBox height={90}/></section>
-      <section className="home-calendar"><SkeletonBox height={280}/></section>
-    </div>
-  )
+  if (loading) return <SkeletonHome/>
   if (loadError) return (
     <div className="app-view px-4 pt-10 pb-8">
       <div className="f-card p-8 text-center space-y-4">
@@ -341,7 +332,7 @@ export default function HomeView() {
 
   return (
     <>
-    <div className="app-view home-view vr-home px-4 pt-6 pb-6 space-y-5">
+    <div className="app-view home-view px-4 pt-6 pb-6 space-y-5">
 
       {/* Trial banner */}
       {isTrial && (
@@ -368,7 +359,7 @@ export default function HomeView() {
       <div className="home-welcome flex items-start justify-between animate-slide-up">
         <div>
           <p className="text-sm" style={{ color: 'var(--text-3)' }}>{greeting()},</p>
-          <h1 className="vr-screen-title font-display text-3xl leading-tight"
+          <h1 className="font-display text-3xl uppercase tracking-wide leading-tight"
             style={{ color: 'var(--text-1)' }}>
             {profile?.name?.split(' ')[0] || 'Atleta'}
           </h1>
@@ -383,71 +374,6 @@ export default function HomeView() {
       </div>
 
       {/* Semana em círculos */}
-      <section className="home-focus vr-session" aria-label="Seu treino de hoje">
-        <div className="vr-section-heading"><h2>Seu próximo movimento</h2><span>{today.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'short' })}</span></div>
-        <button onClick={() => navigate('/app/workout')}
-          className="home-primary-action vr-session-card f-card w-full p-4 text-left animate-slide-up">
-          <div className="min-w-0">
-            <span className="home-primary-action__eyebrow">{todayPlan?.exercises?.length ? 'Sua sessão está pronta' : 'Recuperar também é evoluir'}</span>
-            <p className="vr-session-title font-display text-2xl" style={{ color: 'var(--text-1)' }}>
-              {todayPlan?.name || 'Descanso'}
-            </p>
-            <p className="text-xs mt-1" style={{ color: 'var(--on-inverse)' }}>
-              {todayPlan?.exercises?.length
-                ? `${todayPlan.exercises.length} exercícios · ${todayPlan.exercises.reduce((total, exercise) => total + (Number(exercise.sets) || 0), 0)} séries planejadas`
-                : 'Dia de descanso'}
-            </p>
-          </div>
-          {/* Glifo solto, sem círculo tintado: o card inteiro é o botão, e
-              um ícone em caixa de cor repetida é o vício de painel gerado. */}
-          <span className="vr-session-launch"
-            style={{ color: 'var(--on-inverse)' }}>
-            <span>{todayPlan?.exercises?.length ? 'Começar treino' : 'Abrir treino'}</span>
-            <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          </span>
-        </button>
-        {todayPlan?.exercises?.length > 0 && (
-          <div className="vr-session-preview" aria-label="Primeiros exercícios da sessão">
-            {todayPlan.exercises.slice(0, 3).map((exercise, index) => (
-              <div key={exercise.id || index} className="vr-session-preview-row">
-                <span className="vr-session-order">{String(index + 1).padStart(2, '0')}</span>
-                <span>{exercise.name}</span>
-                <span>{exercise.sets} × {exercise.reps}</span>
-              </div>
-            ))}
-            {todayPlan.exercises.length > 3 && <p className="vr-session-more">+ {todayPlan.exercises.length - 3} exercícios na sessão</p>}
-          </div>
-        )}
-      </section>
-
-      <div className="vr-session-overview">
-      <section className="home-next home-action-card f-card p-4" aria-label="Próxima ação recomendada">
-        <div className="flex items-start gap-3">
-          <div className="min-w-0">
-            <p className="text-sm font-semibold" style={{ color: ACT }}>
-              Próxima ação
-            </p>
-            <p className="text-sm font-semibold mt-1" style={{ color: 'var(--text-1)' }}>
-              {todayPlan?.exercises?.length
-                ? `Você tem ${todayPlan.exercises.length} exercícios prontos para hoje.`
-                : `Faltam ${Math.max(0, (profile?.weekly_goal || 3) - (lastWeek?.thisWeek || 0))} treino(s) para sua meta semanal.`}
-            </p>
-            <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
-              {metrics?.weeklyVolume > 0
-                ? `Volume desta semana: ${(metrics.weeklyVolume / 1000).toFixed(1)}t.`
-                : 'Comece um treino para criar seu primeiro marco da semana.'}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <div className="home-metrics f-card kpi-row px-4 py-3 grid grid-cols-3">
-        <StatMini label="treinos/sem" value={lastWeek?.thisWeek ?? 0} accent/>
-        <StatMini label="volume/sem" value={metrics?.weeklyVolume ? `${(metrics.weeklyVolume / 1000).toFixed(1)}t` : '0t'} accent/>
-        <StatMini label="vs. sem. passada"
-          value={lastWeek?.prevWeek ? `${lastWeek.delta >= 0 ? '+' : ''}${Math.round((lastWeek.delta / lastWeek.prevWeek) * 100)}%` : '—'}/>
-      </div>
-
       <div className="home-week f-card px-4 py-3 animate-slide-up" aria-label="Semana de treinos">
         <div className="flex justify-between">
           {weekDays.map(({ isToday, trained, date, key }) => (
@@ -478,7 +404,49 @@ export default function HomeView() {
       </div>
 
       {/* Foco de hoje */}
+      <div className="home-focus">
+        <p className="text-sm font-semibold mb-2" style={{ color: 'var(--text-3)' }}>Foco de hoje</p>
+        <button onClick={() => navigate('/app/workout')}
+          className="home-primary-action f-card w-full p-4 flex items-center justify-between text-left animate-slide-up">
+          <div className="min-w-0">
+            <span className="home-primary-action__eyebrow">Treino de hoje</span>
+            <p className="font-display text-2xl uppercase tracking-wide truncate" style={{ color: 'var(--text-1)' }}>
+              {todayPlan?.name || 'Descanso'}
+            </p>
+            <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
+              {todayPlan?.exercises?.length
+                ? `${todayPlan.exercises.length} exercício${todayPlan.exercises.length === 1 ? '' : 's'}`
+                : 'Dia de descanso'}
+            </p>
+          </div>
+          {/* Glifo solto, sem círculo tintado: o card inteiro é o botão, e
+              um ícone em caixa de cor repetida é o vício de painel gerado. */}
+          <span className="flex items-center justify-center flex-shrink-0 ml-3"
+            style={{ color: 'var(--on-inverse)' }}>
+            <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </span>
+        </button>
       </div>
+
+      <section className="home-next home-action-card f-card p-4" aria-label="Próxima ação recomendada">
+        <div className="flex items-start gap-3">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold" style={{ color: ACT }}>
+              Próxima ação
+            </p>
+            <p className="text-sm font-semibold mt-1" style={{ color: 'var(--text-1)' }}>
+              {todayPlan?.exercises?.length
+                ? `Você tem ${todayPlan.exercises.length} exercícios prontos para hoje.`
+                : `Faltam ${Math.max(0, (profile?.weekly_goal || 3) - (lastWeek?.thisWeek || 0))} treino(s) para sua meta semanal.`}
+            </p>
+            <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
+              {metrics?.weeklyVolume > 0
+                ? `Volume desta semana: ${(metrics.weeklyVolume / 1000).toFixed(1)}t.`
+                : 'Comece um treino para criar seu primeiro marco da semana.'}
+            </p>
+          </div>
+        </div>
+      </section>
 
       <QuickActions navigate={navigate} />
 
@@ -548,7 +516,12 @@ export default function HomeView() {
       </div>
 
       {/* 3 métricas */}
-
+      <div className="home-metrics f-card kpi-row px-4 py-3 grid grid-cols-3">
+        <StatMini label="treinos/sem" value={lastWeek?.thisWeek ?? 0} accent/>
+        <StatMini label="volume/sem" value={metrics?.weeklyVolume ? `${(metrics.weeklyVolume / 1000).toFixed(1)}t` : '0t'} accent/>
+        <StatMini label="vs. sem. passada"
+          value={lastWeek?.prevWeek ? `${lastWeek.delta >= 0 ? '+' : ''}${Math.round((lastWeek.delta / lastWeek.prevWeek) * 100)}%` : '—'}/>
+      </div>
     </div>
 
     {openLogDate && (
