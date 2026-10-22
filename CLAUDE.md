@@ -254,6 +254,31 @@ Voryn users as medical or financial professionals.
 
 ### Startup correction — Android 1.6
 
+#### Website APK distribution
+
+- `/download` is a public installation page, linked from the landing hero,
+  login card, and authenticated web profile. `AndroidDownloadLink` hides these
+  promotions inside native Capacitor. The page labels the APK as a test build,
+  explains Android 9+, same-account login, installing over the existing app,
+  and phone-only health limitations.
+- `public/downloads/voryn-1.6.apk` is an intentional distribution artifact,
+  byte-identical to the validated local debug APK. This is the sole exception
+  to the general rule below against committing generated APKs. No signing
+  keystore, private credentials, or environment files should be committed.
+- Website builds serve this static file. Vercel headers specify Android APK
+  MIME and attachment disposition. Workbox excludes `/downloads/` from SPA
+  navigation fallback; APKs are outside its precache glob.
+- `android:sync` now runs `scripts/prepare-native-assets.mjs` after Capacitor
+  sync to remove website downloads from generated native assets. This prevents
+  recursive APK embedding/size growth. Keep this step for future native builds.
+- To publish a newer APK, update the versioned file and download page together.
+  Git push alone does not establish whether Vercel finished deploying.
+- Download validation: nine focused download/startup tests and ESLint passed;
+  production web build passed. Browser download from the production preview
+  matched the original APK SHA-256, with no JS errors or horizontal overflow
+  at mobile/desktop sizes. Verified the APK exists in web build output and is
+  absent from native generated assets and the Workbox precache.
+
 - The root route previously rendered LandingPage even after restoring a valid
   session, so reopening the installed app showed the public site. `App.jsx`
   now waits for AuthContext loading as before, then redirects `/` to `/app`

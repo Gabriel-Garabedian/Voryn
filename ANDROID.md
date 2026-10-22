@@ -22,6 +22,24 @@ disponível para visitantes anônimos do site. A recuperação da sessão termin
 antes da escolha da tela. Instale o APK 1.6 por cima da versão anterior para
 preservar registros locais. Esta correção não exige alterações no Supabase.
 
+### Download pelo site
+
+A página pública `/download` oferece `public/downloads/voryn-1.6.apk`, com
+instruções e identificação de versão de teste. Links aparecem na landing,
+login e perfil web; a promoção fica oculta no app nativo. O arquivo é a mesma
+compilação debug 1.6 já validada, não uma versão assinada de produção.
+O deploy web normal copia o APK para `dist/downloads`. A Vercel configura
+MIME Android e download como anexo; o Service Worker não trata essa pasta
+como navegação e não inclui APKs no precache.
+
+Para disponibilizar outra versão, copie o APK validado para
+`public/downloads/voryn-VERSAO.apk`, atualize a página de download e publique
+ambos juntos. Arquivos APK dessa pasta são artefatos de distribuição
+intencionalmente versionados; não publique keystores nem arquivos `.env`.
+`npm run android:sync` remove os downloads web dos assets gerados do Android,
+evitando embutir um APK dentro de outro. Prefira esse script a chamar `cap sync`
+diretamente. O download depende da conclusão do deploy da Vercel.
+
 ## Usar a integração
 
 No Android, abra **Mais → Saúde → Conectar / alterar permissões**. Escolha as categorias desejadas no Health Connect. No Samsung Health, autorize o compartilhamento com o Health Connect. Em Android 9–13, instale o provedor Health Connect; em Android 14+, ele integra o sistema, sujeito à compatibilidade do dispositivo.

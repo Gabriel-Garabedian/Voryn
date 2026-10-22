@@ -5,6 +5,7 @@ import { LANDING_PHOTOS, creditSummary } from '@/data/mediaCredits'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
+import AndroidDownloadLink from '@/components/AndroidDownloadLink'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
@@ -196,9 +197,7 @@ function Hero() {
               <Link to="/register" className="lp-primary-cta">
                 Começar 14 dias grátis
               </Link>
-              <a href="#features" className="lp-secondary-cta">
-                Ver as funcionalidades
-              </a>
+              <AndroidDownloadLink className="lp-secondary-cta" />
             </div>
             <dl className="lp-hero-numbers">
               <div><dt>12 dias de sequência</dt><dd>12</dd></div>

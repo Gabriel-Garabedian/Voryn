@@ -34,7 +34,7 @@ export default defineConfig({
         // toda navegação deve cair em index.html e deixar o router
         // resolver a rota certa no lado do cliente.
         navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/api\//, /^\/functions\//],
+        navigateFallbackDenylist: [/^\/api\//, /^\/functions\//, /^\/downloads\//],
         // Runtime cache for Supabase API calls
         runtimeCaching: [
           {

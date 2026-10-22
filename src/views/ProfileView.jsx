@@ -10,6 +10,7 @@ import { PLANS } from '@/services/payment'
 import { formatDuration, formatVolume, calcStreak, calcBestStreak } from '@/utils/helpers'
 import { EXERCISE_LIBRARY } from '@/data/exercises'
 import { ACHIEVEMENTS } from '@/views/AchievementsView'
+import AndroidDownloadLink from '@/components/AndroidDownloadLink'
 
 // ANTES, esta lista era fixa — só esses 5 exercícios apareciam em Records
 // Pessoais, sem nenhuma forma de adicionar outro (ex: "Remada Curvada" não
@@ -682,6 +683,7 @@ export default function ProfileView() {
       </div>
 
       {/* ── Legal ── */}
+      <AndroidDownloadLink className="desktop-profile-section f-card p-4 text-sm font-semibold text-center block" />
       <div className="desktop-profile-section space-y-2" style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
         <p className="f-label">Legal</p>
         <div className="grid grid-cols-2 gap-2">

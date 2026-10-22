@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { translateError } from '@/utils/helpers'
 import { Chevron } from '@/components/ui'
+import AndroidDownloadLink from '@/components/AndroidDownloadLink'
 
 function VorynLogo() {
   return (
@@ -38,6 +39,7 @@ function AuthCard({ children, title, sub }) {
             {sub && <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>{sub}</p>}
           </div>
           {children}
+          <div className="text-center"><AndroidDownloadLink className="text-sm underline" style={{ color: 'var(--accent-text)' }} /></div>
         </div>
         </div>
       </div>

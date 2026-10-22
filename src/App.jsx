@@ -8,6 +8,7 @@ import IOSInstallBanner from '@/components/ui/IOSInstallBanner'
 import { Capacitor } from '@capacitor/core'
 
 const LandingPage   = lazy(() => import('@/pages/LandingPage'))
+const DownloadAndroidPage = lazy(() => import('@/pages/DownloadAndroidPage'))
 const LoginPage     = lazy(() => import('@/pages/LoginPage'))
 const RegisterPage  = lazy(() => import('@/pages/RegisterPage'))
 const ResetPassword = lazy(() => import('@/pages/ResetPassword'))
@@ -52,6 +53,7 @@ export default function App() {
         <Routes>
           <Route path="/"                 element={user ? <Navigate to="/app" replace /> : Capacitor.isNativePlatform() ? <Navigate to="/login" replace /> : <LandingPage />} />
           <Route path="/pricing"          element={<PricingPage />} />
+          <Route path="/download"         element={<DownloadAndroidPage />} />
           <Route path="/checkout/:planId" element={<CheckoutPage />} />
           <Route path="/reset-password"   element={<ResetPassword />} />
           <Route path="/privacy"          element={<PrivacyPolicy />} />
