@@ -14,6 +14,14 @@ O projeto Android usa Capacitor 8, Java 21 e SDK Android 36. A interface existen
 
 O APK debug estará em `android/app/build/outputs/apk/debug/app-debug.apk`. É uma versão de teste, não uma distribuição assinada de produção. A compilação sem `.env` usa o placeholder existente do projeto e não permite autenticação real.
 
+### Versão 1.6: abertura do aplicativo
+
+Ao iniciar pela rota `/`, uma sessão recuperada abre diretamente `/app`.
+Sem sessão, o aplicativo Android abre `/login`. A landing page continua
+disponível para visitantes anônimos do site. A recuperação da sessão termina
+antes da escolha da tela. Instale o APK 1.6 por cima da versão anterior para
+preservar registros locais. Esta correção não exige alterações no Supabase.
+
 ## Usar a integração
 
 No Android, abra **Mais → Saúde → Conectar / alterar permissões**. Escolha as categorias desejadas no Health Connect. No Samsung Health, autorize o compartilhamento com o Health Connect. Em Android 9–13, instale o provedor Health Connect; em Android 14+, ele integra o sistema, sujeito à compatibilidade do dispositivo.

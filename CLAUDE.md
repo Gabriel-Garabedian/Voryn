@@ -252,6 +252,22 @@ Voryn users as medical or financial professionals.
 
 ## Android and health delivery — 2026-10-22
 
+### Startup correction — Android 1.6
+
+- The root route previously rendered LandingPage even after restoring a valid
+  session, so reopening the installed app showed the public site. `App.jsx`
+  now waits for AuthContext loading as before, then redirects `/` to `/app`
+  for authenticated users on web and native. Native users without a session
+  go to `/login`; anonymous web visitors still see the landing page.
+  Redirects use replacement, preserving existing profile/access checks.
+- Android versionName is now **1.6**, versionCode **7**. Install over the
+  existing app to preserve local pending records; no SQL changes are needed.
+- Six startup regression tests plus six authentication lifecycle tests passed,
+  and focused ESLint passed. This fix changes navigation, not session expiry,
+  subscriptions, or the sensor-validation limitations documented below.
+- Version 1.5 implementation/history follows; use the newest generated APK
+  `android/app/build/outputs/apk/debug/voryn-1.6.apk` for the startup fix.
+
 The project now includes a Capacitor 8.5.3 Android app (`com.voryn.app`),
 versionName **1.5**, versionCode **6**. The existing web app remains deployed
 on Vercel. The user uses a Samsung phone only, without a watch or ring. Do not

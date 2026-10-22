@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext'
 import LoadingScreen from '@/components/ui/LoadingScreen'
 import AuthRecoveryScreen from '@/components/AuthRecoveryScreen'
 import IOSInstallBanner from '@/components/ui/IOSInstallBanner'
+import { Capacitor } from '@capacitor/core'
 
 const LandingPage   = lazy(() => import('@/pages/LandingPage'))
 const LoginPage     = lazy(() => import('@/pages/LoginPage'))
@@ -38,7 +39,7 @@ function PublicRoute({ children }) {
 }
 
 export default function App() {
-  const { loading, authError } = useAuth()
+  const { user, loading, authError } = useAuth()
   if (loading) return <LoadingScreen />
   if (authError) return <AuthRecoveryScreen />
 
@@ -49,7 +50,7 @@ export default function App() {
     <MotionConfig reducedMotion="user">
       <Suspense fallback={<LoadingScreen />}>
         <Routes>
-          <Route path="/"                 element={<LandingPage />} />
+          <Route path="/"                 element={user ? <Navigate to="/app" replace /> : Capacitor.isNativePlatform() ? <Navigate to="/login" replace /> : <LandingPage />} />
           <Route path="/pricing"          element={<PricingPage />} />
           <Route path="/checkout/:planId" element={<CheckoutPage />} />
           <Route path="/reset-password"   element={<ResetPassword />} />
