@@ -369,3 +369,17 @@ before extending this module. These documents are part of project memory.
   Sensors, background battery behavior, restart, and special permissions have
   **not** been tested on the user's physical Samsung. No Play Store release,
   production signing, SMTP setup, or production deployment was performed.
+
+### Git handoff status
+
+- Implementation and memory committed locally as `c95e1cd` on `main`.
+- The requested push to `Gabriel-Garabedian/Voryn` was attempted, but GitHub
+  returned HTTP 403: this computer's only Git Credential Manager account,
+  `andre-w-dev`, has no write permission to that repository. No remote commit
+  or Vercel deployment from these changes was confirmed.
+- Resume by authenticating Git with an account authorized for the repository,
+  then run `git push origin main`. Do not request passwords/tokens in chat.
+- A portable Git bundle backup is saved locally on the Desktop as
+  `Voryn-backup-2026-10-22.bundle`. It contains committed source/history, not
+  ignored `.env.local`, signing keys, build outputs, or APKs. Preserve the
+  current checkout and its ignored environment configuration separately.
