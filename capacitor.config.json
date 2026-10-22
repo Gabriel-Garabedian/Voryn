@@ -1,0 +1,6 @@
+{
+  "appId": "com.voryn.app",
+  "appName": "Voryn",
+  "webDir": "dist",
+  "server": { "androidScheme": "https" }
+}

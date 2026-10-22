@@ -18,7 +18,7 @@ function LegalLayout({ title, children }) {
             <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
               {title}
             </h1>
-            <p className="text-xs" style={{ color: 'var(--text-3)' }}>Voryn Tracker · Última atualização: Junho 2025</p>
+            <p className="text-xs" style={{ color: 'var(--text-3)' }}>Voryn Tracker · Última atualização: Outubro 2026</p>
           </div>
         </div>
         <div className="glass-panel p-6 sm:p-8 prose space-y-6 text-sm leading-relaxed" style={{ color: 'var(--text-2)' }}>
@@ -49,7 +49,7 @@ export function PrivacyPolicyPage() {
       <ul className="space-y-1 ml-2">
         <Li>Nome completo e endereço de e-mail (cadastro)</Li>
         <Li>Dados de treino: exercícios, séries, repetições e cargas registradas</Li>
-        <Li>Dados corporais opcionais: peso, percentual de gordura (somente se inseridos pelo usuário)</Li>
+        <Li>Dados corporais opcionais: peso e percentual de gordura inseridos pelo usuário; peso também pode ser importado do Health Connect com autorização</Li>
         <Li>Registros de histórico de treinos e evolução</Li>
         <Li>Dados de pagamento processados exclusivamente pelo Mercado Pago (não armazenamos dados de cartão)</Li>
       </ul>
@@ -63,6 +63,12 @@ export function PrivacyPolicyPage() {
         <Li>Cumprimento de obrigações legais</Li>
       </ul>
 
+      <H2>Integração opcional com Health Connect</H2>
+      <P>Com sua autorização, o Voryn lê passos, sono, alimentação, água e peso do Health Connect para mostrar seu histórico de saúde. Você escolhe quais categorias compartilhar. A leitura acontece enquanto as telas de saúde ou seus cartões estão abertos. Os resumos importados são enviados à sua conta no Supabase somente quando você toca em salvar resumos importados na conta. Sem essa ação, são exibidos apenas nesta sessão. Informações adicionadas manualmente, incluindo refeições e nutrientes opcionais, são guardadas primeiro neste aparelho e sincronizadas com sua conta quando houver internet e sessão válida. Cada registro manual pode ser editado ou excluído na tela da respectiva categoria.</P>
+      <P>Os dados do Health Connect não são usados para publicidade, treinamento de modelos de inteligência artificial ou análise de produto, nem compartilhados com personal trainers pelo módulo Saúde. Você pode revogar permissões no Health Connect e excluir os resumos salvos na tela Saúde. Revogar acesso não apaga os resumos já salvos. Os resumos permanecem na conta até sua exclusão ou exclusão da conta.</P>
+      <P>Registros manuais são guardados neste aparelho e sincronizados com sua conta quando houver internet e uma sessão válida. Metas e a biblioteca pessoal de alimentos ficam neste aparelho. Ao ativar passos pelo celular, o Voryn usa o sensor também em segundo plano, com notificação contínua, e guarda os totais localmente, inclusive sem internet. Você pode pausar na tela Passos ou na notificação; sair da conta pausa a contagem.</P>
+      <P>Se você autorizar acesso aos dados de uso do Android, o Voryn utiliza apenas os horários de tela ligada e desligada para sugerir intervalos de sono. Não guarda os nomes dos aplicativos usados. Esses horários são estimativas e só viram registros após sua confirmação. Esse recurso não mede fases do sono. A autorização pode ser revogada nas configurações do Android.</P>
+      <P>O celular não mede sozinho alimentação, água ou peso. Esses registros dependem de lançamentos manuais, outros aplicativos ou dispositivos.</P>
       <H2>3. Compartilhamento de Dados</H2>
       <P>Seus dados <strong>não são vendidos ou compartilhados</strong> com terceiros para fins comerciais. O compartilhamento ocorre apenas com:</P>
       <ul className="space-y-1 ml-2">

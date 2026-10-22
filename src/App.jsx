@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { MotionConfig } from 'motion/react'
 import { useAuth } from '@/context/AuthContext'
 import LoadingScreen from '@/components/ui/LoadingScreen'
+import AuthRecoveryScreen from '@/components/AuthRecoveryScreen'
 import IOSInstallBanner from '@/components/ui/IOSInstallBanner'
 
 const LandingPage   = lazy(() => import('@/pages/LandingPage'))
@@ -24,7 +25,7 @@ function ProtectedRoute({ children, adminOnly = false }) {
   const { user, profile, loading } = useAuth()
   if (loading)  return <LoadingScreen />
   if (!user)    return <Navigate to="/login" replace />
-  if (!profile) return <LoadingScreen />
+  if (!profile) return <AuthRecoveryScreen />
   if (adminOnly && profile.role !== 'admin') return <Navigate to="/app" replace />
   return children
 }
@@ -37,8 +38,9 @@ function PublicRoute({ children }) {
 }
 
 export default function App() {
-  const { loading } = useAuth()
+  const { loading, authError } = useAuth()
   if (loading) return <LoadingScreen />
+  if (authError) return <AuthRecoveryScreen />
 
   return (
     // reducedMotion="user": respeita a preferência do sistema operacional

@@ -1,8 +1,17 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import { getSubscription } from '@/utils/helpers'
+import { phoneHealth } from '@/services/phoneHealth'
 
 const AuthContext = createContext(null)
+
+function withAuthTimeout(operation, message) {
+  let timer
+  return Promise.race([
+    Promise.resolve(operation),
+    new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(message)), 20000) }),
+  ]).finally(() => clearTimeout(timer))
+}
 
 // Verifica se a assinatura do usuário venceu (trial expirado, ou período pago
 // encerrado após cancelamento) e, se sim, atualiza o status no banco e no
@@ -40,6 +49,7 @@ export function AuthProvider({ children }) {
   const [user,    setUser]    = useState(null)
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [authError, setAuthError] = useState('')
   const [theme,   setTheme]   = useState(() => localStorage.getItem('voryn_theme') || 'dark')
   // Cor de destaque alternativa ao roxo (recurso pago — ver isPayingUser
   // abaixo). Guardamos a preferência mesmo de quem não é pagante ainda,
@@ -54,6 +64,8 @@ export function AuthProvider({ children }) {
   // terceiros diretamente — nem deveria.
   const [hasTrainerAccess, setHasTrainerAccess] = useState(false)
   const profileRequest = useRef(null)
+  const activeUserId = useRef(null)
+  const accountVersion = useRef(0)
 
   useEffect(() => {
     document.documentElement.classList.toggle('theme-light', theme === 'light')
@@ -61,45 +73,89 @@ export function AuthProvider({ children }) {
   }, [theme])
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      if (session?.user) fetchProfile(session.user.id)
-      else setLoading(false)
+    let disposed = false
+    let receivedAuthEvent = false
+    function applySession(session) {
+      if (disposed) return
+      const nextUser = session?.user ?? null
+      const changedUser = activeUserId.current !== (nextUser?.id ?? null)
+      if (changedUser) {
+        accountVersion.current += 1
+        profileRequest.current = null
+        setProfile(null)
+        setHasTrainerAccess(false)
+      }
+      activeUserId.current = nextUser?.id ?? null
+      if (changedUser || !nextUser) setAuthError('')
+      setUser(nextUser)
+      if (changedUser || !nextUser) setLoading(Boolean(nextUser))
+    }
+    withAuthTimeout(supabase.auth.getSession(), 'A sessão demorou para responder. Verifique sua conexão e tente novamente.').then(({ data: { session }, error }) => {
+      if (error) throw error
+      if (!receivedAuthEvent) applySession(session)
     }).catch(error => {
+      if (disposed || receivedAuthEvent) return
       console.error('[Voryn] Falha ao recuperar sessão:', error)
+      setAuthError('Não foi possível recuperar sua sessão. Verifique sua conexão e tente novamente.')
       setLoading(false)
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-      if (session?.user) fetchProfile(session.user.id)
-      else { setProfile(null); setHasTrainerAccess(false); setLoading(false) }
+      if (_event === 'SIGNED_OUT' && phoneHealth.available()) void phoneHealth.stop().catch(() => {})
+      receivedAuthEvent = true
+      // O callback do Auth só atualiza estado. Chamadas ao SDK aqui podem
+      // disputar o lock de sessão e impedir o término do próprio login.
+      applySession(session)
     })
-    return () => subscription.unsubscribe()
+    return () => { disposed = true; subscription.unsubscribe() }
   }, [])
+
+  useEffect(() => {
+    if (!user?.id) return
+    // Sai também da pilha do evento de autenticação antes de consultar dados.
+    const timer = setTimeout(() => fetchProfile(user.id), 0)
+    return () => clearTimeout(timer)
+  }, [user?.id, user?.email_confirmed_at])
 
   async function fetchProfile(userId) {
     if (!userId) return
     if (profileRequest.current?.userId === userId) return profileRequest.current.promise
-    const promise = fetchProfileInternal(userId)
-    profileRequest.current = { userId, promise }
-    try { return await promise } finally {
-      if (profileRequest.current?.promise === promise) profileRequest.current = null
-    }
+    const request = { userId }
+    const isCurrent = () => activeUserId.current === userId && profileRequest.current === request
+    profileRequest.current = request
+    setLoading(true)
+    setAuthError('')
+    request.promise = withAuthTimeout(
+      Promise.resolve().then(() => fetchProfileInternal(userId, isCurrent)),
+      'Não foi possível concluir o carregamento da conta. Verifique sua conexão e tente novamente.'
+    ).catch(error => {
+      if (isCurrent()) {
+        console.error('[Voryn] Falha ao carregar perfil:', error)
+        setAuthError(error.message || 'Não foi possível carregar sua conta.')
+      }
+    }).finally(() => {
+      if (isCurrent()) { setLoading(false); profileRequest.current = null }
+    })
+    return request.promise
   }
 
-  async function fetchProfileInternal(userId) {
-    try {
+  async function fetchProfileInternal(userId, isCurrent) {
       const { data, error } = await supabase
         .from('users')
         .select('*, subscriptions(*)')
         .eq('id', userId)
         .single()
+      if (!isCurrent()) return
       if (!error && data) {
         await expireSubscriptionIfNeeded(data)
+        if (!isCurrent()) return
         setProfile(data)
       } else {
-        const { data: basic } = await supabase.from('users').select('*').eq('id', userId).single()
-        if (basic) setProfile(basic)
+        const { data: basic, error: basicError } = await supabase.from('users').select('*').eq('id', userId).single()
+        if (!isCurrent()) return
+        if (basicError || !basic) {
+          throw new Error('Seu login foi reconhecido, mas não foi possível acessar seu perfil. Tente novamente. Se persistir, informe o suporte para verificar o cadastro no banco.')
+        }
+        setProfile(basic)
       }
 
       // Checa se o acesso está liberado pelo plano do personal vinculado
@@ -108,10 +164,19 @@ export function AuthProvider({ children }) {
       // vez de travar o carregamento do perfil por causa disso.
       try {
         const { data: trainerAccess } = await supabase.rpc('student_has_trainer_access', { p_student_id: userId })
+        if (!isCurrent()) return
         setHasTrainerAccess(Boolean(trainerAccess))
       } catch (e) {
         console.warn('[Voryn] Falha ao checar acesso via personal (não crítico):', e)
       }
+      if (!isCurrent()) return
+      const version = accountVersion.current
+      // Convites são opcionais e não devem bloquear a abertura da conta.
+      processPendingLinks(userId, () => activeUserId.current === userId && accountVersion.current === version)
+        .catch(error => console.warn('[Voryn] Falha ao processar convites pendentes:', error))
+  }
+
+  async function processPendingLinks(userId, isCurrent) {
       // Retry de vínculo pendente com personal (caso registro tenha falhado)
       const pendingTrainerId = localStorage.getItem('voryn_pending_trainer')
       if (pendingTrainerId) {
@@ -120,6 +185,7 @@ export function AuthProvider({ children }) {
           // RegisterPage.jsx sobre a remoção da policy pública em trainers.
           const { data: trainerId } = await supabase
             .rpc('get_trainer_id_by_user', { p_user_id: pendingTrainerId })
+          if (!isCurrent()) return
           if (trainerId) {
             const { error: linkErr } = await supabase
               .from('trainer_students')
@@ -127,6 +193,7 @@ export function AuthProvider({ children }) {
                 { trainer_id: trainerId, student_id: userId, status: 'active' },
                 { onConflict: 'trainer_id,student_id', ignoreDuplicates: true }
               )
+            if (!isCurrent()) return
             if (!linkErr) {
               localStorage.removeItem('voryn_pending_trainer')
               console.log('[Voryn] Vínculo pendente processado com sucesso')
@@ -153,11 +220,13 @@ export function AuthProvider({ children }) {
         try {
           const { data: communities } = await supabase
             .rpc('get_community_by_invite_code', { p_code: pendingCommunityCode })
+          if (!isCurrent()) return
           const community = communities?.[0]
           if (community) {
             const { error: joinErr } = await supabase
               .from('community_members')
               .insert({ community_id: community.id, user_id: userId })
+            if (!isCurrent()) return
             // duplicate = já é membro, trata como sucesso silencioso
             if (!joinErr || String(joinErr.message || '').includes('duplicate')) {
               localStorage.removeItem('voryn_pending_community')
@@ -181,6 +250,7 @@ export function AuthProvider({ children }) {
       if (pendingFriendCode) {
         try {
           const { error: connErr } = await supabase.rpc('connect_via_friend_code', { p_code: pendingFriendCode })
+          if (!isCurrent()) return
           if (!connErr) {
             localStorage.removeItem('voryn_pending_friend')
             console.log('[Voryn] Conexão de amigo processada com sucesso')
@@ -194,11 +264,6 @@ export function AuthProvider({ children }) {
         }
       }
 
-    } catch (e) {
-      console.error('fetchProfile:', e)
-    } finally {
-      setLoading(false)
-    }
   }
 
   async function signUp({ email, password, name, role = 'student' }) {
@@ -274,8 +339,11 @@ export function AuthProvider({ children }) {
     }
   }
   async function signOut() {
-    await supabase.auth.signOut()
-    setUser(null); setProfile(null); setHasTrainerAccess(false)
+    await withAuthTimeout(supabase.auth.signOut(), 'Não foi possível sair agora. Tente novamente.')
+    activeUserId.current = null
+    accountVersion.current += 1
+    profileRequest.current = null
+    setUser(null); setProfile(null); setHasTrainerAccess(false); setAuthError(''); setLoading(false)
   }
   async function resetPassword(email) {
     return supabase.auth.resetPasswordForEmail(email, {
@@ -350,7 +418,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={{
-      user, profile, loading, theme, role, plan, subStatus,
+      user, profile, loading, authError, theme, role, plan, subStatus,
       isActive, isAdmin, isPersonal, hasTrainerAccess, emailConfirmed,
       trialEndsAt, daysUntilTrialEnd,
       accentColor, setAccentColor, isPayingUser,

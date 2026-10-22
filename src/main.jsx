@@ -8,6 +8,7 @@ import ErrorBoundary from './components/ErrorBoundary.jsx'
 import './index.css'
 import './styles/desktop.css'
 import './styles/app-typography.css'
+import './styles/health.css'
 import { initSentry, captureError } from './lib/sentry'
 initSentry()
 
@@ -21,7 +22,8 @@ initSentry()
 // aqui, não onNeedRefresh (que é mais relevante para o modo 'prompt',
 // não usado neste projeto).
 import { registerSW } from 'virtual:pwa-register'
-registerSW({
+import { Capacitor } from '@capacitor/core'
+if (!Capacitor.isNativePlatform()) registerSW({
   onRegisterError(err) {
     console.error('[Voryn] Falha ao registrar o Service Worker:', err)
     captureError(err, { context: 'service_worker_registration' })

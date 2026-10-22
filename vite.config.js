@@ -38,7 +38,8 @@ export default defineConfig({
         // Runtime cache for Supabase API calls
         runtimeCaching: [
           {
-            urlPattern: ({ url }) => url.hostname.includes('supabase.co'),
+            // Resumos de saúde devem ser lidos com a sessão atual, sem cache persistente do SW.
+            urlPattern: ({ url }) => url.hostname.includes('supabase.co') && !url.pathname.includes('/health_'),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'supabase-cache',

@@ -11,9 +11,14 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "android:sync": "npm run build && cap sync android",
+    "android:open": "cap open android",
+    "android:apk": "npm run android:sync && cd android && gradlew.bat assembleDebug"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
     "@gsap/react": "^2.1.2",
     "@sentry/react": "^7.114.0",
     "@supabase/supabase-js": "^2.39.0",
@@ -27,6 +32,7 @@
     "recharts": "^2.10.0"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.3",
     "@eslint/js": "^9.39.5",
     "@testing-library/jest-dom": "^6.4.0",
     "@testing-library/react": "^15.0.0",

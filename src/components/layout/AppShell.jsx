@@ -4,6 +4,8 @@ import { useAuth } from '@/context/AuthContext'
 import { supabase } from '@/lib/supabase'
 import LoadingScreen from '@/components/ui/LoadingScreen'
 const HomeView = lazy(() => import('@/views/HomeView'))
+const HealthView = lazy(() => import('@/views/HealthView'))
+const HealthMetricView = lazy(() => import('@/views/HealthMetricView'))
 const RoutineView = lazy(() => import('@/views/RoutineView'))
 const WorkoutView = lazy(() => import('@/views/WorkoutView'))
 const PersonalView = lazy(() => import('@/views/PersonalView'))
@@ -44,6 +46,7 @@ const PERSONAL_NAV = [
 ]
 
 const MORE_EXTRAS = [
+  { path: 'health',       icon: 'health',       label: 'Saúde'     },
   { path: 'routine',      icon: 'routine',      label: 'Rotina'    },
   { path: 'goals',        icon: 'goals',        label: 'Metas'     },
   { path: 'achievements', icon: 'achievements', label: 'Conquistas'},
@@ -69,6 +72,7 @@ function NavIcon({ type, active }) {
 
 function MoreIcon({ type }) {
   const paths = {
+    health: <><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 00-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 000-7.8z"/></>,
     routine: <><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></>,
     evolution: <><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></>,
     history: <><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h6M8 17h4"/></>,
@@ -284,6 +288,9 @@ export default function AppShell() {
   }
 
   const screenLabels = {
+    'health/steps': 'Passos', 'health/sleep': 'Sono', 'health/nutrition': 'Alimentação',
+    'health/water': 'Água', 'health/weight': 'Peso',
+    health: 'Saúde',
     routine: 'Rotina de treino', workout: 'Sessão ativa', profile: 'Seu perfil',
     evolution: 'Evolução', history: 'Histórico', goals: 'Metas',
     achievements: 'Conquistas', photos: 'Progresso', community: 'Comunidade',
@@ -359,6 +366,12 @@ export default function AppShell() {
           <TrialEndingBanner hidden={onSubscriptionPage} />
           <Suspense fallback={<div className="flex-1"><LoadingScreen /></div>}>
             <Routes>
+            <Route path="health" element={<HealthView key={user?.id} />} />
+            <Route path="health/steps" element={<HealthMetricView key={`${user?.id}-steps`} category="steps" />} />
+            <Route path="health/sleep" element={<HealthMetricView key={`${user?.id}-sleep`} category="sleep" />} />
+            <Route path="health/nutrition" element={<HealthMetricView key={`${user?.id}-nutrition`} category="nutrition" />} />
+            <Route path="health/water" element={<HealthMetricView key={`${user?.id}-water`} category="water" />} />
+            <Route path="health/weight" element={<HealthMetricView key={`${user?.id}-weight`} category="weight" />} />
             <Route index              element={isPersonal ? <PersonalDashboardView /> : <HomeView />} />
             <Route path="routine/*"      element={<RoutineView />} />
             <Route path="workout/*"      element={<WorkoutView />} />

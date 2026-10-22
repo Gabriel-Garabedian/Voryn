@@ -6,6 +6,7 @@ import { calcStreak, calcBestStreak, getRecoverySnapshot, getRoutineDates, local
 import { SkeletonHome } from '@/components/ui/Skeleton'
 import { Chevron } from '@/components/ui'
 import WorkoutLogModal from '@/components/WorkoutLogModal'
+import HomeHealthCards from '@/components/health/HomeHealthCards'
 
 const AC  = 'var(--accent)'
 const ACT = 'var(--accent-text)'
@@ -522,6 +523,7 @@ export default function HomeView() {
         <StatMini label="vs. sem. passada"
           value={lastWeek?.prevWeek ? `${lastWeek.delta >= 0 ? '+' : ''}${Math.round((lastWeek.delta / lastWeek.prevWeek) * 100)}%` : '—'}/>
       </div>
+      <HomeHealthCards key={user.id} />
     </div>
 
     {openLogDate && (
