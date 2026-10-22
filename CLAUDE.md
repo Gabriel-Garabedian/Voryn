@@ -373,12 +373,13 @@ before extending this module. These documents are part of project memory.
 ### Git handoff status
 
 - Implementation and memory committed locally as `c95e1cd` on `main`.
-- The requested push to `Gabriel-Garabedian/Voryn` was attempted, but GitHub
-  returned HTTP 403: this computer's only Git Credential Manager account,
-  `andre-w-dev`, has no write permission to that repository. No remote commit
-  or Vercel deployment from these changes was confirmed.
-- Resume by authenticating Git with an account authorized for the repository,
-  then run `git push origin main`. Do not request passwords/tokens in chat.
+- The initial push returned HTTP 403 because `andre-w-dev` lacked write access.
+  The user subsequently authenticated `Gabriel-Garabedian`. Pushing with
+  `git -c credential.username=Gabriel-Garabedian push origin main` succeeded:
+  implementation `c95e1cd` and handoff `6138635` reached remote `main`.
+  Prefer that explicit credential username for future pushes from this computer.
+  Do not request passwords/tokens in chat. Vercel deployment status has not
+  been checked; a successful Git push does not confirm a successful deployment.
 - A portable Git bundle backup is saved locally on the Desktop as
   `Voryn-backup-2026-10-22.bundle`. It contains committed source/history, not
   ignored `.env.local`, signing keys, build outputs, or APKs. Preserve the
