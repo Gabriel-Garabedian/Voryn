@@ -7,6 +7,7 @@ import { ToastProvider } from './components/ui/Toast.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 import './index.css'
 import './styles/desktop.css'
+import './styles/app-typography.css'
 import { initSentry, captureError } from './lib/sentry'
 initSentry()
 

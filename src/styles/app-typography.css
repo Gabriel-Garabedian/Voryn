@@ -1,0 +1,21 @@
+/* Typography from the redesign, scoped to the existing application shell.
+   Manrope is already loaded by index.html; dimensions and layout stay in
+   their existing stylesheets. */
+.app-shell { --font-display: 'Manrope', system-ui, sans-serif; }
+
+.app-shell .font-display {
+  font-family: var(--font-display);
+  font-weight: 650;
+  letter-spacing: -.035em;
+  text-transform: none;
+  font-synthesis: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.app-shell h1.font-display { font-weight: 700; }
+
+.app-shell .brand-hub .font-display,
+.app-shell .desktop-nav-brand .font-display {
+  font-weight: 800;
+  letter-spacing: -.055em;
+}
