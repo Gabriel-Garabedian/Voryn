@@ -1,3 +1,4 @@
+import '@/styles/insights-screens.css'
 import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
@@ -22,7 +23,7 @@ function ThemeToggle() {
   const dark = theme === 'dark'
   return (
     <button onClick={toggleTheme}
-      className="w-full f-card p-4 flex items-center justify-between transition-all">
+      aria-pressed={dark} className="vr-theme-toggle w-full f-card p-4 flex items-center justify-between transition-colors">
       <div className="flex items-center gap-3">
         <div className="w-9 h-9 rounded-xl flex items-center justify-center"
           style={{ background: 'rgba(var(--accent-rgb),.1)', border: '1px solid rgba(var(--accent-rgb),.2)' }}>
@@ -48,9 +49,9 @@ function ThemeToggle() {
           <p className="text-xs" style={{ color: 'var(--text-3)' }}>Toque para alternar</p>
         </div>
       </div>
-      <div className="relative w-12 h-6 rounded-full transition-all duration-300 flex-shrink-0"
+      <div className="relative w-12 h-6 rounded-full transition-colors duration-300 flex-shrink-0"
         style={{ background: dark ? 'var(--accent)' : 'var(--border)' }}>
-        <div className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-300"
+        <div className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-colors duration-300"
           style={{ left: dark ? '26px' : '2px' }}/>
       </div>
     </button>
@@ -93,7 +94,7 @@ function AccentColorPicker() {
           ? 'Escolha a cor de destaque do app.'
           : 'Disponível para quem tem assinatura ativa (ou acesso pelo plano do personal).'}
       </p>
-      <div className="grid grid-cols-4 gap-3" role="group" aria-label="Cor de destaque do app">
+      <div className="vr-accent-swatches grid grid-cols-4 gap-3" role="group" aria-label="Cor de destaque do app">
         {ACCENT_COLORS.map(c => {
           const selected = accentColor === c.id
           const locked   = !isPayingUser && c.id !== 'purple'
@@ -105,7 +106,7 @@ function AccentColorPicker() {
               onClick={() => !locked && setAccentColor(c.id)}
               title={locked ? 'Disponível só para assinantes' : c.label}
               aria-label={locked ? `${c.label} — disponível só para assinantes` : c.label}
-              className={`aspect-square rounded-xl flex items-center justify-center transition-all relative ${selected ? 'swatch-selected' : ''}`}
+              className={`aspect-square rounded-xl flex items-center justify-center transition-colors relative ${selected ? 'swatch-selected' : ''}`}
               style={{
                 background: c.color,
                 cursor: locked ? 'not-allowed' : 'pointer',
@@ -270,18 +271,18 @@ export default function ProfileView() {
   }, [logs])
 
   return (
-    <div className="app-view view-profile px-4 pt-6 pb-10 space-y-5">
+    <div className="app-view view-profile vr-insights px-4 pt-6 pb-10 space-y-5">
 
       {/* Título da tela. Sem h1, a tela de Perfil não se nomeava — e o nome
          do usuário abaixo é o dado, não o rótulo da tela. */}
-      <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
+      <h1 className="vr-screen-title" style={{ color: 'var(--text-1)' }}>
         Perfil
       </h1>
 
       {/* Header: avatar + nome + plano, sem card ao redor (igual ao mockup —
          o editor de nome/email continuam aqui, só sem a moldura/segundo
          avatar que existiam antes). */}
-      <div className="flex items-center gap-4">
+      <div className="vr-profile-identity flex items-center gap-4">
         <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0"
           style={{ background: 'rgba(var(--accent-rgb),.15)', border: '1.5px solid rgba(var(--accent-rgb),.35)' }}>
           <span className="font-display text-2xl" style={{ color: 'var(--accent-text)' }}>
@@ -299,7 +300,7 @@ export default function ProfileView() {
                 <button onClick={() => setEditName(false)} aria-label="Cancelar edição do nome" className="icon-btn" style={{ color: 'var(--text-3)' }}><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
               </div>
             : <div className="flex items-center gap-2">
-                <p className="font-display text-xl uppercase tracking-wide truncate" style={{ color: 'var(--text-1)' }}>
+                <p className="vr-profile-name truncate" style={{ color: 'var(--text-1)' }}>
                   {profile?.name}
                 </p>
                 <button onClick={() => { setEditName(true); setNameInput(profile?.name || '') }}
@@ -320,14 +321,14 @@ export default function ProfileView() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-2">
+      <div className="vr-profile-stats vr-stat-strip grid grid-cols-2 gap-2">
         {[
           { label: 'Treinos',    value: logs.length },
           { label: 'Sequência',  value: streak },
           { label: 'Conquistas', value: `${unlockedAch.length}/${ACHIEVEMENTS.length}` },
           { label: 'Melhor',     value: bestStreak },
         ].map(s => (
-          <div key={s.label} className="glass-card p-3 text-center">
+          <div key={s.label} className="vr-stat-cell p-3">
             <div className="font-display text-xl" style={{ color: 'var(--accent-text)' }}>{s.value}</div>
             <div className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>{s.label}</div>
           </div>
@@ -335,8 +336,8 @@ export default function ProfileView() {
       </div>
 
       {/* Conquistas recentes */}
-      <div>
-        <p className="f-label mb-2">Conquistas recentes</p>
+      <div className="vr-profile-achievements">
+        <h2 className="vr-section-title mb-2">Conquistas recentes</h2>
         <div className="flex gap-2.5">
           {ACHIEVEMENTS.slice(0, 4).map(a => {
             const unlocked = a.check(achMetrics)
@@ -374,8 +375,9 @@ export default function ProfileView() {
       )}
 
       {/* ── Assinatura ── */}
+      <div className="vr-profile-settings">
       <div style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
-        <p className="f-label mb-2">Assinatura</p>
+        <h2 className="vr-section-title mb-2">Assinatura</h2>
         <div className="f-card p-4 flex items-center justify-between">
           <div>
             <p className="font-semibold text-sm" style={{ color: 'var(--text-1)' }}>
@@ -393,7 +395,7 @@ export default function ProfileView() {
 
       {/* ── Notificações ── */}
       <div style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
-        <p className="f-label mb-2">Notificações</p>
+        <h2 className="vr-section-title mb-2">Notificações</h2>
         <div className="f-card p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center"
@@ -430,7 +432,7 @@ export default function ProfileView() {
 
       {/* ── Aparência ── */}
       <div style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
-        <p className="f-label mb-2">Aparência</p>
+        <h2 className="vr-section-title mb-2">Aparência</h2>
         <div className="space-y-3">
           <ThemeToggle />
           <AccentColorPicker />
@@ -439,7 +441,7 @@ export default function ProfileView() {
 
       {/* ── Playlist de treino (Spotify) ── */}
       <div style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
-        <p className="f-label mb-2">Playlist de treino</p>
+        <h2 className="vr-section-title mb-2">Playlist de treino</h2>
         <div className="f-card p-3.5">
           {editSpotify ? (
             <div className="flex items-center gap-2">
@@ -491,7 +493,7 @@ export default function ProfileView() {
       {/* ── PRs ── */}
       <div style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
         <div className="flex items-center justify-between mb-2">
-          <p className="f-label">Recordes Pessoais</p>
+          <p className="vr-section-title">Recordes Pessoais</p>
           <span className="text-xs" style={{ color: 'var(--text-3)' }}>em kg</span>
         </div>
         <div className="space-y-2">
@@ -502,7 +504,7 @@ export default function ProfileView() {
           )}
           {Object.keys(prs).sort().map(key => (
             <div key={key} className="f-card p-4 flex items-center gap-4">
-              <span className="section-index flex-shrink-0">PR</span>
+              <span className="vr-record-mark flex-shrink-0" aria-hidden="true">PR</span>
               <div className="flex-1">
                 <p className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>{key}</p>
                 {editingPR === key
@@ -523,7 +525,7 @@ export default function ProfileView() {
                         ? <span className="font-display text-base" style={{ color: 'var(--accent-text)' }}>
                             {prs[key].weight} kg
                           </span>
-                        : <span style={{ color: 'rgba(var(--accent-rgb),.3)' }}>Não registrado</span>
+                        : <span style={{ color: 'var(--text-3)' }}>Não registrado</span>
                       }
                     </p>
                 }
@@ -585,7 +587,7 @@ export default function ProfileView() {
       <div style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
         <button onClick={() => setShowHistory(!showHistory)}
           className="flex items-center justify-between w-full mb-2">
-          <p className="f-label">Histórico Recente</p>
+          <p className="vr-section-title">Histórico Recente</p>
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24"
             stroke="var(--muted)" strokeWidth="2"
             style={{ transform: showHistory ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform .2s' }} aria-hidden="true">
@@ -639,7 +641,7 @@ export default function ProfileView() {
 
       {/* ── Exportar Dados ── */}
       <div style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
-        <p className="f-label mb-2">Exportar meus dados</p>
+        <h2 className="vr-section-title mb-2">Exportar meus dados</h2>
         <div className="space-y-2">
           {[
             { label: 'Dados completos (JSON)', fn: async () => {
@@ -683,7 +685,7 @@ export default function ProfileView() {
 
       {/* ── Legal ── */}
       <div className="space-y-2" style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
-        <p className="f-label">Legal</p>
+        <p className="vr-section-title">Legal</p>
         <div className="grid grid-cols-2 gap-2">
           <a href="/privacy" target="_blank"
             className="f-card p-3 text-center text-sm"
@@ -715,7 +717,7 @@ export default function ProfileView() {
         {!showDelete
           ? <button onClick={() => setShowDelete(true)}
               className="w-full text-center text-xs py-2 transition-colors"
-              style={{ color: 'rgba(var(--danger-rgb), .35)' }}>
+              style={{ color: 'var(--danger)' }}>
               Excluir minha conta
             </button>
           : <div className="f-card p-4 space-y-3 scale-in"
@@ -743,8 +745,9 @@ export default function ProfileView() {
         }
       </div>
 
-      <p className="text-center text-xs font-body tracking-widest"
-        style={{ color: 'rgba(var(--accent-rgb),.2)' }}>
+      </div>
+      <p className="vr-profile-version text-center text-xs font-body"
+        style={{ color: 'var(--text-3)' }}>
         VORYN v2.0
       </p>
     </div>

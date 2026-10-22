@@ -1,3 +1,4 @@
+import '@/styles/insights-screens.css'
 import React, { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { supabase } from '@/lib/supabase'
@@ -38,7 +39,7 @@ function StudentCard({ student, onSelect, inactive, pendingAssessment, lastWorko
 
   return (
     <button onClick={() => onSelect(student)}
-      className="w-full f-card p-4 text-left flex items-center gap-4 transition-all"
+      className="vr-student-row w-full f-card p-4 text-left flex items-center gap-4 transition-all"
       style={inactive ? { borderColor:'rgba(var(--danger-rgb), .25)', background:'rgba(var(--danger-rgb), .03)' } : {}}
       onMouseEnter={e => e.currentTarget.style.borderColor='rgba(var(--accent-rgb),.4)'}
       onMouseLeave={e => e.currentTarget.style.borderColor = inactive ? 'rgba(var(--danger-rgb), .25)' : 'var(--border)'}>
@@ -116,7 +117,7 @@ function StudentDetail({ student, trainerId, onBack }) {
   }
 
   return (
-    <div className="animate-slide-up">
+    <div className="vr-student-detail vr-insights animate-slide-up">
       {/* Header with back + PDF export */}
       <div className="flex items-center justify-between px-4 pt-4 mb-4">
         <button onClick={onBack} className="flex items-center gap-2 text-sm" style={{ color:'var(--text-3)' }}>
@@ -158,7 +159,7 @@ function StudentDetail({ student, trainerId, onBack }) {
             <span className="font-display text-2xl" style={{ color:'var(--accent-text)' }}>{name.charAt(0).toUpperCase()}</span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-display text-xl uppercase tracking-wide" style={{ color:'var(--text-1)' }}>{name}</p>
+            <p className="vr-profile-name" style={{ color:'var(--text-1)' }}>{name}</p>
             <p className="text-xs" style={{ color:'var(--text-3)' }}>{email}</p>
           </div>
           {student.spotify_url && (
@@ -330,7 +331,7 @@ function GoalsTrainer({ studentId }) {
   if (!hasAnyGoal) {
     return (
       <div className="f-card p-6 text-center" style={{ color: 'var(--text-3)' }}>
-        <div className="section-index mb-2">TARGET</div>
+
         <p className="text-sm">Este aluno ainda não definiu metas.</p>
       </div>
     )
@@ -611,7 +612,7 @@ function ConsistencyRanking({ students, ranking, onSelect }) {
   return (
     <div className="f-card p-4 animate-slide-up" style={{ borderColor: 'rgba(var(--warning-rgb), .25)', background: 'rgba(var(--warning-rgb), .03)' }}>
       <div className="flex items-center gap-2 mb-3">
-        <span className="section-index">STREAK</span>
+
         <p className="text-sm font-semibold" style={{ color: 'var(--warning)' }}>Ranking de consistência</p>
       </div>
       <div className="space-y-2">
@@ -641,7 +642,7 @@ function RecentPRsPanel({ newPRs, students }) {
   if (!newPRs?.length) {
     return (
       <div className="text-center py-10">
-        <div className="section-index mb-2">PR BOARD</div>
+
         <p className="text-sm font-semibold" style={{ color: 'var(--text-2)' }}>
           Nenhum PR batido nos últimos 7 dias
         </p>
@@ -784,10 +785,10 @@ export default function PersonalDashboardView() {
   const atLimit = students.length >= studentLimit
 
   return (
-    <div className="app-view personal-dashboard-view px-4 pt-6 pb-4 space-y-5">
+    <div className="app-view personal-dashboard-view vr-insights px-4 pt-6 pb-4 space-y-5">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color:'var(--text-1)' }}>Meus Alunos</h1>
+          <h1 className="vr-screen-title" style={{ color:'var(--text-1)' }}>Meus Alunos</h1>
           <p className="text-sm mt-0.5" style={{ color: atLimit ? 'var(--danger)' : 'var(--text-3)' }}>
             {students.length} / {studentLimit} alunos
           </p>
@@ -856,7 +857,7 @@ export default function PersonalDashboardView() {
           },
         ].map(s => (
           <button key={s.key} onClick={() => setFilterView(s.key === 'all' ? 'all' : s.key)}
-            className="f-card p-3.5 text-left transition-all relative"
+            aria-pressed={filterView === s.key} className="vr-student-metric f-card p-3.5 text-left transition-all relative"
             style={{
               borderColor: filterView === s.key ? s.color : 'var(--border)',
               background:  filterView === s.key ? s.bg : 'var(--card)',
@@ -864,14 +865,14 @@ export default function PersonalDashboardView() {
             onMouseEnter={e => e.currentTarget.style.borderColor = s.border}
             onMouseLeave={e => e.currentTarget.style.borderColor = filterView === s.key ? s.color : 'var(--border)'}>
             <div className="flex items-center justify-between mb-1.5">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: s.bg, color: s.color }}>
+              <div className="vr-metric-icon" style={{ color: s.urgent ? s.color : 'var(--text-3)' }}>
                 {s.icon}
               </div>
               {s.urgent && (
-                <span className="w-2 h-2 rounded-full" aria-hidden="true" style={{ background: s.color, boxShadow: `0 0 6px ${s.color}` }}/>
+                <span className="w-2 h-2 rounded-full" aria-hidden="true" style={{ background: s.color, boxShadow: 'none' }}/>
               )}
             </div>
-            <div className="font-display text-2xl leading-none" style={{ color: s.color }}>{s.value}</div>
+            <div className="font-display text-2xl leading-none" style={{ color: s.urgent ? s.color : 'var(--text-1)' }}>{s.value}</div>
             <div className="text-xs mt-1 leading-tight" style={{ color: 'var(--text-3)' }}>{s.label}</div>
           </button>
         ))}
@@ -997,7 +998,7 @@ export default function PersonalDashboardView() {
             if (filterView !== 'all' && filtered.length === 0) {
               return (
                 <div className="text-center py-10">
-                  <div className="section-index mb-2">CLEAR</div>
+
                   <p className="text-sm font-semibold" style={{ color: 'var(--text-2)' }}>
                     {filterView === 'inactive' ? 'Todos os alunos estão treinando!' : 'Todas as avaliações estão em dia!'}
                   </p>

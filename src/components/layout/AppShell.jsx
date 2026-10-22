@@ -24,14 +24,12 @@ import TrialEndingBanner     from '@/components/ui/TrialEndingBanner'
 import { pushService }       from '@/services/pushNotifications'
 import { activeWorkoutService, offlineSyncService, syncPendingWorkouts } from '@/services'
 
-// Barra de baixo do aluno: Início, Histórico, Treinar (botão central em
-// destaque), Evolução e Perfil. As demais telas (Rotina, Metas, Conquistas,
-// Progresso, Comunidade, Personal) ficam no menu "Mais" do cabeçalho
-// (MORE_EXTRAS) e nos atalhos da Home — nenhuma deixou de existir.
+// A ficha fica a um toque do treino. Histórico e recursos complementares
+// continuam no menu do celular e na navegação expandida do desktop.
 const STUDENT_NAV = [
   { path: '',          label: 'Início',    icon: 'home' },
-  { path: 'history',   label: 'Histórico', icon: 'history' },
-  { path: 'workout',   label: 'Treinar',   icon: 'workout', raised: true },
+  { path: 'routine',   label: 'Rotina',    icon: 'routine' },
+  { path: 'workout',   label: 'Treinar',   icon: 'workout' },
   { path: 'evolution', label: 'Evolução',  icon: 'evolution' },
   { path: 'profile',   label: 'Perfil',    icon: 'profile' },
 ]
@@ -44,6 +42,7 @@ const PERSONAL_NAV = [
 ]
 
 const MORE_EXTRAS = [
+  { path: 'history',      icon: 'history',      label: 'Histórico'},
   { path: 'routine',      icon: 'routine',      label: 'Rotina'    },
   { path: 'goals',        icon: 'goals',        label: 'Metas'     },
   { path: 'achievements', icon: 'achievements', label: 'Conquistas'},
@@ -146,10 +145,15 @@ export function MoreSheet({ open, onClose, navigate, base, currentPath, triggerR
       <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,.72)' }}/>
       <div role="dialog" aria-modal="true" aria-labelledby="more-options-title" ref={panelRef}
         className="absolute bottom-0 left-0 right-0 max-w-2xl mx-auto slide-in-bottom f-card"
-        style={{ borderRadius: '24px 24px 0 0', borderBottom: 'none', padding: '12px 20px 40px' }}
+        style={{ borderRadius: '24px 24px 0 0', borderBottom: 'none', padding: '12px 20px max(24px, env(safe-area-inset-bottom))', maxHeight: 'calc(100dvh - 48px)', overflowY: 'auto' }}
         onClick={e => e.stopPropagation()}>
         <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: 'var(--border)' }}/>
-        <p id="more-options-title" className="text-sm font-semibold mb-4" style={{ color: 'var(--text-3)' }}>Mais opções</p>
+        <div className="flex items-center justify-between mb-4">
+          <p id="more-options-title" className="text-base font-semibold" style={{ color: 'var(--text-1)' }}>Explorar Voryn</p>
+          <button type="button" className="icon-btn" onClick={onClose} aria-label="Fechar mais opções">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg>
+          </button>
+        </div>
         <div className="grid grid-cols-3 gap-3">
           {MORE_EXTRAS.map(e => {
             const active = currentPath === `${base}/${e.path}`
@@ -171,7 +175,7 @@ export function MoreSheet({ open, onClose, navigate, base, currentPath, triggerR
 }
 
 export default function AppShell() {
-  const { isPersonal, isAdmin, profile, user, subStatus, isActive: subIsActive, emailConfirmed, signOut } = useAuth()
+  const { isPersonal, isAdmin, profile, user, subStatus, isActive: subIsActive, emailConfirmed, signOut, theme, toggleTheme } = useAuth()
   const navigate  = useNavigate()
   const location  = useLocation()
   const [moreOpen,    setMoreOpen]    = useState(false)
@@ -295,7 +299,7 @@ export default function AppShell() {
   const displayName = profile?.name?.split(' ')[0] || (isPersonal ? 'Personal' : 'Atleta')
 
   return (
-    <div className="app-shell h-screen flex flex-col" style={{ background: 'var(--bg)' }}>
+    <div className={`app-shell vr-shell${inActiveWorkout ? ' vr-shell--training' : ''}`} style={{ background: 'var(--bg)' }}>
       {/* Skip-link: primeiro elemento focável da página. Pula o cabeçalho
           e a dock para o conteúdo principal (WCAG 2.4.1 / 2.4.11). */}
       <a href="#main-content" className="skip-link">Pular para o conteúdo</a>
@@ -318,17 +322,23 @@ export default function AppShell() {
               <div className="app-header-context text-xs mt-1" style={{ color: 'var(--text-3)' }}>{screenLabel}</div>
             </div>
           </button>
-          <div className="flex items-center gap-2.5">
-            <span className="app-status-pill hidden sm:inline-flex">
-              <span aria-hidden="true" />
-              Em movimento
-            </span>
+          <div className="vr-header-actions flex items-center gap-2.5">
             <span className="hidden sm:block text-xs text-right" style={{ color: 'var(--text-3)' }}>
               Olá, <strong style={{ color: 'var(--text-2)' }}>{displayName}</strong>
             </span>
-            {!isPersonal && (
+            <button type="button" className="icon-btn vr-theme-toggle" onClick={toggleTheme}
+              aria-label={theme === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'}>
+              {theme === 'dark' ? (
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>
+              ) : (
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="M20.5 13.2A8.7 8.7 0 0110.8 3.5a8.8 8.8 0 109.7 9.7z"/></svg>
+              )}
+            </button>
+            <>
               <button ref={moreTriggerRef} onClick={() => setMoreOpen(true)} aria-label="Mais opções"
-                className="w-10 h-10 rounded-full flex items-center justify-center border cursor-pointer"
+                className="vr-more-trigger w-10 h-10 rounded-full flex items-center justify-center border cursor-pointer"
+                aria-expanded={moreOpen}
+                aria-haspopup="dialog"
                 style={{
                   background: onMoreScreen ? 'var(--raised)' : 'transparent',
                   color: onMoreScreen ? 'var(--text-1)' : 'var(--text-2)',
@@ -339,7 +349,7 @@ export default function AppShell() {
                   <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
                 </svg>
               </button>
-            )}
+            </>
             <button onClick={() => navigate(`${base}/profile`)} className="profile-chip w-10 h-10 rounded-full flex items-center justify-center border cursor-pointer font-display text-lg" style={{ color: 'var(--text-1)' }} aria-label="Abrir perfil">
               {displayName.charAt(0).toUpperCase()}
             </button>
@@ -377,45 +387,47 @@ export default function AppShell() {
       </div>
 
       {/* Bottom Nav */}
-      <nav aria-label="Navegação principal" className="app-nav px-3 pb-3" style={{ background: 'transparent', flexShrink: 0, display: inActiveWorkout ? 'none' : undefined }}>
-        <div className="native-dock f-card flex items-center justify-around px-2 pt-2 max-w-2xl mx-auto" style={{ paddingBottom: 'max(10px, env(safe-area-inset-bottom))' }}>
+      <nav aria-label="Navegação principal" className="app-nav" style={inActiveWorkout ? { display: 'none' } : undefined}>
+        <div className="native-dock">
+          <button type="button" className="vr-sidebar-brand" onClick={() => navigate(base)} aria-label="Voryn, início">
+            <img src="/voryn-icon-192.png" alt="" width="34" height="34" />
+            <span>voryn<span className="vr-brand-period">.</span></span>
+          </button>
+          <p className="vr-nav-caption">{isPersonal ? 'Seu trabalho' : 'Seu treino'}</p>
+          <div className="vr-nav-primary">
           {navItems.map(item => {
             const active = isActive(item.path)
-            // Botão central "Treinar": a ação principal do app, feita
-            // primária por inversão (pílula clara, tinta quase preta).
-            if (item.raised) {
-              return (
-                <button key={item.path} onClick={() => handleNav(item.path)}
-                  className="flex flex-col items-center gap-1 px-2 active:scale-95 transition-transform min-w-[58px]"
-                  style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
-                  aria-label={item.label}
-                  aria-current={active ? 'page' : undefined}>
-                  <span className="flex items-center justify-center rounded-full"
-                    style={{
-                      width: 50, height: 50, marginTop: -22,
-                      background: 'var(--inverse)', color: 'var(--on-inverse)',
-                      border: '4px solid var(--bg)',
-                    }}>
-                    <NavIcon type={item.icon} active={true}/>
-                  </span>
-                  <span className="font-display uppercase tracking-wider"
-                    style={{ fontSize: 11, fontWeight: 800, color: active ? 'var(--text-1)' : 'var(--muted)' }}>{item.label}</span>
-                </button>
-              )
-            }
             return (
               <button key={item.path} onClick={() => handleNav(item.path)}
-                className="dock-item flex flex-col items-center gap-1 px-3 py-2 rounded-xl relative active:scale-95 min-w-[58px]"
+                className={`dock-item${item.path === 'workout' ? ' vr-nav-workout' : ''}`}
                 aria-label={item.label}
                 aria-current={active ? 'page' : undefined}
                 style={{ color: active ? 'var(--text-1)' : 'var(--muted)', border: 'none', background: 'transparent', cursor: 'pointer' }}>
-                <div style={{ transform: active ? 'scale(1.12)' : 'scale(1)', transition: 'transform .15s' }}>
-                  <NavIcon type={item.icon} active={active}/>
-                </div>
-                <span style={{ fontSize: item.path === 'workout' ? 12 : 11, fontWeight: active ? 800 : 500 }}>{item.label}</span>
+                <NavIcon type={item.icon} active={active}/>
+                <span>{item.label}</span>
               </button>
             )
           })}
+          </div>
+          <div className="vr-nav-secondary">
+            <p className="vr-nav-caption">Acompanhamento</p>
+            {MORE_EXTRAS.filter(item => !navItems.some(primary => primary.path === item.path)).map(item => (
+              <button type="button" key={item.path} className="dock-item" onClick={() => handleNav(item.path)}
+                aria-current={isActive(item.path) ? 'page' : undefined}>
+                <MoreIcon type={item.icon}/><span>{item.label}</span>
+              </button>
+            ))}
+            <button type="button" className="dock-item" onClick={() => handleNav('subscription')}
+              aria-current={isActive('subscription') ? 'page' : undefined}>
+              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18M7 15h4"/></svg>
+              <span>Assinatura</span>
+            </button>
+          </div>
+          <button type="button" className="vr-sidebar-account" onClick={() => handleNav('profile')}>
+            <span className="vr-account-initial">{displayName.charAt(0).toUpperCase()}</span>
+            <span><strong>{displayName}</strong><small>{isPersonal ? 'Personal trainer' : 'Minha conta'}</small></span>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+          </button>
         </div>
       </nav>
     </div>

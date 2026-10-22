@@ -1,3 +1,4 @@
+import '@/styles/insights-screens.css'
 import React, { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
@@ -23,18 +24,18 @@ export default function CommunityView() {
   }
 
   return (
-    <div className="app-view view-community px-4 pt-6 pb-8">
-      <p className="view-kicker">Training network / 09</p>
-      <h1 className="font-display text-3xl uppercase tracking-wide mb-4" style={{ color: 'var(--text-1)' }}>Comunidade</h1>
+    <div className="app-view vr-secondary view-community px-4 pt-6 pb-8">
+      <h1 className="vr-screen-title mb-1" style={{ color: 'var(--text-1)' }}>Comunidade</h1>
+      <p className="text-sm mb-4" style={{ color: 'var(--text-3)' }}>Seu treino, em boa companhia.</p>
 
       {/* Tabs */}
       <div className="flex gap-2 mb-5 p-1 rounded-xl" style={{ background: 'var(--surface)' }}>
         {[['grupos', 'Grupos'], ['amigos', 'Amigos']].map(([id, label]) => (
-          <button key={id} onClick={() => setTab(id)}
+          <button key={id} aria-pressed={tab === id} onClick={() => setTab(id)}
             className="flex-1 py-2 rounded-lg text-sm font-semibold transition-all"
             style={{
-              background: tab === id ? 'var(--accent)' : 'transparent',
-              color: tab === id ? '#fff' : 'var(--text-3)',
+              background: tab === id ? 'var(--card)' : 'transparent',
+              color: tab === id ? 'var(--text-1)' : 'var(--text-3)',
             }}>
             {label}
           </button>
@@ -97,7 +98,7 @@ function GroupsTab({ userId, onSelect }) {
               className="f-card w-full p-4 flex items-center gap-3 text-left">
               <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
                 style={{ background: 'rgba(var(--accent-rgb),.1)' }}>
-                <span className="section-index">GROUP</span>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-sm truncate" style={{ color: 'var(--text-1)' }}>{c.name}</p>
@@ -228,7 +229,7 @@ function CommunityDetail({ community, userId, onBack, onLeft }) {
   }
 
   return (
-    <div className="app-view view-community-detail px-4 pt-6 pb-8">
+    <div className="app-view vr-secondary view-community-detail px-4 pt-6 pb-8">
       <button onClick={onBack} className="flex items-center gap-2 text-sm mb-4" style={{ color: 'var(--text-3)' }}>
         <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
           <polyline points="15 18 9 12 15 6"/>
@@ -236,17 +237,17 @@ function CommunityDetail({ community, userId, onBack, onLeft }) {
         Voltar
       </button>
 
-      <h1 className="font-display text-2xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>{community.name}</h1>
+      <h1 className="vr-section-title" style={{ color: 'var(--text-1)' }}>{community.name}</h1>
       {community.description && <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>{community.description}</p>}
 
       {/* Sub-tabs: Chat (padrão) | Sobre */}
       <div className="flex gap-2 my-4 p-1 rounded-xl" style={{ background: 'var(--surface)' }}>
         {[['chat', 'Chat'], ['sobre', 'Sobre']].map(([id, label]) => (
-          <button key={id} onClick={() => setDetailTab(id)}
+          <button key={id} aria-pressed={detailTab === id} onClick={() => setDetailTab(id)}
             className="flex-1 py-2 rounded-lg text-sm font-semibold transition-all"
             style={{
-              background: detailTab === id ? 'var(--accent)' : 'transparent',
-              color: detailTab === id ? '#fff' : 'var(--text-3)',
+              background: detailTab === id ? 'var(--card)' : 'transparent',
+              color: detailTab === id ? 'var(--text-1)' : 'var(--text-3)',
             }}>
             {label}
           </button>
@@ -262,7 +263,7 @@ function CommunityDetail({ community, userId, onBack, onLeft }) {
           {/* Invite link */}
           <div className="f-card p-3.5 mb-4 flex items-center gap-3">
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--text-3)' }}>Link de convite</p>
+              <p className="text-xs font-semibold mb-1" style={{ color: 'var(--text-3)' }}>Link de convite</p>
               <p className="text-xs truncate" style={{ color: 'var(--text-2)' }}>{inviteLink}</p>
             </div>
             <Button size="sm" onClick={copyInvite} className="flex-shrink-0">
@@ -483,7 +484,7 @@ function FriendsTab({ userId, onSelect }) {
       {/* Meu link pessoal */}
       <div className="f-card p-3.5 mb-6 flex items-center gap-3">
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--text-3)' }}>Seu link pessoal</p>
+          <p className="text-xs font-semibold mb-1" style={{ color: 'var(--text-3)' }}>Seu link pessoal</p>
           <p className="text-xs truncate" style={{ color: 'var(--text-2)' }}>{myLink}</p>
         </div>
         <Button size="sm" onClick={copyMyLink} className="flex-shrink-0" disabled={!profile?.friend_invite_code}>
@@ -568,11 +569,11 @@ function FriendDetail({ friend, onBack }) {
       {/* Sub-tabs: Chat (padrão) | Perfil */}
       <div className="flex gap-2 mb-4 p-1 rounded-xl" style={{ background: 'var(--surface)' }}>
         {[['chat','Chat'],['perfil','Perfil']].map(([id,label]) => (
-          <button key={id} onClick={() => setDetailTab(id)}
+          <button key={id} aria-pressed={detailTab === id} onClick={() => setDetailTab(id)}
             className="flex-1 py-2 rounded-lg text-sm font-semibold transition-all"
             style={{
-              background: detailTab === id ? 'var(--accent)' : 'transparent',
-              color: detailTab === id ? '#fff' : 'var(--text-3)',
+              background: detailTab === id ? 'var(--card)' : 'transparent',
+              color: detailTab === id ? 'var(--text-1)' : 'var(--text-3)',
             }}>
             {label}
           </button>

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui'
 import { useToast } from '@/components/ui/Toast'
 import { SkeletonList } from '@/components/ui/Skeleton'
 import ExercisePicker from '@/components/ExercisePicker'
+import '@/styles/training-screens.css'
 
 const DAYS_FULL  = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
 const DAYS_SHORT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
@@ -206,11 +207,11 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
   }
 
   return (
-    <div className="app-view routine-view pb-8">
+    <div className="app-view routine-view vr-routine pb-8">
       {/* Header */}
       <div className="px-4 pt-6 pb-4 flex items-start justify-between gap-3">
         <div>
-          <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
+          <h1 className="vr-screen-title font-display text-3xl" style={{ color: 'var(--text-1)' }}>
             {isEmbedded ? 'Ficha de Treino' : 'Minha Rotina'}
           </h1>
           <p className="text-sm mt-1 flex items-center gap-2" style={{ color: 'var(--text-3)' }}>
@@ -247,7 +248,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
             Ficha montada por <span style={{ color: 'var(--accent-text)', fontWeight: 600 }}>{trainerName}</span>
           </div>
         )}
-        <div className="schedule-rail flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Selecionar dia da semana" style={{ scrollbarWidth: 'none' }}>
+        <div className="schedule-rail vr-day-rail" role="group" aria-label="Selecionar dia da semana" style={{ scrollbarWidth: 'none' }}>
           {DAYS_SHORT.map((d, i) => {
             const hasPlan = routines[i]?.name || routines[i]?.exercises?.length
             const isSel   = i === selectedDay
@@ -267,7 +268,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                   <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full" style={{ background: AC }} aria-hidden="true"/>
                 )}
                 <span className="text-xs font-semibold">{d}</span>
-                <span className="text-xs">{isToday ? 'Hoje' : `${i+1}°`}</span>
+                <span className="text-xs">{isToday ? 'Hoje' : hasPlan ? 'Treino' : 'Livre'}</span>
               </button>
             )
           })}
@@ -280,7 +281,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
         ) : (
           <>
             {/* Name card */}
-            <div className="f-card p-4">
+            <div className="f-card vr-routine-session p-4">
               <div className="flex items-center gap-3">
                 <div className="flex-1">
                   {editName ? (
@@ -292,7 +293,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                       onKeyDown={e => { if (e.key === 'Enter') { setEditName(false); if (day?.name) toast.success('Nome salvo!') } }}
                     />
                   ) : (
-                    <button className="text-left w-full" onClick={() => setEditName(true)}>
+                    <button className="vr-routine-name text-left w-full" aria-label="Editar nome do treino" onClick={() => setEditName(true)}>
                       <p className="text-xs font-semibold mb-0.5" style={{ color: 'var(--text-3)' }}>
                         {DAYS_FULL[selectedDay]}
                       </p>
@@ -303,7 +304,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                   )}
                 </div>
                 {(day?.name || day?.exercises?.length > 0) && (
-                  <button onClick={() => clearDay(selectedDay)} style={{ color: 'rgba(var(--danger-rgb), .4)' }}>
+                  <button className="vr-clear-day" aria-label={`Limpar treino de ${DAYS_FULL[selectedDay]}`} onClick={() => clearDay(selectedDay)} style={{ color: 'var(--danger)' }}>
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                       <polyline points="3 6 5 6 21 6"/>
                       <path d="M19 6l-1 14H6L5 6"/>
@@ -380,10 +381,10 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                 </p>
                 {day.exercises.map((ex, idx) => (
                   <div key={ex.id}>
-                    <div className="f-card p-3 transition-all"
+                    <div className="f-card vr-exercise-row p-3 transition-colors"
                       style={editingEx?.exId === ex.id ? { borderColor: 'rgba(var(--accent-rgb),.4)' } : {}}>
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                        <div className="vr-exercise-index w-8 h-8 flex items-center justify-center flex-shrink-0"
                           style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
                           <span className="font-display font-bold text-sm" style={{ color: ACT }}>{idx + 1}</span>
                         </div>
@@ -392,16 +393,16 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                             chip "Alvo", e um gráfico de 48px repetido em
                             cada linha é ruído. O diagrama fica na tela de
                             Treino, onde ele ajuda a mirar o exercício. */}
-                        <div className="flex-1 min-w-0" onClick={() => setEditingEx(editingEx?.exId === ex.id ? null : { exId: ex.id, sets: String(ex.sets), reps: ex.reps, notes: ex.notes || '', supersetGroup: ex.supersetGroup || '' })}>
+                        <button type="button" className="vr-exercise-edit flex-1 min-w-0 text-left" aria-label={`Editar ${ex.name}`} aria-expanded={editingEx?.exId === ex.id} onClick={() => setEditingEx(editingEx?.exId === ex.id ? null : { exId: ex.id, sets: String(ex.sets), reps: ex.reps, notes: ex.notes || '', supersetGroup: ex.supersetGroup || '' })}>
                           <p className="font-semibold text-sm truncate" style={{ color: 'var(--text-1)' }}>{ex.name}</p>
                           <p className="text-xs" style={{ color: 'var(--text-3)' }}>
                             {ex.sets} séries × {ex.reps} reps
-                            {ex.muscle && <span style={{ color: 'rgba(var(--accent-rgb),.5)' }}> · {ex.muscle}</span>}
+                            {ex.muscle && <span style={{ color: 'var(--text-2)' }}> · {ex.muscle}</span>}
                             {ex.supersetGroup && <span style={{ color: ACT }}> · SS {ex.supersetGroup}</span>}
                           </p>
-                          <span className="muscle-target-chip">Alvo: {ex.muscle || 'não informado'}</span>
-                        </div>
-                        <div className="flex items-center gap-0.5">
+                          {ex.notes && <span className="vr-exercise-notes">{ex.notes}</span>}
+                        </button>
+                        <div className="vr-exercise-tools flex items-center gap-0.5">
                           <button onClick={() => moveExercise(selectedDay, ex.id, -1)} disabled={idx === 0}
                             aria-label={`Mover ${ex.name} para cima`}
                             className="p-1.5 disabled:opacity-20" style={{ color: 'var(--text-3)' }}>
@@ -414,7 +415,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                           </button>
                           <button onClick={() => removeExercise(selectedDay, ex.id)} className="p-1.5"
                             aria-label={`Remover ${ex.name}`}
-                            style={{ color: 'rgba(var(--danger-rgb), .4)' }}>
+                            style={{ color: 'var(--danger)' }}>
                             <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                             </svg>
@@ -472,7 +473,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
 
             {/* Add exercise button */}
             <button onClick={() => setShowPicker(true)}
-              className="w-full f-card p-3 flex items-center justify-center gap-2"
+              className="vr-add-exercise w-full f-card p-3 flex items-center justify-center gap-2"
               style={{ borderStyle: 'dashed', color: 'var(--text-2)' }}>
               <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <circle cx="12" cy="12" r="10"/>

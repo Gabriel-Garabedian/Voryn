@@ -1,3 +1,4 @@
+import '@/styles/insights-screens.css'
 import React, { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { readStoredJson } from '@/utils/helpers'
@@ -30,7 +31,7 @@ function AchievementCard({ achievement, unlocked, isNew }) {
   return (
     <div ref={ref} className="f-card p-4 flex items-center gap-4 transition-all"
       style={{
-        opacity: unlocked ? 1 : 0.45,
+        opacity: unlocked ? 1 : 0.78,
         borderColor: unlocked ? 'rgba(var(--accent-rgb),.4)' : 'var(--border)',
         background: unlocked ? 'rgba(var(--accent-rgb),.04)' : 'var(--card)',
       }}>
@@ -40,7 +41,7 @@ function AchievementCard({ achievement, unlocked, isNew }) {
           border: `1.5px solid ${unlocked ? 'rgba(var(--accent-rgb),.4)' : 'var(--border)'}`,
           filter: unlocked ? 'none' : 'grayscale(100%)',
         }}>
-        {achievement.icon}
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="m8.5 12-1 9 4.5-3 4.5 3-1-9"/></svg>
         {isNew && (
           <span className="absolute -top-1 -right-1 text-xs font-bold px-1.5 py-0.5 rounded-full"
             style={{ background: 'var(--success-solid)', color: 'var(--on-success)', fontSize: 12 }}>
@@ -64,7 +65,7 @@ function AchievementCard({ achievement, unlocked, isNew }) {
       {unlocked && (
         <div className="flex-shrink-0">
           <div className="w-8 h-8 rounded-full flex items-center justify-center"
-            style={{ background: 'var(--accent)', boxShadow: '0 0 12px rgba(var(--accent-rgb),.4)' }}>
+            style={{ background: 'var(--accent)', boxShadow: 'none' }}>
             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="3" aria-hidden="true">
               <polyline points="20 6 9 17 4 12"/>
             </svg>
@@ -97,8 +98,7 @@ export default function AchievementsView() {
   }, [user])
 
   if (loading) return (
-    <div className="app-view view-achievements px-4 pt-6 pb-8">
-      <p className="view-kicker">Milestones / 07</p>
+    <div className="app-view vr-secondary view-achievements px-4 pt-6 pb-8">
       <div className="mb-6 space-y-2">
         <div className="skeleton-pulse h-8 w-40 rounded-lg" style={{ background: 'var(--border)' }}/>
         <div className="skeleton-pulse h-4 w-24 rounded" style={{ background: 'var(--border)' }}/>
@@ -120,8 +120,8 @@ export default function AchievementsView() {
   const nextMilestone = MILESTONES.find(m => m.streak > streak)
 
   return (
-    <div className="px-4 pt-6 pb-8">
-      <h1 className="font-display text-3xl uppercase tracking-wide mb-1" style={{ color: 'var(--text-1)' }}>
+    <div className="app-view vr-secondary view-achievements px-4 pt-6 pb-8">
+      <h1 className="vr-screen-title mb-1" style={{ color: 'var(--text-1)' }}>
         Conquistas
       </h1>
       <p className="text-sm mb-6" style={{ color: 'var(--text-3)' }}>
@@ -136,7 +136,7 @@ export default function AchievementsView() {
         </div>
         <div className="h-2 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
           <div className="h-full rounded-full transition-all duration-700"
-            style={{ width: `${pct}%`, background: 'var(--accent)', boxShadow: '0 0 8px rgba(var(--accent-rgb),.4)' }}/>
+            style={{ width: `${pct}%`, background: 'var(--accent)', boxShadow: 'none' }}/>
         </div>
         <div className="grid grid-cols-3 gap-3 mt-4">
           {[
@@ -156,7 +156,7 @@ export default function AchievementsView() {
       {nextMilestone && (
         <div className="f-card p-4 mb-5 flex items-center gap-3"
           style={{ borderColor: 'rgba(var(--warning-rgb), .2)', background: 'rgba(var(--warning-rgb), .04)' }}>
-          <span className="section-index">NEXT</span>
+
           <div>
             <p className="text-xs font-semibold" style={{ color: 'var(--warning)' }}>Próxima conquista</p>
             <p className="text-sm font-bold" style={{ color: 'var(--text-1)' }}>{nextMilestone.label}</p>
@@ -170,7 +170,7 @@ export default function AchievementsView() {
       {newlyUnlocked.size > 0 && (
         <div className="f-card p-4 mb-5 flex items-center gap-3"
           style={{ borderColor: 'rgba(var(--success-rgb), .3)', background: 'rgba(var(--success-rgb), .06)' }}>
-          <span className="section-index">NEW</span>
+
           <div>
             <p className="text-sm font-bold" style={{ color: 'var(--success)' }}>
               {newlyUnlocked.size === 1 ? 'Nova conquista desbloqueada!' : `${newlyUnlocked.size} novas conquistas!`}
@@ -182,7 +182,7 @@ export default function AchievementsView() {
 
       {unlocked.length > 0 && (
         <div className="mb-5">
-          <p className="f-label mb-3">01 · Desbloqueadas ({unlocked.length})</p>
+          <h2 className="vr-section-title mb-3">Desbloqueadas ({unlocked.length})</h2>
           <div className="space-y-2">
             {unlocked.map(a => (
               <AchievementCard key={a.id} achievement={a} unlocked={true} isNew={newlyUnlocked.has(a.id)}/>
@@ -193,7 +193,7 @@ export default function AchievementsView() {
 
       {locked.length > 0 && (
         <div>
-          <p className="f-label mb-3">02 · Bloqueadas ({locked.length})</p>
+          <h2 className="vr-section-title mb-3">Bloqueadas ({locked.length})</h2>
           <div className="space-y-2">
             {locked.map(a => <AchievementCard key={a.id} achievement={a} unlocked={false} isNew={false}/>)}
           </div>

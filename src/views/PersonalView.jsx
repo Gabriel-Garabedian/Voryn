@@ -1,3 +1,4 @@
+import '@/styles/insights-screens.css'
 import React, { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { assessmentService, messageService, programService } from '@/services'
@@ -14,7 +15,7 @@ const SUBTABS = [
 
 function TrainerOverview({ data, onRemove }) {
   return (
-    <div className="app-view view-personal space-y-4 animate-fade-in">
+    <div className="app-view vr-secondary view-personal space-y-4 animate-fade-in">
       <div className="f-card p-5">
         <div className="flex items-start gap-4">
           <div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
@@ -121,7 +122,7 @@ function Chat({ trainerId, studentId, userId }) {
       <div className="flex-1 overflow-y-auto px-1 py-2 space-y-3">
         {msgs.length === 0 && (
           <div className="text-center py-12">
-            <div className="section-index mb-3">CHAT</div>
+
             <p className="text-sm" style={{ color:'var(--text-3)' }}>Nenhuma mensagem ainda. Diga olá!</p>
           </div>
         )}
@@ -324,18 +325,17 @@ export default function PersonalView() {
 
   if (!trainerData) {
     return (
-        <div className="px-4 pt-6 pb-4">
-          <h1 className="font-display text-3xl uppercase tracking-wide mb-6" style={{ color:'var(--text-1)' }}>Personal</h1>
-          <div className="flex flex-col items-center justify-center min-h-64 gap-6 text-center">
-            <div className="w-24 h-24 rounded-3xl flex items-center justify-center"
-              style={{ background:'rgba(var(--accent-rgb),.1)', border:'1.5px solid rgba(var(--accent-rgb),.2)' }}>
-              <svg width="44" height="44" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2" aria-hidden="true">
+        <div className="app-view view-personal vr-secondary px-4 pt-6 pb-4">
+          <h1 className="vr-screen-title mb-6" style={{ color:'var(--text-1)' }}>Personal</h1>
+          <div className="vr-personal-empty f-card flex flex-col items-start gap-5 p-8">
+            <div className="flex items-center justify-center" style={{ color: 'var(--text-3)' }}>
+              <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
                 <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
                 <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
               </svg>
             </div>
             <div>
-              <h2 className="font-display text-2xl uppercase tracking-wide mb-2" style={{ color:'var(--text-1)' }}>Sem Personal Trainer</h2>
+              <h2 className="vr-section-title mb-2" style={{ color:'var(--text-1)' }}>Sem Personal Trainer</h2>
               <p className="text-sm" style={{ color:'var(--text-3)' }}>Peça ao seu personal para te adicionar na plataforma.</p>
             </div>
           </div>
@@ -344,10 +344,9 @@ export default function PersonalView() {
   }
 
   return (
-    <div className="app-view view-personal pb-4">
+    <div className="app-view vr-secondary view-personal pb-4">
       <div className="px-4 pt-6 pb-3">
-        <p className="view-kicker">Coach link / 12</p>
-        <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color:'var(--text-1)' }}>Personal</h1>
+        <h1 className="vr-screen-title" style={{ color:'var(--text-1)' }}>Personal</h1>
         <p className="text-sm mt-0.5" style={{ color:'var(--text-3)' }}>
           Acompanhamento com <span style={{ color:'var(--accent-text)', fontWeight:600 }}>{trainerData.user?.name?.split(' ')[0]}</span>
         </p>
@@ -357,11 +356,11 @@ export default function PersonalView() {
       <div className="px-4 mb-4">
         <div className="flex gap-1 p-1 rounded-xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
           {SUBTABS.map(st => (
-            <button key={st.id} onClick={() => setSubtab(st.id)}
+            <button key={st.id} aria-pressed={subtab === st.id} onClick={() => setSubtab(st.id)}
               className="flex-1 py-2 rounded-lg text-xs font-semibold transition-all"
               style={{
                 background: subtab===st.id ? 'var(--card)' : 'transparent',
-                color:      subtab===st.id ? 'var(--accent-text)' : 'var(--text-3)',
+                color:      subtab===st.id ? 'var(--text-1)' : 'var(--text-3)',
                 border:     subtab===st.id ? '1px solid var(--border)' : '1px solid transparent',
               }}>
               {st.label}

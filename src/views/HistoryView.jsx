@@ -1,3 +1,4 @@
+import '@/styles/insights-screens.css'
 import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
@@ -14,11 +15,11 @@ function LogCard({ log }) {
   const doneSets  = log.exercises?.reduce((a, ex) => a + (ex.sets?.filter(s => s.done)?.length || 0), 0) || 0
 
   return (
-    <div className="f-card overflow-hidden">
-      <button onClick={() => setOpen(!open)}
+    <div className="f-card vr-history-entry overflow-hidden">
+      <button aria-expanded={open} onClick={() => setOpen(!open)}
         className="w-full p-4 flex items-center gap-3 text-left">
         {/* Date box */}
-        <div className="w-12 h-12 rounded-lg flex flex-col items-center justify-center flex-shrink-0"
+        <div className="vr-history-date w-12 h-12 rounded-lg flex flex-col items-center justify-center flex-shrink-0"
           style={{ border: '1px solid var(--border)' }}>
           <span className="font-display text-lg leading-none" style={{ color: 'var(--text-1)' }}>
             {log.date?.slice(8)}
@@ -206,8 +207,8 @@ export default function HistoryView() {
   )
 
   return (
-    <div className="px-4 pt-6 pb-8">
-      <h1 className="font-display text-3xl uppercase tracking-wide mb-1" style={{ color: 'var(--text-1)' }}>
+    <div className="app-view view-history vr-insights px-4 pt-6 pb-8">
+      <h1 className="vr-screen-title mb-1" style={{ color: 'var(--text-1)' }}>
         Histórico
       </h1>
       <p className="text-sm mb-4" style={{ color: 'var(--text-3)' }}>{logs.length} treinos registrados</p>
@@ -228,14 +229,14 @@ export default function HistoryView() {
           fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2" aria-hidden="true">
           <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
         </svg>
-        <input className="f-input pl-9" placeholder="Buscar treino ou exercício..."
+        <input aria-label="Buscar treino ou exercício" className="f-input pl-9" placeholder="Buscar treino ou exercício..."
           value={search} onChange={e => setSearch(e.target.value)}/>
       </div>
 
       {/* Period filter */}
-      <div className="flex gap-2 mb-4 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+      <div className="vr-period-filters flex gap-2 mb-4 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
         {[['all','Todos'],['week','7 dias'],['month','30 dias'],['3months','3 meses']].map(([val, lbl]) => (
-          <button key={val} onClick={() => setPeriod(val)}
+          <button key={val} aria-pressed={period === val} onClick={() => setPeriod(val)}
             className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold"
             style={{
               background: period===val ? 'var(--raised)' : 'transparent',
@@ -249,13 +250,13 @@ export default function HistoryView() {
 
       {/* Summary stats */}
       {filtered.length > 0 && (
-        <div className="f-card kpi-row px-4 py-3 grid grid-cols-3 mb-4">
+        <div className="f-card vr-stat-strip kpi-row px-4 py-3 grid grid-cols-3 mb-4">
           {[
             { label: 'Treinos',  value: filtered.length },
             { label: 'Tempo',    value: formatDuration(totalDuration) },
             { label: 'Volume',   value: formatVolume(totalVolume) },
           ].map(s => (
-            <div key={s.label} className="text-center">
+            <div key={s.label} className="vr-stat-cell">
               <div className="font-display text-xl" style={{ color: 'var(--text-1)' }}>{s.value}</div>
               <div className="text-xs" style={{ color: 'var(--text-3)' }}>{s.label}</div>
             </div>
@@ -277,6 +278,7 @@ export default function HistoryView() {
         )
         : (
           <div className="space-y-2">
+            <h2 className="vr-section-title mb-3">Sessões no período <span className="vr-result-count">{filtered.length}</span></h2>
             {filtered.map(log => <LogCard key={log.id} log={log}/>)}
           </div>
         )

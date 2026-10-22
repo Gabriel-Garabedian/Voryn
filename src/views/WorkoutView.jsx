@@ -14,6 +14,7 @@ import { localDateKey } from '@/utils/helpers'
 import { captureError } from '@/lib/sentry'
 import MuscleTargetImage from '@/components/MuscleTargetImage'
 import PlateCalculator from '@/components/PlateCalculator'
+import '@/styles/workout-screen.css'
 
 const DAYS_FULL = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
 const AC  = 'var(--accent)'
@@ -111,14 +112,14 @@ function RestTimer({ seconds, endsAt, onSkip }) {
   return createPortal(
     <button
       type="button"
-      className="workout-rest-timer"
+      className="workout-rest-timer vr-workout-rest-timer"
       onClick={onSkip}
       aria-label={`Descanso, ${rem} segundos. Toque para pular`}
       style={{ borderColor: warn ? 'var(--danger)' : 'var(--accent)' }}>
       <span className="workout-rest-timer__icon" aria-hidden="true">◷</span>
       <span className="workout-rest-timer__copy">
         <strong>{rem > 0 ? `DESCANSO ${rem}S` : 'PRÓXIMA SÉRIE'}</strong>
-        <small>{rem > 0 ? 'TOQUE P/ PULAR' : 'TOQUE PARA CONTINUAR'}</small>
+        <small>{rem > 0 ? 'Recupere o fôlego para a próxima série' : 'Toque para continuar'}</small>
       </span>
       <span className="workout-rest-timer__progress" aria-hidden="true">
         <span aria-hidden="true" style={{ width: `${progress}%` }} />
@@ -155,12 +156,12 @@ function NoWorkout({ user, onStart }) {
   )
 
   return (
-    <div className="app-view workout-picker px-4 pt-6 pb-4 space-y-5">
+    <div className="app-view workout-picker vr-workout-picker px-4 pt-6 pb-4 space-y-5">
       <div>
         <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
-          Em Treino
+          Seu próximo treino
         </h1>
-        <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>Selecione um treino para iniciar</p>
+        <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>Escolha a sessão e comece no seu ritmo.</p>
       </div>
 
       {todayPlan?.exercises?.length > 0 && (
@@ -645,7 +646,7 @@ export default function WorkoutView() {
   const doneSets  = workout.exercises.reduce((a, ex) => a + ex.sets.filter(s => s.done).length, 0)
 
   return (
-    <div className={`app-view workout-view ${restEndsAt ? 'pb-40' : 'pb-8'}`}>
+    <div className={`app-view workout-view vr-workout ${restEndsAt ? 'pb-40' : 'pb-8'}`}>
       {showPlateCalculator && <PlateCalculator onClose={() => setShowPlateCalculator(false)} />}
       {detailExercise && (
         <ExerciseDetail
@@ -659,7 +660,7 @@ export default function WorkoutView() {
       {/* Header imersivo: sem a barra padrão do app (AppShell esconde
           header/dock quando há treino ativo — ver inActiveWorkout). Voltar
           / timer central / menu (cancelar treino), igual ao mockup. */}
-      <div className="flex items-center justify-between px-4 pt-4 pb-2">
+      <div className="vr-workout-topbar flex items-center justify-between px-4 pt-4 pb-2">
         <button onClick={() => navigate('/app')} aria-label="Voltar"
           className="w-9 h-9 flex items-center justify-center rounded-full"
           style={{ color: 'var(--text-1)' }}>
@@ -683,20 +684,21 @@ export default function WorkoutView() {
       </div>
 
       {/* Header */}
-      <div className="native-header px-4 pt-2 pb-4 glass-panel"
+      <div className="vr-workout-summary native-header px-4 pt-2 pb-4 glass-panel"
         style={{ borderRadius: '0 0 var(--radius-xl) var(--radius-xl)' }}>
         <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-3)' }}>
           Treino de hoje
         </p>
-        <h2 className="font-display text-2xl uppercase tracking-wide leading-tight mb-3"
+        <h1 className="vr-workout-title font-display text-2xl leading-tight mb-3"
           style={{ color: 'var(--text-1)' }}>
           {workout.name}
-        </h2>
+        </h1>
 
+        <div className="vr-workout-session-facts"><span><strong>{workout.exercises.length}</strong> exercícios</span><span><strong>{totalSets - doneSets}</strong> séries restantes</span></div>
         {/* Progress bar */}
         <div className="flex items-center gap-3">
           <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
-            <div className="h-full rounded-full transition-all duration-500"
+            <div className="h-full rounded-full transition-colors duration-500"
               style={{
                 width: `${totalSets > 0 ? (doneSets / totalSets) * 100 : 0}%`,
                 background: AC,
@@ -718,10 +720,10 @@ export default function WorkoutView() {
         </div>
 
         {/* Rest timer config */}
-        <div className="flex items-center flex-wrap gap-2 mt-3">
+        <div className="vr-workout-rest-options flex items-center flex-wrap gap-2 mt-3">
           <span className="text-xs" style={{ color: 'var(--text-3)' }}>Descanso:</span>
           {[30, 60, 90, 120, 180].map(s => (
-            <button key={s} onClick={() => setRestSecs(s)}
+            <button key={s} onClick={() => setRestSecs(s)} aria-pressed={restSecs === s}
               className="px-2 py-1 rounded-lg text-xs font-semibold"
               style={{
                 background: restSecs === s ? 'var(--raised)' : 'var(--surface)',
@@ -756,7 +758,7 @@ export default function WorkoutView() {
             return (
               <React.Fragment key={ex.id}>
                 <button onClick={() => setExpandedEx(ei)}
-                  className="f-card w-full overflow-hidden flex items-center gap-3 px-4 py-3 text-left transition-all"
+                  className="vr-workout-exercise-summary f-card w-full overflow-hidden flex items-center gap-3 px-4 py-3 text-left transition-colors" aria-expanded="false"
                   style={exDone ? { borderColor: 'rgba(var(--accent-rgb),.4)', background: 'rgba(var(--accent-rgb),.05)' } : {}}>
                   <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
                     style={{
@@ -787,11 +789,11 @@ export default function WorkoutView() {
           // ── Expandido: card completo (comportamento de sempre) ───────
           return (
             <React.Fragment key={ex.id}>
-            <div className="glass-card overflow-hidden"
+            <div className="vr-workout-active-exercise glass-card overflow-hidden"
               style={exDone ? { borderColor: 'rgba(var(--accent-rgb),.4)' } : {}}>
 
               {/* Exercise header */}
-              <div className="px-4 py-3 flex items-center gap-3"
+              <div className="vr-workout-exercise-heading px-4 py-3 flex items-center gap-3"
                 style={{
                   background: exDone ? 'rgba(var(--accent-rgb),.05)' : 'var(--surface)',
                   borderBottom: '1px solid var(--border)',
@@ -813,7 +815,7 @@ export default function WorkoutView() {
                     const libMatch = EXERCISE_LIBRARY.find(le => le.name === ex.name)
                     setDetailExercise(libMatch || { name: ex.name, muscle: ex.muscle || 'Outro', equipment: 'Livre', type: 'compound' })
                   }}
-                  className="font-semibold text-sm flex-1 text-left flex items-center gap-1.5"
+                  className="vr-workout-exercise-name font-semibold text-sm flex-1 text-left flex items-center gap-1.5"
                   style={{ color: exDone ? ACT : 'var(--text-1)' }}>
                   {ex.name}
                   <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2" style={{ flexShrink: 0 }} aria-hidden="true">
@@ -860,7 +862,7 @@ export default function WorkoutView() {
                 )}
                 {/* Header row */}
                 <div className="workout-set-row workout-set-header grid grid-cols-[28px_1fr_1fr_44px_36px_24px] gap-2 mb-2">
-                  {['S', 'kg', 'Reps', '', 'Feito', ''].map((h, i) => (
+                  {['Série', 'kg', 'Reps', '', 'Feito', ''].map((h, i) => (
                     <div key={i} className="text-xs font-semibold text-center"
                       style={{ color: 'var(--text-3)' }}>{h}</div>
                   ))}
@@ -887,7 +889,7 @@ export default function WorkoutView() {
                     <div key={set.id} className="space-y-1">
                     <div
                       className="workout-set-row grid grid-cols-[28px_1fr_1fr_44px_36px_24px] gap-2 items-center"
-                      style={{ opacity: set.done ? .55 : 1 }}>
+                      data-completed={set.done}>
                       <div className="w-7 h-7 rounded-lg flex items-center justify-center mx-auto font-display text-xs"
                         style={{
                           background: set.done ? 'rgba(var(--accent-rgb),.15)' : 'var(--surface)',
@@ -896,11 +898,11 @@ export default function WorkoutView() {
                         }}>
                         {si + 1}
                       </div>
-                      <input type="text" inputMode="decimal" className="f-input py-2 text-center text-sm"
+                      <input type="text" inputMode="decimal" className="vr-workout-set-input f-input py-2 text-center text-sm"
                         aria-label={`Peso da série ${si + 1}`}
                         placeholder={set.prev?.weight || '—'} value={set.weight} disabled={set.done}
                         onChange={e => updateSet(ei, si, 'weight', e.target.value)}/>
-                      <input type="text" inputMode="numeric" className="f-input py-2 text-center text-sm"
+                      <input type="text" inputMode="numeric" className="vr-workout-set-input f-input py-2 text-center text-sm"
                         aria-label={`Repetições da série ${si + 1}`}
                         placeholder={set.prev?.reps || '—'} value={set.reps} disabled={set.done}
                         onChange={e => updateSet(ei, si, 'reps', e.target.value)}/>
@@ -912,12 +914,12 @@ export default function WorkoutView() {
                         style={{ color: set.type !== 'working' || set.rpe || set.rir ? ACT : 'var(--text-3)', border: '1px solid var(--border)' }}>
                         <span className="text-xs font-bold" aria-hidden="true">⋯</span>
                       </button>
-                      <button onClick={() => toggleDone(ei, si)}
-                        className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto transition-all"
+                      <button onClick={() => toggleDone(ei, si)} aria-label={`${set.done ? 'Reabrir' : 'Concluir'} série ${si + 1}`} aria-pressed={set.done}
+                        className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto transition-colors"
                         style={{
                           background: set.done ? AC : 'transparent',
                           border: `2px solid ${set.done ? AC : 'var(--text-3)'}`,
-                          boxShadow: set.done ? '0 0 10px rgba(var(--accent-rgb),.35)' : 'none',
+                          boxShadow: 'none',
                         }}>
                         {set.done && (
                           <svg width="14" height="14" fill="none" viewBox="0 0 24 24"
@@ -931,8 +933,8 @@ export default function WorkoutView() {
                           quando só resta 1 série (ver guard em removeSet). */}
                       {ex.sets.length > 1 ? (
                         <button onClick={() => removeSet(ei, si)} aria-label="Remover série"
-                          className="w-6 h-6 rounded-md flex items-center justify-center mx-auto"
-                          style={{ color: 'var(--border)' }}>
+                          className="vr-workout-remove-set w-6 h-6 rounded-md flex items-center justify-center mx-auto"
+                          style={{ color: 'var(--text-3)' }}>
                           <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                             <polyline points="3 6 5 6 21 6"/>
                             <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
@@ -940,6 +942,7 @@ export default function WorkoutView() {
                         </button>
                       ) : <div/>}
                     </div>
+                    {(set.prev?.weight || set.prev?.reps) && <p className="vr-workout-previous-set">Último treino: {set.prev.weight || '—'} kg × {set.prev.reps || '—'} reps</p>}
                     {openSetMeta[`${ei}-${si}`] && <div className="workout-set-meta flex flex-wrap items-center justify-end gap-2 pr-8 pt-1">
                       <label className="text-xs" style={{ color: 'var(--text-3)' }}>Tipo
                         <select className="f-input py-1 px-1 text-xs ml-1" aria-label={`Tipo da série ${si + 1}`}
@@ -965,8 +968,8 @@ export default function WorkoutView() {
 
                 {/* Add set */}
                 <button onClick={() => addSet(ei)}
-                  className="w-full mt-3 py-2 rounded-lg text-xs flex items-center justify-center gap-1 transition-all"
-                  style={{ border: '1px dashed var(--border)', color: 'rgba(var(--accent-rgb),.35)' }}>
+                  className="w-full mt-3 py-2 rounded-lg text-xs flex items-center justify-center gap-1 transition-colors"
+                  style={{ border: '1px solid var(--border)', color: 'var(--text-2)', minHeight: 44 }}>
                   <svg width="12" height="12" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor" strokeWidth="2" aria-hidden="true">
                     <line x1="12" y1="5" x2="12" y2="19"/>
@@ -990,7 +993,7 @@ export default function WorkoutView() {
                   </div>
                 ) : (
                   <button onClick={() => setOpenNotes(o => ({ ...o, [ei]: true }))}
-                    className="w-full mt-2 py-1.5 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all"
+                    className="w-full mt-2 py-1.5 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-colors"
                     style={{ color: 'var(--text-3)' }}>
                     <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                       <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
@@ -1009,8 +1012,8 @@ export default function WorkoutView() {
       {/* Add exercise mid-workout */}
       <div className="px-4 mt-4">
         <button onClick={() => setShowExPicker(true)}
-          className="w-full py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition-all"
-          style={{ border: '1px dashed rgba(var(--accent-rgb),.3)', color: 'rgba(var(--accent-rgb),.5)' }}
+          className="w-full py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition-colors"
+          style={{ border: '1px dashed rgba(var(--accent-rgb),.3)', color: 'var(--text-2)' }}
           onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(var(--accent-rgb),.6)'; e.currentTarget.style.color='var(--accent-text)' }}
           onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(var(--accent-rgb),.3)'; e.currentTarget.style.color='rgba(var(--accent-rgb),.5)' }}>
           <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -1021,7 +1024,7 @@ export default function WorkoutView() {
       </div>
 
       {/* Finish */}
-      <div className="px-4 mt-6 space-y-2">
+      <div className="vr-workout-finish px-4 mt-6 space-y-2">
         {restEndsAt ? (
           <RestTimer
             key={restEndsAt}
@@ -1050,7 +1053,7 @@ export default function WorkoutView() {
             <button
               onClick={() => { activeWorkoutService.clear(); window.dispatchEvent(new Event('voryn:workout_active_change')); setWorkout(null); navigate('/app') }}
               className="w-full text-center text-xs transition-colors"
-              style={{ color: 'rgba(var(--danger-rgb), .4)' }}>
+              style={{ color: 'var(--danger)' }}>
               Cancelar treino (sem salvar)
             </button>
           </div>

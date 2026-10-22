@@ -1,0 +1,60 @@
+/* Secondary screens follow the current theme and chosen accent. */
+.vr-section-title { color:var(--text-1); font-size:15px; font-weight:600; line-height:1.45; letter-spacing:-.015em; text-transform:none; }
+.vr-insights .font-display,.vr-insights .kpi-row { font-variant-numeric:tabular-nums; }
+.vr-stat-strip { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+.vr-stat-cell { text-align:left; padding:8px 12px; min-width:0; }
+.vr-stat-cell + .vr-stat-cell { border-left:1px solid var(--border); }
+.vr-stat-cell .font-display { color:var(--text-1) !important; font-size:clamp(19px,3.4vw,26px); font-weight:600; letter-spacing:-.035em; line-height:1.25; overflow-wrap:anywhere; }
+.vr-stat-cell .text-xs { margin-top:5px; font-size:12px; line-height:1.45; }
+.vr-chart-panel { padding:20px; box-shadow:none; }
+.vr-chart-heading { flex-wrap:wrap; gap:12px; }
+.vr-chart-records { flex-wrap:wrap; }
+.vr-chart-panel .recharts-wrapper { font-variant-numeric:tabular-nums; }
+.vr-period-filters button { min-height:44px; border-radius:8px; padding-inline:15px; font-size:13px; }
+.vr-history-entry { box-shadow:none; }
+.vr-history-entry > button { padding-block:18px; min-height:88px; }
+.vr-history-date { border:0 !important; border-radius:6px; background:var(--surface); }
+.vr-history-date .font-display { font-size:24px; font-weight:550; }
+.vr-profile-identity { padding-block:4px 8px; }
+.vr-profile-name { font-size:21px; font-weight:600; line-height:1.3; letter-spacing:-.025em; text-transform:none; }
+.vr-profile-stats { gap:0; }
+.vr-profile-stats .vr-stat-cell:nth-child(odd) { border-left:0; }
+.vr-profile-stats .vr-stat-cell:nth-child(n+3) { border-top:1px solid var(--border); }
+.view-profile.vr-insights > div:has(> .vr-section-title),.view-profile.vr-insights > div:has(> div > .vr-section-title) { margin-top:28px; }
+.vr-accent-swatches { grid-template-columns:repeat(8,minmax(0,1fr)); gap:8px; padding-top:6px; }
+.vr-accent-swatches > button { aspect-ratio:auto; min-height:44px; height:44px; border-radius:8px; }
+.vr-theme-toggle > div:first-child > div:first-child { background:var(--surface) !important; border-color:var(--border) !important; }
+.vr-theme-toggle > div:first-child svg { stroke:var(--text-2); }
+.vr-record-mark { font-size:11px; font-weight:650; color:var(--text-3); }
+.vr-student-metric { min-height:112px; background:var(--card) !important; }
+.vr-student-metric[aria-pressed="true"] { background:var(--surface) !important; border-color:var(--text-3) !important; }
+.vr-student-metric .font-display { font-size:28px; font-weight:550; letter-spacing:-.03em; }
+.vr-metric-icon { display:flex; width:20px; height:20px; align-items:center; justify-content:center; }
+.vr-student-row { min-height:88px; }
+.vr-student-row > div:first-child { background:var(--surface) !important; border-color:var(--border) !important; border-radius:50%; }
+.vr-student-row > div:first-child > span { color:var(--text-2) !important; }
+@media(max-width:480px) {
+.vr-chart-panel { padding:16px 12px; }
+.vr-stat-strip { padding-inline:4px; }
+.vr-stat-cell { padding-inline:9px; }
+.vr-accent-swatches { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.vr-chart-records { gap:6px; }
+.vr-student-detail .vr-profile-name { overflow-wrap:anywhere; }
+}
+
+.vr-metric-tabs button { min-height:44px; font-size:13px; }
+.vr-result-count { color:var(--text-3); font-weight:400; margin-left:6px; font-size:12px; }
+
+/* Companion screens share the same controls and quiet hierarchy. */
+.vr-secondary button[aria-pressed] { min-height:44px; }
+.vr-secondary button[aria-pressed="true"] { color:var(--text-1); }
+.vr-secondary > .vr-screen-title { margin-bottom:6px; }
+.view-community.vr-secondary > .vr-screen-title { margin-bottom:8px; }
+.view-community.vr-secondary > .vr-screen-title + div { margin-top:18px; }
+.view-community.vr-secondary .f-card > div:has(> svg:only-child) { background:transparent !important; color:var(--text-3); }
+.view-photos.vr-secondary div:has(> svg:only-child).text-4xl { background:transparent !important; border:0 !important; color:var(--text-3); width:44px; height:44px; }
+.view-photos.vr-secondary button { min-height:44px; }
+.view-subscription.vr-secondary .section-index { color:var(--text-3); }
+
+.view-achievements.vr-secondary .achievement-mark { background:transparent !important; border:0 !important; color:var(--text-3); width:36px; }
+.view-community button[aria-pressed] { min-height:44px; }

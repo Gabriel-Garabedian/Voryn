@@ -1,3 +1,4 @@
+import '@/styles/insights-screens.css'
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { workoutLogService } from '@/services'
@@ -144,9 +145,9 @@ export default function GoalsView() {
   )
 
   return (
-    <div className="app-view view-goals px-4 pt-6 pb-8 space-y-6">
+    <div className="app-view vr-secondary view-goals px-4 pt-6 pb-8 space-y-6">
       <div>
-        <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>Metas</h1>
+        <h1 className="vr-screen-title" style={{ color: 'var(--text-1)' }}>Metas</h1>
         <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>Acompanhe seu progresso semanal</p>
       </div>
 
@@ -165,8 +166,8 @@ export default function GoalsView() {
           <p className="text-xs text-center mb-3" style={{ color: 'var(--text-3)' }}>Meta semanal de treinos</p>
           <div className="flex justify-center gap-2">
             {DAYS_GOAL_OPTIONS.map(d => (
-              <button key={d} onClick={() => saveGoal(d)}
-                className="w-10 h-10 rounded-lg font-display text-lg"
+              <button key={d} aria-pressed={weeklyGoal === d} onClick={() => saveGoal(d)}
+                className="min-w-[44px] h-11 rounded-lg font-display text-lg"
                 style={{
                   background: weeklyGoal===d ? 'var(--raised)' : 'var(--surface)',
                   color:      weeklyGoal===d ? 'var(--text-1)' : 'var(--text-3)',
