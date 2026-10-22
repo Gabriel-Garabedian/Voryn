@@ -278,6 +278,12 @@ Voryn users as medical or financial professionals.
   matched the original APK SHA-256, with no JS errors or horizontal overflow
   at mobile/desktop sizes. Verified the APK exists in web build output and is
   absent from native generated assets and the Workbox precache.
+- Production deployment of `9a1cecc` succeeded. The repository homepage is
+  `https://voryn-liard.vercel.app`; do not guess `voryn.vercel.app`. Public HEAD
+  checks returned 200 for `/download` and `/downloads/voryn-1.6.apk`; the latter
+  served Android APK MIME, `Content-Disposition: attachment`, and 20,301,715
+  bytes. Individual Vercel deployment URLs require Vercel SSO; use the public
+  production domain for users.
 
 - The root route previously rendered LandingPage even after restoring a valid
   session, so reopening the installed app showed the public site. `App.jsx`
