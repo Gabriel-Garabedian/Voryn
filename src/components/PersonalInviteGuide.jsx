@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/components/ui/Toast'
-import { Button } from '@/components/ui'
+import { Button, Chevron } from '@/components/ui'
 
 // ── QR Code gerado com canvas (sem dependência externa) ─────
 function QRCanvas({ value, size = 200 }) {
@@ -135,8 +135,7 @@ function QRModal({ inviteLink, trainerName, onClose }) {
       onClick={close}>
       {/* backdrop */}
       <div className="absolute inset-0" style={{
-        background: 'rgba(0,0,0,.75)',
-        backdropFilter: 'blur(8px)',
+        background: 'rgba(0,0,0,.72)',
         opacity: show ? 1 : 0,
         transition: 'opacity .25s',
       }}/>
@@ -158,7 +157,7 @@ function QRModal({ inviteLink, trainerName, onClose }) {
         <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: 'var(--border)' }}/>
 
         <div className="text-center mb-5">
-          <p className="font-display text-xl uppercase tracking-wide mb-1" style={{ color: 'var(--text-1)' }}>
+          <p className="font-display text-xl mb-1" style={{ color: 'var(--text-1)' }}>
             QR Code do convite
           </p>
           <p className="text-xs" style={{ color: 'var(--text-3)' }}>
@@ -242,7 +241,7 @@ export default function PersonalInviteGuide({ onClose, trainerId, onStudentAdded
     const { trainerService } = await import('@/services')
     const { data, error } = await trainerService.addStudent(trainerId, addEmail.trim())
     if (error) { setAddError(error.message); return }
-    toast.success('Aluno adicionado! 🎉')
+    toast.success('Aluno adicionado!')
     setAddEmail(''); setShowEmailField(false)
     onStudentAdded?.(data)
   }
@@ -422,9 +421,13 @@ export default function PersonalInviteGuide({ onClose, trainerId, onStudentAdded
           ))}
         </div>
 
-        <div className="px-3 py-2 rounded-xl text-xs"
+        <div className="px-3 py-2 rounded-xl text-xs flex items-start gap-2"
           style={{ background: 'rgba(var(--warning-rgb), .06)', border: '1px solid rgba(var(--warning-rgb), .15)', color: 'rgba(var(--warning-rgb), .7)' }}>
-          💡 O cadastro do aluno é sempre gratuito. Apenas você paga a assinatura.
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"
+            strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="flex-shrink-0 mt-0.5">
+            <path d="M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/>
+          </svg>
+          <span>O cadastro do aluno é sempre gratuito. Apenas você paga a assinatura.</span>
         </div>
 
         {/* Já sabe o email do aluno? — antes este fluxo (busca por email)
@@ -453,9 +456,10 @@ export default function PersonalInviteGuide({ onClose, trainerId, onStudentAdded
               </div>
             ) : (
               <button onClick={() => setShowEmailField(true)}
-                className="w-full text-center text-xs font-semibold py-1"
+                className="w-full inline-flex items-center justify-center gap-1.5 text-xs font-semibold py-2 min-h-[44px]"
                 style={{ color: 'var(--text-3)' }}>
-                Já sabe o email do aluno? Adicione direto →
+                Já sabe o email do aluno? Adicione direto
+                <Chevron size={13}/>
               </button>
             )}
           </div>

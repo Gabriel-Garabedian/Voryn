@@ -240,6 +240,32 @@ export const notificationService = {
 }
 
 // ── ROUTINES ───────────────────────────────────────────────
+
+// Normaliza um exercício de rotina para o formato que as telas esperam:
+// { id, name, sets (número), reps, muscle, equipment, notes, supersetGroup }.
+//
+// A coluna `exercises` é jsonb livre: rotinas montadas pelo seed, por
+// versões antigas do app ou pelo personal podem ter salvo `sets` como LISTA
+// de séries (o formato dos logs de treino) ou nem ter `id` nenhum. Sem
+// normalizar, a tela de Rotina renderizava o painel de edição já no
+// primeiro paint (porque `editingEx?.exId === ex.id` era `undefined ===
+// undefined`) e quebrava com "Cannot read properties of null".
+function normalizeExercise(ex, index) {
+  const raw = ex || {}
+  const setsCount = Array.isArray(raw.sets) ? raw.sets.length : (Number(raw.sets) || 0)
+  return {
+    ...raw,
+    id: raw.id || `ex_${index}_${String(raw.name || 'exercicio').slice(0, 16).replace(/\s+/g, '-').toLowerCase()}`,
+    sets: setsCount || 3,
+    reps: raw.reps || '10',
+    muscle: raw.muscle || '',
+    equipment: raw.equipment || '',
+    secondaryMuscles: raw.secondaryMuscles || [],
+    notes: raw.notes || '',
+    supersetGroup: raw.supersetGroup || '',
+  }
+}
+
 export const routineService = {
   async getAll(userId) {
     // try/catch defensivo: sem isso, uma falha de rede ou de parse (ex: o
@@ -256,7 +282,12 @@ export const routineService = {
         .select('*')
         .eq('user_id', userId)
       const map = {}
-      ;(data || []).forEach(r => { map[r.day_index] = r })
+      ;(data || []).forEach(r => {
+        map[r.day_index] = {
+          ...r,
+          exercises: (r.exercises || []).map(normalizeExercise),
+        }
+      })
       return { data: map, error }
     } catch (err) {
       console.error('[Voryn] routineService.getAll falhou (rede/parse):', err)

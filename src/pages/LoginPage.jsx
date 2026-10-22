@@ -2,13 +2,14 @@ import React, { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { translateError } from '@/utils/helpers'
+import { Chevron } from '@/components/ui'
 
 function VorynLogo() {
   return (
     <div className="flex items-center justify-center gap-3 mb-2">
       <img src="/voryn-logo-purple.png" alt="Voryn" className="w-12 h-12 rounded-2xl"
-        style={{ boxShadow: '0 0 24px rgba(var(--accent-rgb),.5)', border: '1px solid rgba(var(--accent-rgb),.4)' }} />
-      <span className="font-display text-4xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
+        style={{ border: '1px solid var(--line-strong)' }} />
+      <span className="font-display text-4xl tracking-wide" style={{ color: 'var(--text-1)' }}>
         Voryn
       </span>
     </div>
@@ -17,27 +18,23 @@ function VorynLogo() {
 
 function AuthCard({ children, title, sub }) {
   return (
-    <div className="auth-shell min-h-screen flex flex-col items-center justify-center px-5 py-8"
+    <div className="auth-shell min-h-dvh flex flex-col items-center justify-center px-5 py-8"
       style={{ background: 'var(--bg)' }}>
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[34rem] h-[34rem] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle,rgba(var(--accent-rgb),.13) 0%,transparent 68%)' }}/>
       <div className="w-full max-w-4xl relative z-10 animate-slide-up grid md:grid-cols-[.85fr_1fr] gap-6 items-center">
         <div className="hidden md:block px-5">
-          <p className="f-label" style={{ color: 'var(--accent-2)' }}>Performance club</p>
-          <h2 className="font-display uppercase text-7xl leading-[.82] tracking-wide mb-5">Treine.<br/><span style={{ color: 'var(--accent-text)' }}>Registre.</span><br/>Evolua.</h2>
+          <h2 className="font-display text-7xl leading-[.82] tracking-wide mb-5">Treine.<br/><span style={{ color: 'var(--accent-text)' }}>Registre.</span><br/>Evolua.</h2>
           <p className="max-w-xs text-sm leading-relaxed" style={{ color: 'var(--text-3)' }}>O painel de treino para quem transforma consistência em resultado.</p>
           <div className="mt-8 flex gap-2">
-            {['FOCO', 'CARGA', 'RITMO'].map(item => <span key={item} className="f-badge f-badge-accent">{item}</span>)}
+            {['Foco', 'Carga', 'Ritmo'].map(item => <span key={item} className="f-badge f-badge-accent">{item}</span>)}
           </div>
         </div>
         <div>
         <div className="text-center mb-7">
           <VorynLogo />
         </div>
-        <div className="glass-panel p-6 sm:p-8 space-y-5" style={{ borderColor: 'rgba(var(--accent-rgb),.2)' }}>
+        <div className="glass-panel p-6 sm:p-8 space-y-5">
           <div className="mb-2">
-            <p className="f-label" style={{ color: 'var(--accent-2)' }}>Acesso do atleta</p>
-            <h1 className="font-display uppercase text-3xl tracking-wide" style={{ color: 'var(--text-1)' }}>{title}</h1>
+            <h1 className="font-display text-3xl tracking-wide" style={{ color: 'var(--text-1)' }}>{title}</h1>
             {sub && <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>{sub}</p>}
           </div>
           {children}
@@ -108,12 +105,12 @@ export function LoginPage() {
         </div>
         <ErrorBox msg={error}/>
         <button type="submit" id="voryn-login-btn" disabled={loading}
-          className="f-btn f-btn-accent glow-primary w-full py-4 text-base font-display uppercase tracking-widest"
+          className="f-btn f-btn-accent w-full py-4 text-base font-display"
           style={{ opacity: loading ? .65 : 1 }}>
           {loading ? 'Entrando...' : 'Entrar no Voryn'}
         </button>
         <div className="flex items-center justify-between text-sm">
-          <Link to="/reset-password" style={{ color: 'var(--accent-2)' }}>
+          <Link to="/reset-password" style={{ color: 'var(--accent-text)' }}>
             Esqueceu a senha?
           </Link>
           <Link to="/register" style={{ color: 'var(--text-3)' }}>
@@ -159,14 +156,14 @@ export function ResetPasswordPage() {
       sub={isRecovery ? 'Digite sua nova senha' : 'Enviaremos um link por email'}>
       {sent ? (
         <div className="text-center space-y-3 py-4">
-          <div className="section-index">EMAIL SENT</div>
+          <p className="font-display text-2xl" style={{ color: 'var(--text-1)' }}>Email enviado</p>
           <p style={{ color: 'var(--text-2)' }}>
             Link enviado para <strong>{email}</strong>
           </p>
           <p className="text-sm" style={{ color: 'var(--text-3)' }}>
             Verifique sua caixa de entrada e spam.
           </p>
-          <Link to="/login" style={{ color: 'var(--accent-2)', fontSize: 14 }}>
+          <Link to="/login" style={{ color: 'var(--accent-text)', fontSize: 14 }}>
             Voltar ao login
           </Link>
         </div>
@@ -179,7 +176,7 @@ export function ResetPasswordPage() {
           </div>
           <ErrorBox msg={error}/>
           <button type="submit" disabled={loading}
-            className="f-btn f-btn-accent w-full py-4 text-base font-display uppercase tracking-widest">
+            className="f-btn f-btn-accent w-full py-4 text-base font-display">
             {loading ? 'Salvando...' : 'Salvar nova senha'}
           </button>
         </form>
@@ -192,11 +189,14 @@ export function ResetPasswordPage() {
           </div>
           <ErrorBox msg={error}/>
           <button type="submit" disabled={loading}
-            className="f-btn f-btn-accent w-full py-4 text-base font-display uppercase tracking-widest">
+            className="f-btn f-btn-accent w-full py-4 text-base font-display">
             {loading ? 'Enviando...' : 'Enviar link de recuperação'}
           </button>
           <p className="text-center text-sm">
-            <Link to="/login" style={{ color: 'var(--text-3)' }}>← Voltar ao login</Link>
+            <Link to="/login" className="inline-flex items-center gap-1.5" style={{ color: 'var(--text-3)' }}>
+              <Chevron direction="left" size={14}/>
+              Voltar ao login
+            </Link>
           </p>
         </form>
       )}

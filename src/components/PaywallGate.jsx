@@ -6,17 +6,17 @@ const STATUS_COPY = {
   inactive: {
     title:   'Seu acesso expirou',
     message: 'Seu período gratuito ou assinatura não está mais ativo. Assine um plano para continuar treinando com o Voryn.',
-    icon:    '🔒',
+    variant: 'lock',
   },
   canceled: {
     title:   'Assinatura cancelada',
     message: 'Sua assinatura foi cancelada e o período pago já terminou. Assine novamente para continuar usando o Voryn.',
-    icon:    '🔒',
+    variant: 'lock',
   },
   past_due: {
     title:   'Pagamento pendente',
     message: 'Não conseguimos confirmar seu último pagamento. Assine novamente para regularizar e continuar usando o Voryn.',
-    icon:    '⚠️',
+    variant: 'alert',
   },
   // Mudança de modelo de negócio: aluno pode ter acesso liberado pelo
   // plano do personal, sem nunca ter pago a própria mensalidade. Se esse
@@ -27,8 +27,28 @@ const STATUS_COPY = {
   no_trainer_access: {
     title:   'Acesso via personal encerrado',
     message: 'Seu acesso gratuito estava vinculado ao plano do seu personal, que não está mais ativo. Assine um plano próprio para continuar usando o Voryn, ou peça ao seu personal para regularizar a assinatura dele.',
-    icon:    '🔒',
+    variant: 'lock',
   },
+}
+
+function StatusIcon({ variant }) {
+  const stroke = variant === 'alert' ? 'var(--danger)' : 'var(--accent-text)'
+  return (
+    <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke={stroke} strokeWidth="1.5"
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {variant === 'alert' ? (
+        <>
+          <path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/>
+          <path d="M12 9v4M12 17v.5"/>
+        </>
+      ) : (
+        <>
+          <rect x="4" y="10.5" width="16" height="10" rx="2"/>
+          <path d="M8 10.5V7a4 4 0 018 0v3.5"/>
+        </>
+      )}
+    </svg>
+  )
 }
 
 // Tela de bloqueio exibida quando a assinatura do usuário não está ativa
@@ -42,7 +62,7 @@ export default function PaywallGate({ status, hadTrainerAccess, onSignOut }) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-10 text-center"
       style={{ background: 'var(--bg)' }}>
-      <div className="text-5xl mb-5">{copy.icon}</div>
+      <div className="mb-5 flex justify-center"><StatusIcon variant={copy.variant}/></div>
       <h1 className="font-display text-2xl uppercase tracking-wide mb-2" style={{ color: 'var(--text-1)' }}>
         {copy.title}
       </h1>

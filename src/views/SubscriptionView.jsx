@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext'
 import { PLANS } from '@/services/payment'
 import { useToast } from '@/components/ui/Toast'
 import { captureError } from '@/lib/sentry'
-import { Button, Badge } from '@/components/ui'
+import { Button, Badge, Chevron } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
 import { getSubscription } from '@/utils/helpers'
 
@@ -30,7 +30,7 @@ export default function SubscriptionView() {
   }
   // Aluno sem assinatura própria, mas com acesso liberado pelo plano do
   // personal: sem esta checagem, a tela mostrava "Plano Grátis" com badge
-  // "🔒 Inativo" para alguém que na verdade TEM acesso liberado — confuso,
+  // "Inativo" para alguém que na verdade TEM acesso liberado — confuso,
   // dava a entender que precisava assinar quando não precisava.
   const accessViaTrainer = !['active', 'trialing'].includes(subStatus) && hasTrainerAccess
   const si = accessViaTrainer
@@ -225,7 +225,8 @@ export default function SubscriptionView() {
         <a href="mailto:privacidade@vorynapp.com.br?subject=Exportar meus dados"
           className="inline-flex items-center gap-1.5 text-xs mt-2 font-semibold"
           style={{ color: 'var(--accent-2)' }}>
-          Solicitar exportação de dados →
+          Solicitar exportação de dados
+          <Chevron size={13}/>
         </a>
       </div>
 

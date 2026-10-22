@@ -134,7 +134,7 @@ function StudentDetail({ student, trainerId, onBack }) {
           <div className="hidden group-hover:flex flex-col absolute right-0 top-full mt-1 z-20 rounded-xl overflow-hidden"
             style={{ background:'var(--card)', border:'1px solid var(--border)', boxShadow:'0 8px 32px rgba(0,0,0,.4)', minWidth:160 }}>
             {[
-              ['📋 Ficha de Treino', handleExportRoutine],
+              ['Ficha de Treino', handleExportRoutine],
               ['Avaliações',         handleExportAssessment],
               ['Progresso',          handleExportProgress],
             ].map(([label, fn]) => (
@@ -264,7 +264,7 @@ function ChatTrainer({ studentId, trainerId }) {
           <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>Carregando...</p>
         ) : msgs.length === 0 ? (
           <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>
-            Nenhuma mensagem ainda. Manda um &quot;oi&quot; pro aluno 👋
+            Nenhuma mensagem ainda. Manda um &quot;oi&quot; pro aluno.
           </p>
         ) : msgs.map(m => {
           const isMe = m.sender_id === user.id
@@ -575,7 +575,7 @@ function PriorityActions({ students, dashStats, onSelect }) {
   return (
     <div className="f-card p-4" style={{ borderColor: 'rgba(var(--accent-rgb),.25)' }}>
       <p className="text-xs font-semibold mb-3 flex items-center gap-1.5" style={{ color: 'var(--accent-text)' }}>
-        ✅ Hoje você devia
+        Hoje você devia
       </p>
       <div className="space-y-1">
         {top.map((a, i) => (
@@ -607,7 +607,6 @@ function ConsistencyRanking({ students, ranking, onSelect }) {
   const studentMap = {}
   for (const s of students) studentMap[s.id] = s
 
-  const medals = ['🥇', '🥈', '🥉']
 
   return (
     <div className="f-card p-4 animate-slide-up" style={{ borderColor: 'rgba(var(--warning-rgb), .25)', background: 'rgba(var(--warning-rgb), .03)' }}>
@@ -624,7 +623,7 @@ function ConsistencyRanking({ students, ranking, onSelect }) {
               className="w-full flex items-center gap-3 text-left py-2 px-1 rounded-lg transition-all"
               onMouseEnter={e => e.currentTarget.style.background='rgba(var(--warning-rgb), .06)'}
               onMouseLeave={e => e.currentTarget.style.background='transparent'}>
-              <div className="w-7 text-center flex-shrink-0 text-sm">{medals[i] || `${i + 1}º`}</div>
+              <div className="w-7 text-center flex-shrink-0 text-sm font-semibold" style={{ color: i < 3 ? 'var(--warning)' : 'var(--text-3)' }}>{i + 1}º</div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-1)' }}>{s.name || 'Aluno'}</p>
               </div>
@@ -933,7 +932,7 @@ export default function PersonalDashboardView() {
             {filterView === 'prs'                 && `${dashStats?.newPRsCount ?? 0} PR(s) batidos nos últimos 7 dias`}
           </p>
           <button onClick={() => setFilterView('all')} className="text-xs font-semibold" style={{ color: 'var(--text-3)' }}>
-            Limpar filtro ✕
+            Limpar filtro
           </button>
         </div>
       )}

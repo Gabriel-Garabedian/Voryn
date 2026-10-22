@@ -4,7 +4,7 @@ import { PLANS } from '@/services/payment'
 
 function Check() {
   return (
-    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" style={{ color: 'var(--accent-2)', flexShrink: 0 }} aria-hidden="true">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" style={{ color: 'var(--accent-text)', flexShrink: 0 }} aria-hidden="true">
       <polyline points="20 6 9 17 4 12"/>
     </svg>
   )
@@ -14,54 +14,51 @@ export default function PricingPage() {
   const plans = Object.values(PLANS)
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
+    <div className="min-h-dvh" style={{ background: 'var(--bg)' }}>
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto">
-        <Link to="/" className="font-display text-2xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
-          VORYN
+        <Link to="/" className="font-display text-2xl tracking-wide" style={{ color: 'var(--text-1)' }}>
+          Voryn
         </Link>
         <Link to="/login" className="f-btn f-btn-ghost py-2 px-4 text-sm">Entrar</Link>
       </nav>
 
       <div className="max-w-5xl mx-auto px-6 py-16 text-center">
         {/* Header */}
-        <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--accent-2)' }}>
-          Planos e Preços
-        </p>
-        <h1 className="font-display text-5xl md:text-7xl uppercase tracking-wide mb-4" style={{ color: 'var(--text-1)' }}>
-          ESCOLHA SEU PLANO
+        <h1 className="font-display text-5xl md:text-7xl mb-4" style={{ color: 'var(--text-1)' }}>
+          Escolha seu plano
         </h1>
         <p className="text-lg mb-3" style={{ color: 'var(--text-3)' }}>
           14 dias grátis em todos os planos. Cancele quando quiser.
         </p>
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm mb-16"
           style={{ background: 'rgba(var(--success-rgb), .1)', border: '1px solid rgba(var(--success-rgb), .2)', color: 'var(--success)' }}>
-          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse inline-block" aria-hidden="true"/>
-          14 dias grátis — sem cartão de crédito
+          <span className="w-2 h-2 rounded-full inline-block flex-shrink-0"
+            style={{ background: 'var(--success)' }} aria-hidden="true"/>
+          14 dias grátis, sem cartão de crédito
         </div>
 
         {/* Cards */}
         <div className="grid md:grid-cols-3 gap-6 text-left">
           {plans.map(plan => (
             <div key={plan.id}
-              className="glass-card p-6 flex flex-col relative"
+              className="f-card p-6 flex flex-col relative"
               style={plan.highlight ? {
-                borderColor: 'var(--accent)',
-                boxShadow: '0 0 30px rgba(var(--accent-rgb),.2)',
+                borderColor: 'var(--line-strong)',
               } : {}}>
 
               {plan.highlight && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-white"
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold text-white"
                   style={{ background: 'var(--accent)' }}>
                   Mais popular
                 </div>
               )}
 
               <div className="mb-6">
-                <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--text-3)' }}>
+                <p className="text-xs font-semibold mb-1" style={{ color: 'var(--text-3)' }}>
                   {plan.description}
                 </p>
-                <h3 className="font-display text-2xl uppercase tracking-wide mb-3" style={{ color: 'var(--text-1)' }}>
+                <h3 className="font-display text-2xl mb-3" style={{ color: 'var(--text-1)' }}>
                   {plan.name}
                 </h3>
                 <div className="flex items-end gap-1">
@@ -71,7 +68,7 @@ export default function PricingPage() {
                   <span className="text-sm mb-2" style={{ color: 'var(--text-3)' }}>/{plan.period}</span>
                 </div>
                 {plan.maxStudents > 0 && (
-                  <p className="text-sm mt-1" style={{ color: 'var(--accent-2)' }}>
+                  <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>
                     Até {plan.maxStudents} alunos
                   </p>
                 )}
@@ -87,10 +84,7 @@ export default function PricingPage() {
               </ul>
 
               <Link to={`/checkout/${plan.id}`}
-                className="f-btn text-sm font-semibold py-3 px-6 rounded-xl text-center w-full active:scale-[.98]"
-                style={plan.highlight
-                  ? { background: 'var(--accent)', color: '#fff', boxShadow: '0 0 20px rgba(var(--accent-rgb),.35)' }
-                  : { background: 'var(--surface)', color: 'var(--text-1)', border: '1px solid var(--border)' }}>
+                className={`f-btn text-sm font-semibold py-3 px-6 w-full ${plan.highlight ? 'f-btn-accent' : 'f-btn-ghost'}`}>
                 Começar grátis
               </Link>
             </div>
@@ -99,16 +93,16 @@ export default function PricingPage() {
 
         {/* FAQ quick */}
         <div className="mt-20 max-w-2xl mx-auto text-left space-y-4">
-          <h2 className="font-display text-3xl uppercase tracking-wide text-center mb-8" style={{ color: 'var(--text-1)' }}>
-            DÚVIDAS RÁPIDAS
+          <h2 className="font-display text-3xl tracking-wide text-center mb-8" style={{ color: 'var(--text-1)' }}>
+            Dúvidas rápidas
           </h2>
           {[
             ['Posso cancelar quando quiser?', 'Sim, sem multa e sem burocracia. Cancele pelo próprio app.'],
             ['O que acontece após o período de teste?', 'Você será notificado antes do vencimento. Se não assinar, o acesso é limitado.'],
-            ['Os dados ficam seguros?', 'Sim. Utilizamos Supabase com criptografia e Row Level Security — seus dados só são acessíveis por você.'],
+            ['Os dados ficam seguros?', 'Sim. Utilizamos Supabase com criptografia e Row Level Security, então seus dados só são acessíveis por você.'],
             ['Posso mudar de plano?', 'Sim, a qualquer momento. O ajuste é proporcional ao período restante.'],
           ].map(([q, a]) => (
-            <div key={q} className="glass-card p-4">
+            <div key={q} className="f-card p-4">
               <p className="font-semibold text-sm mb-1" style={{ color: 'var(--text-1)' }}>{q}</p>
               <p className="text-sm" style={{ color: 'var(--text-3)' }}>{a}</p>
             </div>

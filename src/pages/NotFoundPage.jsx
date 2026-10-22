@@ -1,10 +1,11 @@
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Chevron } from '@/components/ui'
 
 export default function NotFoundPage() {
   const navigate = useNavigate()
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center"
+    <div className="min-h-dvh flex flex-col items-center justify-center px-6 text-center"
       style={{ background: 'var(--bg)' }}>
       <div className="mb-8">
         <div className="font-display text-9xl leading-none mb-2"
@@ -28,8 +29,9 @@ export default function NotFoundPage() {
       </p>
       <div className="flex gap-3 flex-wrap justify-center">
         <button onClick={() => navigate(-1)}
-          className="f-btn f-btn-ghost px-6 py-3">
-          ← Voltar
+          className="f-btn f-btn-ghost px-6 py-3 inline-flex items-center gap-1.5">
+          <Chevron direction="left" size={16}/>
+          Voltar
         </button>
         <Link to="/" className="f-btn f-btn-accent px-6 py-3">
           Ir para o início

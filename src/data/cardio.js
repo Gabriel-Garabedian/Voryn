@@ -22,11 +22,25 @@
 //  opcionais, e ficam `null` se a pessoa não preencher.
 // ──────────────────────────────────────────────────────────
 
+// Ícones desenhados em SVG (traços de 1.5, cantos arredondados) no lugar de
+// emoji: emoji muda de desenho entre plataformas e vira ruído visual na
+// grade de escolha de modalidade. Cada id abaixo casa com uma chave de
+// CARDIO_ICON_PATHS.
+export const CARDIO_ICON_PATHS = {
+  esteira:   ['M3 12h3l2-5 3 10 2.5-7 1.5 4H21', 'M6 5v2M9 5v2'],
+  bike:      ['M6 18a4 4 0 100-8 4 4 0 000 8z', 'M18 18a4 4 0 100-8 4 4 0 000 8z', 'M10 14l4-6 3 3h-4'],
+  escada:    ['M3 20h4v-4h4v-4h4V8h4V4', 'M17 8h4'],
+  eliptico:  ['M12 20a8 8 0 100-16 8 8 0 000 16z', 'M12 12l4-4', 'M4 12h4'],
+  remo:      ['M3 12c3-4 6 4 9 0s6 4 9 0', 'M6 6l12 12'],
+  corrida:  ['M13 4a2 2 0 100-4 2 2 0 000 4z', 'M9 21l2-6 3 2 2 4', 'M11 15l-3-3', 'M11 15l4-3'],
+  livre:     ['M13 2L4 14h7l-1 8 9-12h-7l1-8z'],
+}
+
 export const CARDIO_TYPES = [
   {
     id: 'esteira',
     label: 'Esteira',
-    icon: '🏃',
+    icon: 'esteira',
     fields: [
       { key: 'speed_kmh',        label: 'Velocidade média', unit: 'km/h', type: 'decimal', placeholder: '10.5' },
       { key: 'incline_percent',  label: 'Inclinação',       unit: '%',    type: 'number',  placeholder: '3' },
@@ -37,7 +51,7 @@ export const CARDIO_TYPES = [
   {
     id: 'bike',
     label: 'Bicicleta Ergométrica',
-    icon: '🚴',
+    icon: 'bike',
     fields: [
       { key: 'resistance_level', label: 'Nível de resistência', unit: '1-20', type: 'number',  placeholder: '10' },
       { key: 'rpm',              label: 'Cadência média',       unit: 'rpm',  type: 'number',  placeholder: '80' },
@@ -48,7 +62,7 @@ export const CARDIO_TYPES = [
   {
     id: 'escada',
     label: 'Escada / Stairmaster',
-    icon: '🪜',
+    icon: 'escada',
     fields: [
       { key: 'resistance_level', label: 'Nível / velocidade', unit: '1-20', type: 'number', placeholder: '8' },
       { key: 'stair_spm',        label: 'Degraus por minuto', unit: 'spm',  type: 'number', placeholder: '60' },
@@ -59,7 +73,7 @@ export const CARDIO_TYPES = [
   {
     id: 'eliptico',
     label: 'Elíptico / Transport',
-    icon: '⚙️',
+    icon: 'eliptico',
     fields: [
       { key: 'resistance_level', label: 'Nível de resistência', unit: '1-20', type: 'number',  placeholder: '10' },
       { key: 'duration_minutes', label: 'Tempo',                unit: 'min',  type: 'number',  placeholder: '20', required: true },
@@ -69,7 +83,7 @@ export const CARDIO_TYPES = [
   {
     id: 'remo',
     label: 'Remo Seco',
-    icon: '🚣',
+    icon: 'remo',
     fields: [
       { key: 'split_pace',       label: 'Split pace (500m)',       unit: 'min/500m', type: 'text',   placeholder: '2:05' },
       { key: 'resistance_level', label: 'Carga do dumper',         unit: '1-10',     type: 'number', placeholder: '5' },
@@ -80,7 +94,7 @@ export const CARDIO_TYPES = [
   {
     id: 'corrida',
     label: 'Corrida / Caminhada',
-    icon: '🏞️',
+    icon: 'corrida',
     fields: [
       { key: 'pace_min_km',      label: 'Pace médio', unit: 'min/km', type: 'text',    placeholder: '5:30' },
       { key: 'distance_km',      label: 'Distância',  unit: 'km',     type: 'decimal', placeholder: '5' },
@@ -91,7 +105,7 @@ export const CARDIO_TYPES = [
   {
     id: 'livre',
     label: 'Cardio Livre / Corda / HIIT',
-    icon: '⚡',
+    icon: 'livre',
     fields: [
       { key: 'duration_minutes', label: 'Tempo', unit: 'min', type: 'number', placeholder: '15', required: true },
       {
@@ -119,7 +133,7 @@ export function summarizeCardio(cardio) {
   if (!cardio?.type) return ''
   const def = getCardioType(cardio.type)
   if (!def) return ''
-  const parts = [`${def.icon} ${def.label}`]
+  const parts = [def.label]
   if (cardio.duration_minutes) parts.push(`${cardio.duration_minutes} min`)
   def.fields.forEach(f => {
     if (f.key === 'duration_minutes') return // já entrou acima

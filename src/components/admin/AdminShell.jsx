@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { adminService } from '@/services'
 import { PLANS } from '@/services/payment'
 import { getSubscription } from '@/utils/helpers'
-import { Badge } from '@/components/ui'
+import { Badge, Chevron } from '@/components/ui'
 import {
   LineChart, Line, BarChart, Bar,
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid
@@ -47,7 +47,10 @@ export default function AdminShell() {
                 {t.label}
               </button>
             ))}
-            <Link to="/app" className="text-sm" style={{ color: 'var(--text-3)' }}>← App</Link>
+            <Link to="/app" className="text-sm inline-flex items-center gap-1.5" style={{ color: 'var(--text-3)' }}>
+              <Chevron direction="left" size={14}/>
+              App
+            </Link>
             <button onClick={signOut}
               className="text-sm px-3 py-1.5 rounded-lg border transition-all"
               style={{ color: 'var(--text-3)', borderColor: 'var(--border)', background: 'none', cursor: 'pointer' }}>

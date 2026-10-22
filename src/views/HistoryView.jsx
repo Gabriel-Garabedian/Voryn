@@ -14,16 +14,16 @@ function LogCard({ log }) {
   const doneSets  = log.exercises?.reduce((a, ex) => a + (ex.sets?.filter(s => s.done)?.length || 0), 0) || 0
 
   return (
-    <div className="f-card overflow-hidden transition-all">
+    <div className="f-card overflow-hidden">
       <button onClick={() => setOpen(!open)}
         className="w-full p-4 flex items-center gap-3 text-left">
         {/* Date box */}
-        <div className="w-12 h-12 rounded-xl flex flex-col items-center justify-center flex-shrink-0"
-          style={{ background: 'rgba(var(--accent-rgb),.1)', border: '1px solid rgba(var(--accent-rgb),.2)' }}>
-          <span className="font-display text-lg leading-none" style={{ color: 'var(--accent-text)' }}>
+        <div className="w-12 h-12 rounded-lg flex flex-col items-center justify-center flex-shrink-0"
+          style={{ border: '1px solid var(--border)' }}>
+          <span className="font-display text-lg leading-none" style={{ color: 'var(--text-1)' }}>
             {log.date?.slice(8)}
           </span>
-          <span className="text-xs uppercase" style={{ color: 'var(--text-3)' }}>
+          <span className="text-xs" style={{ color: 'var(--text-3)' }}>
             {MONTHS_PT[parseInt(log.date?.slice(5,7)) - 1]}
           </span>
         </div>
@@ -47,8 +47,7 @@ function LogCard({ log }) {
             </>}
           </div>
           {log.cardio && (
-            <div className="mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs max-w-full truncate"
-              style={{ background: 'rgba(var(--accent-rgb),.1)', color: 'var(--accent-text)', border: '1px solid rgba(var(--accent-rgb),.2)' }}>
+            <div className="mt-1.5 text-xs max-w-full truncate" style={{ color: 'var(--text-3)' }}>
               {summarizeCardio(log.cardio)}
             </div>
           )}
@@ -67,14 +66,14 @@ function LogCard({ log }) {
           style={{ borderTop: '1px solid var(--border)', paddingTop: 12 }}>
 
           {/* Mini stats */}
-          <div className="grid grid-cols-3 gap-2 mb-3">
+          <div className="kpi-row grid grid-cols-3 gap-2 mb-3">
             {[
               { label:'Duração',  value: formatDuration(log.duration) },
               { label:'Séries',   value: `${doneSets}/${totalSets}` },
               { label:'Volume',   value: formatVolume(log.total_volume) },
             ].map(s => (
-              <div key={s.label} className="text-center py-2 rounded-lg" style={{ background: 'var(--surface)' }}>
-                <div className="font-display text-base" style={{ color: 'var(--accent-text)' }}>{s.value}</div>
+              <div key={s.label} className="text-center py-2">
+                <div className="font-display text-base" style={{ color: 'var(--text-1)' }}>{s.value}</div>
                 <div className="text-xs" style={{ color: 'var(--text-3)' }}>{s.label}</div>
               </div>
             ))}
@@ -83,7 +82,7 @@ function LogCard({ log }) {
           {/* Exercises */}
           {log.exercises?.map((ex, i) => (
             <div key={i} className="space-y-1">
-              <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-3)' }}>
+              <p className="text-xs font-semibold" style={{ color: 'var(--text-2)' }}>
                 {ex.name}
               </p>
               <div className="flex flex-wrap gap-1">
@@ -114,8 +113,8 @@ function LogCard({ log }) {
             if (!def) return null
             return (
               <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
-                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-3)' }}>
-                  {def.icon} Cardio · {def.label}
+                <p className="text-xs font-semibold mb-2" style={{ color: 'var(--text-2)' }}>
+                  Cardio · {def.label}
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   {def.fields.map(f => {
@@ -200,7 +199,6 @@ export default function HistoryView() {
 
   if (loading) return (
     <div className="app-view view-history px-4 pt-6 pb-8">
-      <p className="view-kicker">Session archive / 05</p>
       <div className="skeleton-pulse h-8 w-32 rounded-lg mb-2" style={{ background: 'var(--border)' }}/>
       <div className="skeleton-pulse h-4 w-20 rounded mb-6" style={{ background: 'var(--border)' }}/>
       <SkeletonList count={5}/>
@@ -216,10 +214,8 @@ export default function HistoryView() {
 
       {isLimited && (
         <button onClick={() => navigate('/app/subscription')}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-4 text-left transition-all"
-          style={{ background: 'rgba(var(--accent-rgb),.08)', border: '1px solid rgba(var(--accent-rgb),.25)' }}>
-          <span className="section-index">LIMIT</span>
-          <span className="flex-1 text-xs" style={{ color: 'var(--text-2)' }}>
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-4 text-left f-card">
+          <span className="flex-1 text-sm" style={{ color: 'var(--text-2)' }}>
             Mostrando só os últimos {historyDays} dias. Assine para ver todo o seu histórico.
           </span>
           <span className="text-xs font-semibold flex-shrink-0" style={{ color: 'var(--accent-text)' }}>Assinar</span>
@@ -240,11 +236,11 @@ export default function HistoryView() {
       <div className="flex gap-2 mb-4 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
         {[['all','Todos'],['week','7 dias'],['month','30 dias'],['3months','3 meses']].map(([val, lbl]) => (
           <button key={val} onClick={() => setPeriod(val)}
-            className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
+            className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold"
             style={{
-              background: period===val ? 'var(--accent)' : 'var(--card)',
-              color:      period===val ? '#fff'          : 'var(--text-3)',
-              border:     `1px solid ${period===val ? 'var(--accent)' : 'var(--border)'}`,
+              background: period===val ? 'var(--raised)' : 'transparent',
+              color:      period===val ? 'var(--text-1)' : 'var(--text-3)',
+              border:     `1px solid ${period===val ? 'var(--line-strong)' : 'var(--border)'}`,
             }}>
             {lbl}
           </button>
@@ -253,14 +249,14 @@ export default function HistoryView() {
 
       {/* Summary stats */}
       {filtered.length > 0 && (
-        <div className="grid grid-cols-3 gap-2 mb-4">
+        <div className="f-card kpi-row px-4 py-3 grid grid-cols-3 mb-4">
           {[
             { label: 'Treinos',  value: filtered.length },
             { label: 'Tempo',    value: formatDuration(totalDuration) },
             { label: 'Volume',   value: formatVolume(totalVolume) },
           ].map(s => (
-            <div key={s.label} className="f-card p-3 text-center">
-              <div className="font-display text-xl" style={{ color: 'var(--accent-text)' }}>{s.value}</div>
+            <div key={s.label} className="text-center">
+              <div className="font-display text-xl" style={{ color: 'var(--text-1)' }}>{s.value}</div>
               <div className="text-xs" style={{ color: 'var(--text-3)' }}>{s.label}</div>
             </div>
           ))}
@@ -271,7 +267,6 @@ export default function HistoryView() {
       {filtered.length === 0
         ? (
           <div className="f-card p-8 text-center space-y-2">
-            <div className="section-index">NO LOGS</div>
             <p className="font-semibold" style={{ color: 'var(--text-1)' }}>
               {logs.length === 0 ? 'Nenhum treino registrado ainda' : 'Nenhum resultado encontrado'}
             </p>

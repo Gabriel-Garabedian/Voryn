@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { prService, workoutLogService, routineService, dataExportService } from '@/services'
-import { Button, Badge } from '@/components/ui'
+import { Button, Badge, Chevron } from '@/components/ui'
 import { useToast } from '@/components/ui/Toast'
 import { pushService } from '@/services/pushNotifications'
 import { exportProgressPDF, exportRoutinePDF } from '@/services/pdfExport'
@@ -105,19 +105,11 @@ function AccentColorPicker() {
               onClick={() => !locked && setAccentColor(c.id)}
               title={locked ? 'Disponível só para assinantes' : c.label}
               aria-label={locked ? `${c.label} — disponível só para assinantes` : c.label}
-              className="aspect-square rounded-xl flex items-center justify-center transition-all"
+              className={`aspect-square rounded-xl flex items-center justify-center transition-all relative ${selected ? 'swatch-selected' : ''}`}
               style={{
                 background: c.color,
                 cursor: locked ? 'not-allowed' : 'pointer',
                 border: '2.5px solid transparent',
-                // Anel de seleção em duas camadas: o filete na cor do card
-                // separa o anel da amostra (sem ele, no tema claro, o anel
-                // se funde com a amostra) e o anel em --text-1 garante o
-                // contraste contra o fundo. Feito com box-shadow para não
-                // mexer no outline de foco.
-                boxShadow: selected
-                  ? '0 0 0 2px var(--card), 0 0 0 4.5px var(--text-1)'
-                  : 'none',
               }}>
               {selected && (
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth="3" aria-hidden="true">
@@ -180,7 +172,7 @@ export default function ProfileView() {
     const val = parseFloat(prInput)
     if (isNaN(val) || val <= 0) { setEditingPR(null); return }
     const { data } = await prService.upsert(user.id, key, val)
-    if (data) { setPRs(p => ({ ...p, [key]: data })); toast.success('PR salvo! 💪') }
+    if (data) { setPRs(p => ({ ...p, [key]: data })); toast.success('PR salvo!') }
     setEditingPR(null)
     setPrInput('')
   }
@@ -280,6 +272,12 @@ export default function ProfileView() {
   return (
     <div className="app-view view-profile px-4 pt-6 pb-10 space-y-5">
 
+      {/* Título da tela. Sem h1, a tela de Perfil não se nomeava — e o nome
+         do usuário abaixo é o dado, não o rótulo da tela. */}
+      <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
+        Perfil
+      </h1>
+
       {/* Header: avatar + nome + plano, sem card ao redor (igual ao mockup —
          o editor de nome/email continuam aqui, só sem a moldura/segundo
          avatar que existiam antes). */}
@@ -298,7 +296,7 @@ export default function ProfileView() {
                   onKeyDown={e => e.key === 'Enter' && saveName()}
                   autoFocus/>
                 <button onClick={saveName} className="text-xs font-semibold" style={{ color: 'var(--accent-text)' }}>OK</button>
-                <button onClick={() => setEditName(false)} className="text-xs" style={{ color: 'var(--text-3)' }}>✕</button>
+                <button onClick={() => setEditName(false)} aria-label="Cancelar edição do nome" className="icon-btn" style={{ color: 'var(--text-3)' }}><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
               </div>
             : <div className="flex items-center gap-2">
                 <p className="font-display text-xl uppercase tracking-wide truncate" style={{ color: 'var(--text-1)' }}>
@@ -384,7 +382,7 @@ export default function ProfileView() {
               {planInfo?.name || 'Plano Grátis'}
             </p>
             <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>
-              {planInfo ? `R$ ${planInfo.price.toFixed(2).replace('.', ',')} / mês` : '7 dias de teste grátis'}
+              {planInfo ? `R$ ${planInfo.price.toFixed(2).replace('.', ',')} / mês` : '14 dias de teste grátis'}
             </p>
           </div>
           <Button variant="ghost" size="sm" onClick={() => navigate('/app/subscription')}>
@@ -452,7 +450,7 @@ export default function ProfileView() {
                 onKeyDown={e => e.key === 'Enter' && saveSpotify()}
                 autoFocus/>
               <button onClick={saveSpotify} className="text-xs font-semibold flex-shrink-0" style={{ color: 'var(--accent-text)' }}>OK</button>
-              <button onClick={() => setEditSpotify(false)} className="text-xs flex-shrink-0" style={{ color: 'var(--text-3)' }}>✕</button>
+              <button onClick={() => setEditSpotify(false)} aria-label="Cancelar edição do Spotify" className="icon-btn flex-shrink-0" style={{ color: 'var(--text-3)' }}><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
             </div>
           ) : profile?.spotify_url ? (
             <div className="flex items-center gap-3">
@@ -518,8 +516,7 @@ export default function ProfileView() {
                         className="text-sm font-semibold" style={{ color: 'var(--accent-text)' }}>
                         Salvar
                       </button>
-                      <button onClick={() => setEditingPR(null)}
-                        className="text-sm" style={{ color: 'var(--text-3)' }}>✕</button>
+                      <button onClick={() => setEditingPR(null)} aria-label="Cancelar edição do recorde" className="icon-btn" style={{ color: 'var(--text-3)' }}><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
                     </div>
                   : <p className="text-xs mt-0.5">
                       {prs[key]?.weight
@@ -629,9 +626,10 @@ export default function ProfileView() {
                     </div>
                   ))}
                   <button onClick={() => navigate('/app/history')}
-                    className="w-full text-center text-sm py-2"
+                    className="w-full inline-flex items-center justify-center gap-1.5 text-sm py-2 min-h-[44px]"
                     style={{ color: 'var(--accent-text)' }}>
-                    Ver histórico completo →
+                    Ver histórico completo
+                    <Chevron size={13}/>
                   </button>
                 </>
             }
@@ -649,7 +647,7 @@ export default function ProfileView() {
               await dataExportService.downloadJson(user.id, profile)
               toast.dismiss(t); toast.success('Dados exportados!')
             }},
-            { label: '📋 Ficha de Treino (PDF)', fn: async () => {
+            { label: 'Ficha de Treino (PDF)', fn: async () => {
               const t = toast.loading('Gerando PDF...')
               const { data } = await routineService.getAll(user.id)
               await exportRoutinePDF({ studentName: profile?.name, routines: data || {} })
@@ -670,10 +668,8 @@ export default function ProfileView() {
             }},
           ].map(btn => (
             <button key={btn.label} onClick={btn.fn}
-              className="w-full f-card px-4 py-3 flex items-center gap-3 text-left transition-all"
-              style={{ color: 'var(--text-1)' }}
-              onMouseEnter={e => e.currentTarget.style.borderColor='rgba(var(--accent-rgb),.4)'}
-              onMouseLeave={e => e.currentTarget.style.borderColor='var(--border)'}>
+              className="w-full f-card px-4 py-3 flex items-center gap-3 text-left"
+              style={{ color: 'var(--text-1)' }}>
               <span className="text-sm font-medium">{btn.label}</span>
               <svg className="ml-auto" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
@@ -690,14 +686,19 @@ export default function ProfileView() {
         <p className="f-label">Legal</p>
         <div className="grid grid-cols-2 gap-2">
           <a href="/privacy" target="_blank"
-            className="f-card p-3 text-center text-sm transition-all"
+            className="f-card p-3 text-center text-sm"
             style={{ color: 'var(--text-3)' }}>
             Privacidade
           </a>
           <a href="/terms" target="_blank"
-            className="f-card p-3 text-center text-sm transition-all"
+            className="f-card p-3 text-center text-sm"
             style={{ color: 'var(--text-3)' }}>
-            📄 Termos de Uso
+            Termos de Uso
+          </a>
+          <a href="/credits" target="_blank"
+            className="f-card p-3 text-center text-sm col-span-2"
+            style={{ color: 'var(--text-3)' }}>
+            Créditos de mídia
           </a>
         </div>
       </div>

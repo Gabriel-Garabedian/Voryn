@@ -33,7 +33,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6" style={{ background: 'var(--bg)' }}>
+    <div className="min-h-dvh flex items-center justify-center px-6" style={{ background: 'var(--bg)' }}>
       <div className="w-full max-w-md animate-slide-up">
         <Link to="/pricing" className="flex items-center gap-2 text-sm mb-6" style={{ color: 'var(--text-3)' }}>
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
@@ -43,10 +43,10 @@ export default function CheckoutPage() {
         <div className="glass-panel p-6 sm:p-7" style={plan.highlight ? { borderColor: 'var(--accent)' } : {}}>
           {/* Plan summary */}
           <div className="text-center mb-6 pb-6" style={{ borderBottom: '1px solid var(--border)' }}>
-            <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--text-3)' }}>
+            <p className="text-xs font-semibold mb-1" style={{ color: 'var(--text-3)' }}>
               Você escolheu
             </p>
-            <h2 className="font-display text-3xl uppercase tracking-wide mb-2" style={{ color: 'var(--text-1)' }}>
+            <h2 className="font-display text-3xl mb-2" style={{ color: 'var(--text-1)' }}>
               {plan.name}
             </h2>
             <div className="flex items-end justify-center gap-1">

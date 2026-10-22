@@ -50,7 +50,7 @@ export default function WorkoutLogModal({ userId, date, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center"
-      style={{ background: 'rgba(0,0,0,.8)', backdropFilter: 'blur(12px)' }}
+      style={{ background: 'rgba(0,0,0,.72)' }}
       onClick={handleClose}>
       <div onClick={e => e.stopPropagation()} ref={panelRef}
         role="dialog" aria-modal="true" aria-labelledby="workout-log-title"
@@ -63,7 +63,7 @@ export default function WorkoutLogModal({ userId, date, onClose }) {
 
         <div className="flex items-center justify-between mb-4">
           <div className="min-w-0">
-            <p id="workout-log-title" className="font-display text-2xl uppercase tracking-wide truncate" style={{ color: 'var(--text-1)' }}>
+            <p id="workout-log-title" className="font-display text-2xl truncate" style={{ color: 'var(--text-1)' }}>
               {d} de {MONTHS_PT[m - 1]}
             </p>
             {log?.name && <p className="text-sm truncate" style={{ color: 'var(--text-3)' }}>{log.name}</p>}
@@ -96,7 +96,7 @@ export default function WorkoutLogModal({ userId, date, onClose }) {
             <div className="space-y-3">
               {log.exercises?.map((ex, i) => (
                 <div key={i} className="space-y-1">
-                  <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-3)' }}>
+                  <p className="text-xs font-semibold" style={{ color: 'var(--text-3)' }}>
                     {ex.name}
                   </p>
                   <div className="flex flex-wrap gap-1">

@@ -146,7 +146,6 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
   )
   if (logs.length === 0) return (
     <div className="px-4 pt-8 text-center space-y-3">
-      <div className="section-index">NO SESSIONS</div>
       <p className="font-semibold" style={{ color: 'var(--text-1)' }}>Sem dados ainda</p>
       <p className="text-sm" style={{ color: 'var(--text-3)' }}>Complete alguns treinos para ver sua evolução.</p>
     </div>
@@ -155,7 +154,6 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
   return (
     <div className="app-view view-evolution pb-6">
       <div className="px-4 pt-6 pb-4">
-        <p className="view-kicker">Load lab / 04</p>
         <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>Evolução</h1>
         <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>
           {isEmbedded ? `Progresso de ${embeddedName || 'aluno'}` : 'Acompanhe sua progressão'}
@@ -169,10 +167,10 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
             <button key={id} onClick={() => setTab(id)}
               role="tab"
               aria-selected={tab === id}
-              className="flex-1 py-2 rounded-lg text-xs font-semibold transition-all"
+              className="flex-1 py-2 rounded-lg text-xs font-semibold"
               style={{
                 background: tab===id ? 'var(--card)' : 'transparent',
-                color:      tab===id ? 'var(--accent-text)' : 'var(--text-3)',
+                color:      tab===id ? 'var(--text-1)' : 'var(--text-3)',
                 border:     tab===id ? '1px solid var(--border)' : '1px solid transparent',
               }}>
               {lbl}
@@ -195,7 +193,7 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
           </div>
 
           {loadData.length > 0 ? (
-            <div className="glass-card p-4">
+            <div className="f-card p-4">
               <div className="flex items-center justify-between mb-3">
                 <p className="font-semibold text-sm" style={{ color: 'var(--text-1)' }}>Carga máxima (kg)</p>
                 <div className="flex gap-2">
@@ -206,8 +204,8 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
               <ResponsiveContainer width="100%" height={180}>
                 <LineChart data={loadData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false}/>
-                  <XAxis dataKey="date" tick={{ fill: 'var(--text-3)', fontSize: 10 }} axisLine={false} tickLine={false}/>
-                  <YAxis tick={{ fill: 'var(--text-3)', fontSize: 10 }} axisLine={false} tickLine={false} width={35}/>
+                  <XAxis dataKey="date" tick={{ fill: 'var(--text-3)', fontSize: 12 }} axisLine={false} tickLine={false}/>
+                  <YAxis tick={{ fill: 'var(--text-3)', fontSize: 12 }} axisLine={false} tickLine={false} width={35}/>
                   <Tooltip content={<CustomTooltip/>}/>
                   <Line type="monotone" dataKey="carga" name="Carga" unit="kg"
                     stroke={AC} strokeWidth={2.5} dot={{ fill: AC, r: 4 }}
@@ -223,13 +221,13 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
 
           {/* Volume for selected exercise */}
           {loadData.length > 0 && (
-            <div className="glass-card p-4">
+            <div className="f-card p-4">
               <p className="font-semibold text-sm mb-3" style={{ color: 'var(--text-1)' }}>Volume por sessão (kg × reps)</p>
               <ResponsiveContainer width="100%" height={140}>
                 <BarChart data={loadData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false}/>
-                  <XAxis dataKey="date" tick={{ fill:'var(--text-3)', fontSize:10 }} axisLine={false} tickLine={false}/>
-                  <YAxis tick={{ fill:'var(--text-3)', fontSize:10 }} axisLine={false} tickLine={false} width={40}/>
+                  <XAxis dataKey="date" tick={{ fill:'var(--text-3)', fontSize: 12 }} axisLine={false} tickLine={false}/>
+                  <YAxis tick={{ fill:'var(--text-3)', fontSize: 12 }} axisLine={false} tickLine={false} width={40}/>
                   <Tooltip content={<CustomTooltip/>}/>
                   <Bar dataKey="volume" name="Volume" fill={AC} radius={[4,4,0,0]}/>
                 </BarChart>
@@ -247,8 +245,8 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={weeklyVolume}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false}/>
-                <XAxis dataKey="week" tick={{ fill:'var(--text-3)', fontSize:10 }} axisLine={false} tickLine={false}/>
-                <YAxis tick={{ fill:'var(--text-3)', fontSize:10 }} axisLine={false} tickLine={false} width={40}/>
+                <XAxis dataKey="week" tick={{ fill:'var(--text-3)', fontSize: 12 }} axisLine={false} tickLine={false}/>
+                <YAxis tick={{ fill:'var(--text-3)', fontSize: 12 }} axisLine={false} tickLine={false} width={40}/>
                 <Tooltip content={<CustomTooltip/>}/>
                 <Bar dataKey="volume" name="Volume" unit="kg" fill={AC} radius={[4,4,0,0]}/>
               </BarChart>
@@ -256,15 +254,15 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
           </div>
 
           {/* Stats cards */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="f-card kpi-row grid grid-cols-2 gap-3 px-4 py-3">
             {[
               { label:'Maior volume semanal', value: weeklyVolume.length ? formatVolume(Math.max(...weeklyVolume.map(w=>w.volume))) : '—' },
               { label:'Média semanal',         value: weeklyVolume.length ? formatVolume(weeklyVolume.reduce((a,w)=>a+w.volume,0)/weeklyVolume.length) : '—' },
               { label:'Total acumulado',        value: formatVolume(logs.reduce((a,l)=>a+(parseFloat(l.total_volume)||0),0)) },
               { label:'Melhor semana',          value: weeklyVolume.length ? weeklyVolume.reduce((a,b)=>a.volume>b.volume?a:b).week : '—' },
             ].map(s => (
-              <div key={s.label} className="f-card p-3 text-center">
-                <div className="font-display text-xl" style={{ color: 'var(--accent-text)' }}>{s.value}</div>
+              <div key={s.label} className="text-center">
+                <div className="font-display text-xl" style={{ color: 'var(--text-1)' }}>{s.value}</div>
                 <div className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>{s.label}</div>
               </div>
             ))}
@@ -280,22 +278,22 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={monthlyFreq}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false}/>
-                <XAxis dataKey="mes" tick={{ fill:'var(--text-3)', fontSize:10 }} axisLine={false} tickLine={false}/>
-                <YAxis tick={{ fill:'var(--text-3)', fontSize:10 }} axisLine={false} tickLine={false} width={30}/>
+                <XAxis dataKey="mes" tick={{ fill:'var(--text-3)', fontSize: 12 }} axisLine={false} tickLine={false}/>
+                <YAxis tick={{ fill:'var(--text-3)', fontSize: 12 }} axisLine={false} tickLine={false} width={30}/>
                 <Tooltip content={<CustomTooltip/>}/>
                 <Bar dataKey="treinos" name="Treinos" fill={AC2} radius={[4,4,0,0]}/>
               </BarChart>
             </ResponsiveContainer>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="f-card kpi-row grid grid-cols-3 gap-3 px-4 py-3">
             {[
               { label:'Total treinos',    value: logs.length },
               { label:'Melhor mês',       value: monthlyFreq.length ? Math.max(...monthlyFreq.map(m=>m.treinos)) : 0 },
               { label:'Média/mês',        value: monthlyFreq.length ? Math.round(monthlyFreq.reduce((a,m)=>a+m.treinos,0)/monthlyFreq.length) : 0 },
             ].map(s => (
-              <div key={s.label} className="f-card p-3 text-center">
-                <div className="font-display text-2xl" style={{ color: 'var(--accent-text)' }}>{s.value}</div>
+              <div key={s.label} className="text-center">
+                <div className="font-display text-2xl" style={{ color: 'var(--text-1)' }}>{s.value}</div>
                 <div className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>{s.label}</div>
               </div>
             ))}
@@ -309,7 +307,7 @@ export default function EvolutionView({ embeddedUserId, embeddedName }) {
           incomodando"), sem precisar abrir o Histórico separadamente. */}
       {recentNotes.length > 0 && (
         <div className="px-4 mt-2">
-          <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-3)' }}>
+          <p className="text-sm font-semibold mb-2" style={{ color: 'var(--text-2)' }}>
             Anotações recentes
           </p>
           <div className="space-y-2">

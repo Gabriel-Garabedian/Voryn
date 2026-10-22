@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { findExerciseGif } from '@/data/exerciseGifMedia'
+import { creditFor } from '@/data/mediaCredits'
 
 // Carrossel de fotos/vídeos por exercício — estrutura visual pronta,
 // alimentada pelo campo `media` de cada exercício em data/exercises.js
@@ -18,6 +19,9 @@ export default function ExerciseMediaCarousel({ media = [], exercise, title, sub
   const combinedMedia = remoteGif ? [...media, { type: 'gif', url: remoteGif }] : media
   const hasMedia = combinedMedia.length > 0
   const current = hasMedia ? combinedMedia[index] : null
+  // Crédito do material de terceiro exibido agora (CC BY exige atribuição
+  // visível). Vem do catálogo em public/media/credits.json.
+  const credit = current?.url ? creditFor(current.url.split('/').pop()) : null
 
   useEffect(() => {
     let cancelled = false
@@ -53,7 +57,7 @@ export default function ExerciseMediaCarousel({ media = [], exercise, title, sub
 
       {hasMedia ? (
         current.type === 'video' ? (
-          <video key={current.url} src={current.url} className="w-full h-full object-cover"
+          <video key={current.url} src={current.url} poster={current.poster} className="w-full h-full object-cover"
             controls playsInline preload="metadata" />
         ) : (
           <img key={current.url} src={current.url} alt={title || 'Exercício'}
@@ -74,14 +78,26 @@ export default function ExerciseMediaCarousel({ media = [], exercise, title, sub
         </div>
       )}
 
-      {/* Overlay de título/subtítulo, sobre gradiente escuro no rodapé —
-          só aparece se algum dos dois for passado. */}
+      {/* Faixa de título/subtítulo no rodapé — só aparece se algum dos
+          dois for passado. O fundo é uma faixa sólida escura em vez de
+          gradiente: sobre a foto, um degrau reto lê melhor e não
+          introduces um segundo elemento visual na tela. */}
       {(title || subtitle) && (
         <div className="absolute inset-x-0 bottom-0 px-4 py-3"
-          style={{ background: 'linear-gradient(to top, rgba(0,0,0,.85), transparent)' }}>
-          {title && <p className="font-display text-lg uppercase tracking-wide text-white leading-tight">{title}</p>}
+          style={{ background: 'rgba(0,0,0,.78)' }}>
+          {title && <p className="font-display text-lg text-white leading-tight">{title}</p>}
           {subtitle && <p className="text-xs text-white/70 mt-0.5">{subtitle}</p>}
         </div>
+      )}
+
+      {/* Crédito da mídia de terceiro — obrigatório por licença (CC BY/CC
+          BY-SA). Fica sobre a faixa escura do rodapé, em texto pequeno. */}
+      {credit && (
+        <a href={credit.page} target="_blank" rel="noreferrer noopener"
+          className="absolute right-3 top-3 text-xs leading-none px-2 py-1 rounded"
+          style={{ background: 'rgba(0,0,0,.72)', color: 'rgba(255,255,255,.88)', textDecoration: 'none' }}>
+          {credit.creator} · {credit.license}
+        </a>
       )}
 
       {/* Pontos de navegação — só aparecem com mais de 1 item */}

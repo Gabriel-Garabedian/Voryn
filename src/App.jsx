@@ -16,6 +16,7 @@ const AdminShell    = lazy(() => import('@/components/admin/AdminShell'))
 const NotFoundPage  = lazy(() => import('@/pages/NotFoundPage'))
 const PrivacyPolicy = lazy(() => import('@/pages/legal/LegalPages').then(m => ({ default: m.PrivacyPolicyPage })))
 const TermsOfUse    = lazy(() => import('@/pages/legal/LegalPages').then(m => ({ default: m.TermsOfUsePage })))
+const CreditsPage   = lazy(() => import('@/pages/legal/CreditsPage'))
 const CommunityJoinPage = lazy(() => import('@/pages/CommunityJoinPage'))
 const FriendAddPage     = lazy(() => import('@/pages/FriendAddPage'))
 
@@ -52,6 +53,7 @@ export default function App() {
           <Route path="/reset-password"   element={<ResetPassword />} />
           <Route path="/privacy"          element={<PrivacyPolicy />} />
           <Route path="/terms"            element={<TermsOfUse />} />
+          <Route path="/credits"          element={<CreditsPage />} />
           <Route path="/community/join/:code" element={<CommunityJoinPage />} />
           <Route path="/friend/add/:code"     element={<FriendAddPage />} />
           <Route path="/login"    element={<PublicRoute><LoginPage /></PublicRoute>} />

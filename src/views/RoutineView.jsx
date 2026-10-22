@@ -7,7 +7,6 @@ import { Button } from '@/components/ui'
 import { useToast } from '@/components/ui/Toast'
 import { SkeletonList } from '@/components/ui/Skeleton'
 import ExercisePicker from '@/components/ExercisePicker'
-import MuscleTargetImage from '@/components/MuscleTargetImage'
 
 const DAYS_FULL  = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
 const DAYS_SHORT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
@@ -107,7 +106,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
         : item)
       const updated = { ...current, exercises }
       setRoutines(r => ({ ...r, [selectedDay]: updated }))
-      persist(selectedDay, updated, `✅ ${ex.name} substituído!`)
+      persist(selectedDay, updated, `${ex.name} substituído!`)
       setReplacingEx(null)
       setShowPicker(false)
       return
@@ -119,7 +118,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
     }]
     const updated = { ...current, exercises }
     setRoutines(r => ({ ...r, [selectedDay]: updated }))
-    persist(selectedDay, updated, `✅ ${ex.name} adicionado!`)
+    persist(selectedDay, updated, `${ex.name} adicionado!`)
     setShowPicker(false)
   }
 
@@ -211,8 +210,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
       {/* Header */}
       <div className="px-4 pt-6 pb-4 flex items-start justify-between gap-3">
         <div>
-            <p className="view-kicker">Planner / 02</p>
-            <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
+          <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
             {isEmbedded ? 'Ficha de Treino' : 'Minha Rotina'}
           </h1>
           <p className="text-sm mt-1 flex items-center gap-2" style={{ color: 'var(--text-3)' }}>
@@ -259,17 +257,16 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                 onClick={() => { setSelectedDay(i); setEditName(false) }}
                 aria-pressed={isSel}
                 aria-label={`${d}${isToday ? ', hoje' : ''}${hasPlan ? ', com plano' : ', sem plano'}`}
-                className="routine-day-button flex-shrink-0 flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl transition-all relative"
+                className="routine-day-button flex-shrink-0 flex flex-col items-center gap-1 px-4 py-2.5 relative"
                 style={{
-                  background: isSel ? AC : 'var(--card)',
-                  border:     `1px solid ${isSel ? AC : 'var(--border)'}`,
-                  color:      isSel ? '#fff' : 'var(--text-3)',
-                  boxShadow:  isSel ? '0 0 16px rgba(var(--accent-rgb),.35)' : 'none',
+                  background: isSel ? 'var(--raised)' : 'var(--card)',
+                  border:     `1px solid ${isSel ? 'var(--line-strong)' : 'var(--border)'}`,
+                  color:      isSel ? 'var(--text-1)' : 'var(--text-3)',
                 }}>
                 {hasPlan && !isSel && (
                   <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full" style={{ background: AC }} aria-hidden="true"/>
                 )}
-                <span className="text-xs font-semibold uppercase tracking-wider">{d}</span>
+                <span className="text-xs font-semibold">{d}</span>
                 <span className="text-xs">{isToday ? 'Hoje' : `${i+1}°`}</span>
               </button>
             )
@@ -285,12 +282,6 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
             {/* Name card */}
             <div className="f-card p-4">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center"
-                  style={{ background: 'rgba(var(--accent-rgb),.1)', border: '1px solid rgba(var(--accent-rgb),.25)' }}>
-                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke={ACT} strokeWidth="2" aria-hidden="true">
-                    <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
-                  </svg>
-                </div>
                 <div className="flex-1">
                   {editName ? (
                     <input autoFocus className="f-input py-1 text-sm"
@@ -302,10 +293,10 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                     />
                   ) : (
                     <button className="text-left w-full" onClick={() => setEditName(true)}>
-                      <p className="text-xs font-semibold uppercase tracking-widest mb-0.5" style={{ color: 'var(--text-3)' }}>
+                      <p className="text-xs font-semibold mb-0.5" style={{ color: 'var(--text-3)' }}>
                         {DAYS_FULL[selectedDay]}
                       </p>
-                      <p className="text-sm font-semibold" style={{ color: day?.name ? 'var(--text-1)' : 'rgba(var(--accent-rgb),.3)' }}>
+                      <p className="text-sm font-semibold" style={{ color: day?.name ? 'var(--text-1)' : 'var(--text-3)' }}>
                         {day?.name || 'Toque para nomear o treino...'}
                       </p>
                     </button>
@@ -358,11 +349,11 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
               {exerciseCount > 0 && (
                 <div className="routine-overview mt-4 pt-3 flex items-center gap-3">
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>
-                      Resumo da sessão
-                    </p>
-                    <p className="text-sm mt-1" style={{ color: 'var(--text-2)' }}>
+                    <p className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>
                       {exerciseCount} exercício{exerciseCount === 1 ? '' : 's'} · {totalSets} séries
+                    </p>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>
+                      Resumo da sessão
                     </p>
                   </div>
                   {!isEmbedded && (
@@ -384,7 +375,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
             {/* Exercise list */}
             {day?.exercises?.length > 0 && (
               <div className="exercise-list space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-widest px-1" style={{ color: 'var(--text-3)' }}>
+                <p className="text-sm font-semibold px-1" style={{ color: 'var(--text-2)' }}>
                   {day.exercises.length} exercício{day.exercises.length !== 1 ? 's' : ''}
                 </p>
                 {day.exercises.map((ex, idx) => (
@@ -396,7 +387,11 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                           style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
                           <span className="font-display font-bold text-sm" style={{ color: ACT }}>{idx + 1}</span>
                         </div>
-                        <MuscleTargetImage muscle={ex.muscle} secondaryMuscles={ex.secondaryMuscles} compact showLabel={false} />
+                        {/* Sem o diagrama de músculo aqui: na ficha de
+                            planejamento o grupo muscular já está escrito no
+                            chip "Alvo", e um gráfico de 48px repetido em
+                            cada linha é ruído. O diagrama fica na tela de
+                            Treino, onde ele ajuda a mirar o exercício. */}
                         <div className="flex-1 min-w-0" onClick={() => setEditingEx(editingEx?.exId === ex.id ? null : { exId: ex.id, sets: String(ex.sets), reps: ex.reps, notes: ex.notes || '', supersetGroup: ex.supersetGroup || '' })}>
                           <p className="font-semibold text-sm truncate" style={{ color: 'var(--text-1)' }}>{ex.name}</p>
                           <p className="text-xs" style={{ color: 'var(--text-3)' }}>
@@ -439,7 +434,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                       </div>
 
                       {/* Inline edit panel */}
-                      {editingEx?.exId === ex.id && (
+                      {editingEx && editingEx.exId === ex.id && (
                         <div className="mt-3 pt-3 space-y-2" style={{ borderTop: '1px solid var(--border)' }}>
                           <div className="grid grid-cols-2 gap-2">
                             {[['sets','Séries','number'],['reps','Reps','text'],['notes','Obs','text'],['supersetGroup','Supersérie','text']].map(([k,l,t]) => (
@@ -448,7 +443,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
                                 <input type={t} className="f-input text-center py-2 text-sm"
                                   placeholder={k === 'notes' ? '—' : k === 'sets' ? '3' : '10'}
                                   value={editingEx[k]}
-                                  onChange={e => setEditingEx(p => ({ ...p, [k]: e.target.value }))}
+                                  onChange={e => setEditingEx(p => (p ? { ...p, [k]: e.target.value } : p))}
                                 />
                               </div>
                             ))}
@@ -477,10 +472,8 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
 
             {/* Add exercise button */}
             <button onClick={() => setShowPicker(true)}
-              className="w-full f-card p-3 flex items-center justify-center gap-2 transition-all"
-              style={{ borderStyle: 'dashed', color: 'var(--text-3)' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(var(--accent-rgb),.4)'; e.currentTarget.style.color = AC }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-3)' }}>
+              className="w-full f-card p-3 flex items-center justify-center gap-2"
+              style={{ borderStyle: 'dashed', color: 'var(--text-2)' }}>
               <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <circle cx="12" cy="12" r="10"/>
                 <line x1="12" y1="8" x2="12" y2="16"/>
@@ -489,7 +482,7 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
               <span className="text-sm font-medium">
                 Adicionar exercício da biblioteca
               </span>
-              <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(var(--accent-rgb),.1)', color: ACT }}>
+              <span className="text-xs" style={{ color: 'var(--text-3)' }}>
                 100+
               </span>
             </button>
@@ -497,20 +490,18 @@ export default function RoutineView({ embeddedUserId, embeddedName, onClose }) {
             {/* Empty state */}
             {!day?.exercises?.length && (
               <div className="text-center py-10">
-                <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center"
-                  style={{ background: 'rgba(var(--accent-rgb),.06)', border: '1px dashed rgba(var(--accent-rgb),.2)' }}>
-                  <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke={ACT} strokeWidth="2" opacity=".4" aria-hidden="true">
+                <p className="f-empty-mark mb-1" aria-hidden="true">
+                  <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                     <path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"/>
                   </svg>
-                </div>
-                <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-2)' }}>Dia de descanso</p>
-                <p className="text-xs mb-4" style={{ color: 'var(--text-3)' }}>
+                </p>
+                <p className="text-lg font-semibold mb-1" style={{ color: 'var(--text-1)' }}>Dia de descanso</p>
+                <p className="text-sm mb-4" style={{ color: 'var(--text-3)' }}>
                   Nenhum exercício para {DAYS_FULL[selectedDay]}
                 </p>
                 <button onClick={() => setShowPicker(true)}
-                  className="text-sm font-semibold px-4 py-2 rounded-xl"
-                  style={{ background: 'rgba(var(--accent-rgb),.1)', color: ACT, border: '1px solid rgba(var(--accent-rgb),.25)' }}>
-                  + Criar treino para este dia
+                  className="f-btn f-btn-accent">
+                  Criar treino para este dia
                 </button>
               </div>
             )}

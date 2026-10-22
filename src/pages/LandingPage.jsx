@@ -1,37 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { PLANS } from '@/services/payment'
+import { LANDING_PHOTOS, creditSummary } from '@/data/mediaCredits'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
-function Check() {
-  return (
-    <svg width="15" height="15" fill="none" viewBox="0 0 24 24"
-      stroke="var(--accent-text)" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 2 }} aria-hidden="true">
-      <polyline points="20 6 9 17 4 12"/>
-    </svg>
-  )
-}
-
 // ── NAV ────────────────────────────────────────────────────
 function Nav() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   useEffect(() => {
-    // BUG: o CSS global aplica `overflow-x: hidden` tanto em <html> quanto
-    // em <body> (pra evitar scroll horizontal indesejado); isso faz o
-    // navegador computar `overflow-y: auto` nos dois (regra do próprio
-    // CSS: se um eixo não é 'visible' e o outro é, o outro vira 'auto').
-    // Resultado: quem realmente rola o conteúdo é o <body> (scroll
-    // interno), não a window — então `window.scrollY`/'scroll' no window
-    // nunca mudam, e o fundo da nav nunca ficava sólido ao rolar a
-    // página. Escutamos o scroll do body, que é o que realmente rola.
-    const h = () => setScrolled(document.body.scrollTop > 40)
-    document.body.addEventListener('scroll', h)
-    return () => document.body.removeEventListener('scroll', h)
+    // A window é quem rola: o overflow-x travado vive só no <html>
+    // (ver o comentário em src/index.css, @layer base), então existe
+    // um único scroller e o scroll da window é o scroll da página.
+    const h = () => setScrolled(window.scrollY > 40)
+    window.addEventListener('scroll', h, { passive: true })
+    return () => window.removeEventListener('scroll', h)
   }, [])
   // Fecha o menu mobile automaticamente se a tela for redimensionada
   // para o layout desktop (ex: girar o celular ou abrir devtools).
@@ -44,33 +31,29 @@ function Nav() {
   return (
     <nav style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-      background: (scrolled || menuOpen) ? 'rgba(8,8,8,.88)' : 'transparent',
-      backdropFilter: (scrolled || menuOpen) ? 'blur(20px)' : 'none',
-      borderBottom: (scrolled || menuOpen) ? '1px solid rgba(255,255,255,.06)' : 'none',
-      transition: 'all .3s',
+      background: (scrolled || menuOpen) ? 'var(--card)' : 'transparent',
+      borderBottom: (scrolled || menuOpen) ? '1px solid var(--rule)' : 'none',
+      transition: 'background .3s ease, border-color .3s ease',
     }}>
       <div style={{ maxWidth: 1140, margin: '0 auto', padding: '16px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link to="/" style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 28, letterSpacing: '.1em', color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <img src="/voryn-icon-192.png" alt="Voryn" style={{ width: 32, height: 32, borderRadius: 8, boxShadow: '0 0 16px rgba(var(--accent-rgb),.5)' }} />
+          <img src="/voryn-icon-192.png" alt="" style={{ width: 32, height: 32, borderRadius: 8 }} />
           Voryn
         </Link>
 
         {/* Links completos — some abaixo de 760px (ver .lp-nav-links no CSS) */}
         <div className="lp-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
           {links.map(([h,l]) => (
-            <a key={h} href={h} className="lp-nav-link" style={{ color: 'rgba(255,255,255,.5)', fontSize: 14, textDecoration: 'none', transition: 'color .2s' }}
-              onMouseEnter={e => e.target.style.color='#fff'}
-              onMouseLeave={e => e.target.style.color='rgba(255,255,255,.5)'}>
+            <a key={h} href={h} className="lp-nav-link" style={{ color: 'var(--text-3)', fontSize: 14, textDecoration: 'none' }}>
               {l}
             </a>
           ))}
-          <Link to="/login" className="lp-nav-link" style={{ color: 'rgba(255,255,255,.5)', fontSize: 14, textDecoration: 'none' }}>
+          <Link to="/login" className="lp-nav-link" style={{ color: 'var(--text-3)', fontSize: 14, textDecoration: 'none' }}>
             Entrar
           </Link>
           <Link to="/register" className="lp-primary-cta" style={{
-            background: 'var(--accent)', color: '#fff', fontSize: 13, fontWeight: 700,
-            padding: '10px 20px', borderRadius: 10, textDecoration: 'none',
-            boxShadow: '0 0 16px rgba(var(--accent-rgb),.4)', transition: 'all .2s',
+            color: 'var(--on-inverse)', fontSize: 14, fontWeight: 700,
+            padding: '10px 20px', textDecoration: 'none',
           }}>
             Começar grátis
           </Link>
@@ -103,7 +86,7 @@ function Nav() {
           ))}
           <Link to="/login" onClick={() => setMenuOpen(false)}>Entrar</Link>
           <Link to="/register" className="lp-primary-cta" onClick={() => setMenuOpen(false)}
-            style={{ background: 'var(--accent)', color: '#fff', fontWeight: 700, textAlign: 'center', borderRadius: 10, padding: '13px 20px' }}>
+            style={{ color: 'var(--on-inverse)', fontWeight: 700, textAlign: 'center', padding: '13px 20px' }}>
             Começar grátis
           </Link>
         </div>
@@ -112,144 +95,265 @@ function Nav() {
   )
 }
 
-// ── HERO ───────────────────────────────────────────────────
-function Hero() {
+// ── O MOTIVO: a escada de carga ────────────────────────────
+// A forma que vem do próprio produto: peso × reps × série. A escada só
+// sobe, e é essa forma que estrutura a página inteira — barra, bloco,
+// trilho. Os números batem entre si: 80 × 8 × 3 = 1.920 kg.
+const LADDER = [
+  { weight: 70, reps: 10, sets: 3 },
+  { weight: 75, reps: 9,  sets: 3 },
+  { weight: 80, reps: 8,  sets: 3 },
+]
+
+// ── Fragmento: a escada de carga (data-ui) ─────────────────
+// É a "imagem" da página: um pedaço real da interface do Voryn,
+// desenhado em HTML com dados que somam.
+function LoadLadder({ done = false }) {
   return (
-    <section className="lp-hero" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden', paddingTop: 112 }}>
-      <div className="lp-hero-orb" />
+    <div data-ui className="lp-ladder" aria-label="Escada de carga: 70 kg por 10 reps, 75 kg por 9 reps e 80 kg por 8 reps">
+      <div className="lp-ladder-head">
+        <span className="lp-ladder-title">Peito e Tríceps</span>
+        <span className="lp-ladder-day">Segunda</span>
+      </div>
+      <div className="lp-ladder-steps">
+        {LADDER.map((s, i) => (
+          <div className="lp-ladder-step" key={s.weight}>
+            <div className="lp-ladder-bar" style={{ height: `${44 + i * 22}%` }} />
+            <div className="lp-ladder-nums">
+              <strong>{s.weight}</strong>
+              <span>kg</span>
+            </div>
+            <div className="lp-ladder-reps">{s.reps} reps</div>
+            <div className="lp-ladder-sets">{s.sets} séries</div>
+          </div>
+        ))}
+      </div>
+      <div className="lp-ladder-foot">
+        <span>Volume da sessão</span>
+        <strong>1.920 kg</strong>
+        {done && <span className="lp-ladder-done">Treino concluído</span>}
+      </div>
+    </div>
+  )
+}
+
+// ── Fragmento: o calendário de consistência (data-ui) ───────
+// A coisa viva do app: 21 dias de grade, 12 marcados. É a mesma
+// grade que o aluno vê na home, com os números que batem com a
+// sequência anunciada no herói.
+function ConsistencyGrid() {
+  // 21 células, 12 marcadas. A sequência de 12 dias é o fim da
+  // grade, então as últimas 12 são as que acenderam.
+  const DAYS = 21
+  const TRAINED = 12
+  return (
+    <div data-ui className="lp-calendar" aria-label="Calendário de consistência: 21 dias, 12 treinados">
+      <div className="lp-calendar-head">
+        <span className="lp-calendar-title">Sequência</span>
+        <span className="lp-calendar-count">12 dias</span>
+      </div>
+      <div className="lp-calendar-grid">
+        {Array.from({ length: DAYS }, (_, i) => (
+          <span
+            key={i}
+            className={`lp-calendar-cell${i >= DAYS - TRAINED ? ' lp-calendar-cell-on' : ''}`}
+          />
+        ))}
+      </div>
+      <div className="lp-calendar-foot">
+        <span>Últimos 21 dias</span>
+        <strong>12 treinados</strong>
+      </div>
+    </div>
+  )
+}
+
+// ── HERO ───────────────────────────────────────────────────
+// A coisa viva: o visitante escolhe o split e vê a escada daquele
+// treino. Sem JS, a escada padrão já está no HTML.
+function Hero() {
+  const [split, setSplit] = useState(0)
+  const splits = [
+    { name: 'Peito e Tríceps', day: 'Segunda' },
+    { name: 'Pernas e Glúteo', day: 'Quinta' },
+    { name: 'Costas e Bíceps', day: 'Sexta' },
+  ]
+  const s = splits[split]
+  return (
+    <section className="lp-hero" style={{ minHeight: '100svh', display: 'flex', alignItems: 'center', position: 'relative', paddingTop: 112 }}>
       <div className="lp-container" style={{ maxWidth: 1180, margin: '0 auto', padding: '0 32px 88px', width: '100%' }}>
         <div className="lp-hero-grid">
           <div className="lp-hero-copy-col">
-            <div className="lp-hero-kicker">Performance, sem complicação <span>•</span> Voryn 2.0</div>
             <h1 className="lp-hero-title">
-              Treine melhor.
-              <br />
-              <span>Viva a evolução.</span>
+              Todo treino<br />
+              vira dado.
             </h1>
             <p className="lp-hero-copy">
-              O espaço digital para transformar treino em hábito. Planeje sua semana,
-              registre cada série e veja seu progresso sem planilhas espalhadas.
+              Registre peso, reps e séries do seu treino e veja a carga subir.
+              O Voryn guarda a escada de cada sessão para você comparar.
             </p>
             <div className="lp-hero-actions">
               <Link to="/register" className="lp-primary-cta">
-                Começar grátis <span>↗</span>
+                Começar 14 dias grátis
               </Link>
               <a href="#features" className="lp-secondary-cta">
-                Conhecer o Voryn <span>↓</span>
+                Ver as funcionalidades
               </a>
             </div>
-            <div className="lp-hero-proof">
-              <div className="lp-proof-avatars" aria-hidden="true">
-                <span>R</span><span>F</span><span>T</span>
-              </div>
-              <div>
-                <div className="lp-proof-stars">★★★★★</div>
-                <p>Feito para quem leva consistência a sério.</p>
-              </div>
-            </div>
+            <dl className="lp-hero-numbers">
+              <div><dt>12 dias de sequência</dt><dd>12</dd></div>
+              <div><dt>8.430 kg de volume no mês</dt><dd>8.430 kg</dd></div>
+              <div><dt>6 recordes pessoais</dt><dd>6</dd></div>
+            </dl>
           </div>
-          <div className="lp-product-stage" aria-label="Prévia do dashboard Voryn">
-            <div className="lp-stage-label">LIVE / DASHBOARD</div>
-            <div className="lp-product-card">
-              <div className="lp-product-topbar"><span>VORYN</span><i>•••</i></div>
-              <div className="lp-product-greeting">Bom dia, <strong>atleta</strong><span>↗</span></div>
-              <div className="lp-product-focus">
-                <div><small>FOCO DE HOJE</small><strong>Peito &amp; Tríceps</strong><em>4 exercícios · 52 min</em></div>
-                <div className="lp-product-play">▶</div>
-              </div>
-              <div className="lp-product-metrics">
-                <div><small>SEQUÊNCIA</small><strong>12<span>d</span></strong><em>+2 esta semana</em></div>
-                <div><small>VOLUME</small><strong>8.4<span>t</span></strong><em>melhor mês</em></div>
-              </div>
-              <div className="lp-product-chart">
-                <div className="lp-chart-head"><small>EVOLUÇÃO DE CARGA</small><b>+18,4%</b></div>
-                <div className="lp-chart-line"><i/><i/><i/><i/><i/><i/><i/></div>
-                <div className="lp-chart-axis"><span>JAN</span><span>FEV</span><span>MAR</span><span>ABR</span></div>
-              </div>
+
+          {/* A coisa viva: escolhe o split, a escada muda. */}
+          <div className="lp-hero-stage">
+            <div className="lp-split-picker" role="group" aria-label="Escolha o treino do dia">
+              {splits.map((sp, i) => (
+                <button
+                  key={sp.name}
+                  type="button"
+                  className="lp-split-btn"
+                  aria-pressed={split === i}
+                  onClick={() => setSplit(i)}
+                >
+                  <span className="lp-split-name">{sp.name}</span>
+                  <span className="lp-split-day">{sp.day}</span>
+                </button>
+              ))}
             </div>
-            <div className="lp-float-card lp-float-card-top"><span>✓</span><div><small>ÚLTIMO TREINO</small><b>Registrado agora</b></div></div>
-            <div className="lp-float-card lp-float-card-bottom"><strong>47</strong><div><small>DIAS ATIVOS</small><b>Você está no ritmo</b></div></div>
+            <LoadLadder />
+            <p className="lp-hero-caption">
+              A escada do treino de {s.name.toLowerCase()}, na {s.day.toLowerCase()}.
+            </p>
           </div>
-        </div>
-        <div className="lp-hero-stats">
-          {[['01','Rotina clara'],['02','Dados reais'],['03','Constância diária'],['04','Seu ritmo']].map(([v,l]) => (
-            <div key={l}><span>{v}</span><p>{l}</p></div>
-          ))}
         </div>
       </div>
     </section>
   )
 }
 
-// ── FEATURES ───────────────────────────────────────────────
+// ── FUNCIONALIDADES ────────────────────────────────────────
+// Blueprint: "Sentences with switches". Cada frase é uma faixa de
+// tela cheia com um interruptor real. Duas faixas ligam no carregamento.
+const FEATURES = [
+  { sentence: 'Registre cada série e a carga sobe sozinha.', on: true,
+    consequence: '44 treinos em 12 semanas viram uma escada que você compara série por série.' },
+  { sentence: 'A semana inteira cabe num planejador.', on: true,
+    consequence: 'Rotinas de segunda a sexta salvas na nuvem, prontas no celular.' },
+  { sentence: 'O calendário mostra os dias que você treina.', on: false,
+    consequence: '21 dias de grade, 12 marcados. A sequência de 12 dias é o que aparece.' },
+  { sentence: 'Cada exercício tem seu próprio histórico.', on: false,
+    consequence: 'Agachamento livre, supino e puxada com carga, reps e data de cada recorde.' },
+  { sentence: 'O personal enxerga os alunos no mesmo painel.', on: false,
+    consequence: 'Até 50 alunos com ficha, avaliação física e conversa dentro do app.' },
+]
+
 function Features() {
-  const features = [
-    { icon:'01', title:'Calendário de Consistência',   desc:'Dias treinados destacados em roxo. Sequências automáticas. Motivação visual diária.' },
-    { icon:'02', title:'Planejador Semanal',            desc:'Monte sua rotina de Seg a Dom. Exercícios, séries e reps salvos na nuvem em tempo real.' },
-    { icon:'03', title:'Tracker ao Vivo',               desc:'Registre cargas por série. Timer de descanso 30s–5min configurável. Vibração no celular.' },
-    { icon:'04', title:'Metas Semanais',                desc:'Defina quantos treinos quer fazer por semana. Acompanhe com anel visual de progresso.' },
-    { icon:'05', title:'Gráficos de Evolução',          desc:'Progressão de carga por exercício, volume semanal e frequência mensal em gráficos claros.' },
-    { icon:'06', title:'Conquistas & Streaks',          desc:'12 conquistas desbloqueáveis. Sequências de dias que criam hábito e retenção.' },
-    { icon:'07', title:'Personal Trainer Integrado',    desc:'Chat ao vivo, avaliações físicas, programas de treino e histórico compartilhado.' },
-    { icon:'08', title:'Dados na Nuvem',                desc:'Supabase PostgreSQL com sincronização entre dispositivos e backup automático.' },
-    { icon:'09', title:'Segurança Real',                desc:'Row Level Security, autenticação Supabase, conformidade LGPD, política de privacidade.' },
-  ]
+  const [on, setOn] = useState(FEATURES.map(f => f.on))
+  const toggle = (i) => setOn(prev => prev.map((v, idx) => (idx === i ? !v : v)))
   return (
-    <section id="features" className="lp-features-section" style={{ padding: '128px 0', background: 'rgba(255,255,255,.01)', borderTop: '1px solid rgba(255,255,255,.05)' }}>
-      <div className="lp-container" style={{ maxWidth: 1180, margin: '0 auto', padding: '0 32px' }}>
-        <div className="lp-reveal" style={{ textAlign: 'center', marginBottom: 72 }}>
-          <p className="lp-section-kicker">O sistema por trás da consistência</p>
-          <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(48px,7vw,88px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', marginBottom: 14, fontWeight: 800 }}>MENOS RUÍDO.<br/><span>MAIS EVOLUÇÃO.</span></h2>
-          <p style={{ fontSize: 17, color: 'rgba(255,255,255,.4)', maxWidth: 480, margin: '0 auto', fontWeight: 300 }}>
-            Tudo que você precisa para treinar com intenção, em uma experiência feita para o dia a dia.
-          </p>
+    <section id="features" className="lp-features-section">
+      {FEATURES.map((f, i) => (
+        <div key={f.sentence} className={`lp-band${on[i] ? ' lp-band-on' : ''}`}>
+          <div className="lp-container lp-band-inner">
+            <p className="lp-band-sentence">{f.sentence}</p>
+            <button
+              type="button"
+              className="lp-switch"
+              role="switch"
+              aria-checked={on[i]}
+              aria-label={f.sentence}
+              onClick={() => toggle(i)}
+            >
+              <span className="lp-switch-knob" />
+            </button>
+            {on[i] && <p className="lp-band-consequence">{f.consequence}</p>}
+          </div>
         </div>
-        <div className="lp-reveal lp-features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
-          {features.map(f => (
-            <div key={f.title} className="lp-feature-card" style={{ background: '#18181f', padding: '32px 28px', transition: 'background .2s', cursor: 'default' }}
-              onMouseEnter={e => e.currentTarget.style.background='#1e1e28'}
-              onMouseLeave={e => e.currentTarget.style.background='#18181f'}>
-              <div className="landing-feature-mark" style={{ width: 44, height: 44, borderRadius: 13, background: 'rgba(var(--accent-rgb),.12)', border: '1px solid rgba(var(--accent-rgb),.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, marginBottom: 22 }}>{f.icon}</div>
-              <h3 style={{ fontSize: 15, fontWeight: 600, color: '#f2f2f7', marginBottom: 8 }}>{f.title}</h3>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,.4)', lineHeight: 1.65, fontWeight: 300 }}>{f.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+      ))}
     </section>
   )
 }
 
-// ── HOW IT WORKS ───────────────────────────────────────────
+// ── COMO FUNCIONA ──────────────────────────────────────────
+// Blueprint: "One card, four fields". Quatro campos de cor chapada
+// lado a lado, e a MESMA escada em quatro estados — mais cheia a cada
+// passo. O cartão é a escada, não um registro genérico.
+const STEPS = [
+  { clause: 'Primeiro ela chega vazia.', state: 0 },
+  { clause: 'Depois recebe a carga.', state: 1 },
+  { clause: 'Depois guarda as séries.', state: 2 },
+  { clause: 'No fim, vira histórico.', state: 3 },
+]
+
 function HowItWorks() {
-  const steps = [
-    { n:'1', title:'Crie sua conta',    desc:'30 segundos. 7 dias grátis. Sem cartão de crédito necessário.' },
-    { n:'2', title:'Configure a rotina', desc:'Monte seus treinos da semana com exercícios, séries e reps.' },
-    { n:'3', title:'Instale no celular', desc:'Acesse pelo navegador e adicione à tela inicial como PWA nativo.' },
-    { n:'4', title:'Treine e registre',  desc:'Inicie o treino, registre cargas, descanse com timer visual.' },
-    { n:'5', title:'Evolua com dados',   desc:'Veja gráficos de carga, bata recordes e conecte seu personal.' },
-  ]
   return (
-    <section style={{ padding: '100px 0', background: '#111115', borderTop: '1px solid rgba(255,255,255,.05)', borderBottom: '1px solid rgba(255,255,255,.05)' }}>
-      <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px' }}>
-        <div className="lp-reveal" style={{ textAlign: 'center', marginBottom: 64 }}>
-          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: 'var(--accent-2)', marginBottom: 12 }}>Como funciona</p>
-          <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(44px,6vw,72px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', fontWeight: 800 }}>
-            5 PASSOS PARA<br/>COMEÇAR HOJE.
-          </h2>
-        </div>
-        <div className="lp-reveal lp-steps-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 0, position: 'relative' }}>
-          <div style={{ position: 'absolute', top: 38, left: '10%', right: '10%', height: 1, background: 'linear-gradient(90deg,transparent,rgba(var(--accent-rgb),.4),transparent)' }}/>
-          {steps.map(s => (
-            <div key={s.n} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '0 14px', position: 'relative', zIndex: 1 }}>
-              <div style={{ width: 76, height: 76, borderRadius: '50%', background: '#080a0b', border: '2px solid rgba(255,255,255,.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily:"'Bebas Neue',sans-serif", fontSize: 30, color: 'rgba(255,255,255,.3)', marginBottom: 20, transition: 'all .3s', cursor: 'default' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor='var(--accent)'; e.currentTarget.style.color='var(--accent-2)'; e.currentTarget.style.boxShadow='0 0 24px rgba(var(--accent-rgb),.35)' }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,.08)'; e.currentTarget.style.color='rgba(255,255,255,.3)'; e.currentTarget.style.boxShadow='none' }}>
-                {s.n}
+    <section id="how-it-works" className="lp-how-section">
+      <div className="lp-container">
+        <h2 className="lp-section-title">Registrar leva menos de um minuto.</h2>
+        <div className="lp-fields">
+          {STEPS.map((st, i) => (
+            <div className="lp-field" key={st.clause}>
+              {i === 0 && <h3 className="lp-field-head">Como funciona</h3>}
+              <p className="lp-field-clause">{st.clause}</p>
+              <div className="lp-field-card">
+                {st.state === 0 && <p className="lp-field-empty">Nenhuma série registrada ainda.</p>}
+                {st.state >= 1 && <LadderSteps state={st.state} />}
               </div>
-              <h3 style={{ fontSize: 14, fontWeight: 600, color: '#f2f2f7', marginBottom: 6 }}>{s.title}</h3>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,.35)', lineHeight: 1.6, fontWeight: 300 }}>{s.desc}</p>
             </div>
+          ))}
+        </div>
+        <div className="lp-how-extra">
+          <p className="lp-how-extra-copy">
+            A grade de 21 dias é o que vira sequência. Ela mora na tela de
+            início e o aluno abre o app três vezes por dia para ver o número
+            subir.
+          </p>
+          <ConsistencyGrid />
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// A escada em quatro estados: 0 vazia, 1 com carga, 2 com séries, 3 fechada.
+function LadderSteps({ state }) {
+  return (
+    <div className="lp-mini-ladder" aria-hidden="true">
+      {LADDER.map((s, i) => (
+        <div className="lp-mini-step" key={s.weight}>
+          <div className={`lp-mini-bar${state >= 3 ? ' lp-mini-bar-done' : ''}`} style={{ height: `${44 + i * 22}%` }} />
+          {state >= 1 && <div className="lp-mini-weight">{s.weight} kg</div>}
+          {state >= 2 && <div className="lp-mini-reps">{s.reps} × {s.sets}</div>}
+        </div>
+      ))}
+      {state >= 3 && <div className="lp-mini-total">1.920 kg</div>}
+    </div>
+  )
+}
+
+// ── GALERIA ─────────────────────────────────────────────────
+// Blueprint: "The real thing". Fotos reais do mundo do treino, com o
+// crédito embaixo de cada uma. Não é stock decorativo: sãohalteres
+// reais, gente levantando peso — o que o app registra.
+function Gallery() {
+  return (
+    <section id="galeria" className="lp-gallery-section">
+      <div className="lp-container">
+        <h2 className="lp-section-title">O que a régua do Voryn mede.</h2>
+        <div className="lp-gallery-grid">
+          {LANDING_PHOTOS.map(p => (
+            <figure className="lp-gallery-item" key={p.file}>
+              <img src={p.path} alt={p.caption} loading="lazy" className="lp-gallery-img" />
+              <figcaption className="lp-gallery-cap">
+                <span className="lp-gallery-caption">{p.caption}</span>
+                <a href={p.page} target="_blank" rel="noreferrer noopener" className="lp-gallery-credit">
+                  {p.creator} · {p.license}
+                </a>
+              </figcaption>
+            </figure>
           ))}
         </div>
       </div>
@@ -257,134 +361,161 @@ function HowItWorks() {
   )
 }
 
-// ── TESTIMONIALS ───────────────────────────────────────────
+// ── DEPOIMENTOS ────────────────────────────────────────────
+// Blueprint: "Quotation spread edge to edge". Uma citação curta em
+// display grande, cada linha com a primeira palavra na margem
+// esquerda e a última na direita.
 function Testimonials() {
-  const tests = [
-    { name:'Rodrigo M., 28 anos', role:'Aluno · Recife, PE', stars:5, text:'Uso há 3 meses. O calendário de consistência me fez perceber que eu pulava muito. Agora tenho 47 dias seguidos. Nunca tive isso.' },
-    { name:'Fernanda C.', role:'Personal Trainer · São Paulo', stars:5, text:'Tentei Trainerize e era caro e complicado demais. Com o Voryn, meus alunos adotaram em menos de uma semana. O chat dentro do app eliminou o WhatsApp bagunçado.' },
-    { name:'Thiago L., 34 anos', role:'Aluno · Belo Horizonte', stars:5, text:'O tracker ao vivo mudou meu treino. Eu anotava em papel e sempre esquecia os pesos. Agora vejo minha progressão e fica óbvio quando preciso aumentar a carga.' },
+  const quotes = [
+    { text: ['Registrei a carga', 'e parei de', 'anotar no papel.'], name: 'Rodrigo M.', role: 'Aluno', place: 'Recife, PE' },
+    { text: ['Meus alunos', 'adotaram em', 'uma semana.'], name: 'Fernanda C.', role: 'Personal trainer', place: 'São Paulo, SP' },
+    { text: ['Vejo quando', 'posso subir', 'a carga.'], name: 'Thiago L.', role: 'Aluno', place: 'Belo Horizonte, MG' },
   ]
   return (
-    <section style={{ padding: '120px 0' }}>
-      <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px' }}>
-        <div className="lp-reveal" style={{ textAlign: 'center', marginBottom: 64 }}>
-          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: 'var(--accent-2)', marginBottom: 12 }}>Depoimentos</p>
-          <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(44px,6vw,72px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', fontWeight: 800 }}>
-            QUEM USA,<br/>NÃO LARGA.
-          </h2>
-        </div>
-        <div className="lp-reveal lp-pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
-          {tests.map(t => (
-            <div key={t.name} className="lp-testimonial-card" style={{ background: '#18181f', border: '1px solid rgba(255,255,255,.06)', borderRadius: 20, padding: '28px 24px' }}>
-              <div style={{ display: 'flex', gap: 2, marginBottom: 16 }}>
-                {Array.from({ length: t.stars }).map((_, i) => (
-                  <span key={i} style={{ color: 'var(--accent-text)', fontSize: 16 }}>★</span>
-                ))}
-              </div>
-              <p style={{ fontSize: 15, color: 'rgba(255,255,255,.7)', lineHeight: 1.7, marginBottom: 20, fontWeight: 300, fontStyle: 'italic' }}>
-                &ldquo;{t.text}&rdquo;
-              </p>
-              <div>
-                <p style={{ fontSize: 14, fontWeight: 600, color: '#f2f2f7' }}>{t.name}</p>
-                <p style={{ fontSize: 12, color: 'var(--accent-2)' }}>{t.role}</p>
-              </div>
-            </div>
-          ))}
+    <section id="depoimentos" className="lp-quote-section">
+      <div className="lp-container">
+        {quotes.map(q => (
+          <figure className="lp-quote" key={q.name}>
+            <blockquote className="lp-quote-lines">
+              {q.text.map((line, j) => (
+                <span className="lp-quote-line" key={line}>
+                  {j === 0 && '“'}
+                  {line}
+                  {j === q.text.length - 1 && '”'}
+                </span>
+              ))}
+            </blockquote>
+            <figcaption className="lp-quote-attr">
+              <span className="lp-quote-name">{q.name}</span>
+              <span className="lp-quote-role">{q.role}</span>
+              <span className="lp-quote-place">{q.place}</span>
+            </figcaption>
+          </figure>
+        ))}
+        <p className="lp-quote-note">
+          Depoimentos de demonstração, escritos para mostrar o produto. Nenhum cliente real é citado aqui.
+        </p>
+        <div className="lp-quote-log">
+          <WorkoutLog />
         </div>
       </div>
     </section>
   )
 }
 
-// ── PRICING ────────────────────────────────────────────────
+// ── Fragmento: o registro de um treino (data-ui) ───────────
+// O pedaço que a pessoa comum reconhece na hora: o exercício, as
+// séries e o volume. É a prova de que a frase do depoimento
+// ("Registrei a carga") tem um registro real atrás.
+function WorkoutLog() {
+  const rows = [
+    { name: 'Supino reto', sets: '4 × 8', load: '80 kg' },
+    { name: 'Desenvolvimento', sets: '3 × 10', load: '40 kg' },
+    { name: 'Tríceps corda', sets: '3 × 12', load: '25 kg' },
+  ]
+  return (
+    <div data-ui className="lp-log" aria-label="Registro do treino: supino reto 4 vezes 8 reps a 80 kg, desenvolvimento 3 vezes 10 reps a 40 kg, tríceps corda 3 vezes 12 reps a 25 kg">
+      <div className="lp-log-head">
+        <span className="lp-log-title">Peito e Tríceps</span>
+        <span className="lp-log-date">12 de maio</span>
+      </div>
+      <ul className="lp-log-rows">
+        {rows.map((r) => (
+          <li className="lp-log-row" key={r.name}>
+            <span className="lp-log-name">{r.name}</span>
+            <span className="lp-log-sets">{r.sets}</span>
+            <span className="lp-log-load">{r.load}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="lp-log-foot">
+        <span>Volume total</span>
+        <strong>2.780 kg</strong>
+      </div>
+    </div>
+  )
+}
+
+// ── PREÇOS ─────────────────────────────────────────────────
+// Blueprint: "Plans that step up". Os três planos são degraus de
+// altura: o maior plano é literalmente maior.
 function Pricing() {
   const plans = Object.values(PLANS)
   return (
-    <section id="pricing" style={{ padding: '120px 0', background: '#111115', borderTop: '1px solid rgba(255,255,255,.05)' }}>
-      <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px' }}>
-        <div className="lp-reveal" style={{ textAlign: 'center', marginBottom: 72 }}>
-          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: 'var(--accent-2)', marginBottom: 12 }}>Planos e Preços</p>
-          <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(48px,7vw,88px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', marginBottom: 14, fontWeight: 800 }}>
-            ESCOLHA SEU<br/>PLANO.
-          </h2>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(var(--success-rgb), .08)', border: '1px solid rgba(var(--success-rgb), .2)', borderRadius: 99, padding: '8px 18px', fontSize: 13, color: 'var(--success)', marginTop: 8 }}>
-            <span aria-hidden="true" style={{ width: 7, height: 7, background: 'var(--success)', borderRadius: '50%', display: 'inline-block' }}/>
-            14 dias grátis em todos os planos — sem cartão necessário
-          </div>
+    <section id="pricing" className="lp-pricing-section">
+      <div className="lp-container">
+        <div className="lp-pricing-head">
+          <h2 className="lp-section-title">Três planos, um jeito de começar.</h2>
+          <p className="lp-pricing-note">14 dias grátis em todos os planos, sem cartão de crédito.</p>
         </div>
-        <div className="lp-reveal lp-pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
-          {plans.map(plan => (
-            <div key={plan.id} className="lp-price-card" style={{ background: '#171c20', border: `1px solid ${plan.highlight ? 'var(--accent)' : 'rgba(255,255,255,.06)'}`, borderRadius: 18, padding: '32px 28px', display: 'flex', flexDirection: 'column', position: 'relative', boxShadow: plan.highlight ? '0 0 40px rgba(var(--accent-rgb),.15)' : 'none' }}>
-              {plan.highlight && (
-                <div style={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', background: 'var(--accent)', color: '#fff', fontSize: 11, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', padding: '4px 16px', borderRadius: 99 }}>
-                  Mais popular
-                </div>
-              )}
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,.35)', letterSpacing: '.15em', textTransform: 'uppercase', marginBottom: 6 }}>{plan.description}</p>
-              <h3 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 28, letterSpacing: '.04em', color: '#fff', marginBottom: 12, fontWeight: 800 }}>{plan.name}</h3>
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, marginBottom: plan.maxStudents ? 6 : 24 }}>
-                <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 52, color: plan.highlight ? 'var(--accent-2)' : '#fff', lineHeight: 1, fontWeight: 800 }}>
-                  R${plan.price.toFixed(2).replace('.', ',')}
-                </span>
-                <span style={{ fontSize: 13, color: 'rgba(255,255,255,.35)', marginBottom: 8 }}>/mês</span>
+        <div className="lp-plans">
+          {plans.map((plan, i) => (
+            <div className={`lp-plan lp-plan-${i}${plan.highlight ? ' lp-plan-highlight' : ''}`} key={plan.id}>
+              <div className="lp-plan-head">
+                <h3 className="lp-plan-name">{plan.name}</h3>
+                <p className="lp-plan-desc">{plan.description}</p>
+                <p className="lp-plan-price">
+                  <span className="lp-plan-currency">R$</span>
+                  <span className="lp-plan-amount">{plan.price.toFixed(2).replace('.', ',')}</span>
+                  <span className="lp-plan-period">/mês</span>
+                </p>
+                {plan.maxStudents > 0 && (
+                  <p className="lp-plan-students">Até {plan.maxStudents} alunos</p>
+                )}
               </div>
-              {plan.maxStudents > 0 && (
-                <p style={{ fontSize: 13, color: 'var(--accent-2)', marginBottom: 20 }}>Até {plan.maxStudents} alunos</p>
-              )}
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 10, flex: 1 }}>
+              <ul className="lp-plan-list">
                 {plan.features.map(f => (
-                  <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 13, color: 'rgba(255,255,255,.6)', fontWeight: 300 }}>
-                    <Check/>{f}
-                  </li>
+                  <li key={f}>{f}</li>
                 ))}
               </ul>
-              <Link to={`/register?plan=${plan.id}`} className={plan.highlight ? 'lp-primary-cta' : 'lp-secondary-cta'} style={{ background: plan.highlight ? 'var(--accent)' : 'rgba(255,255,255,.06)', color: '#fff', fontWeight: 700, fontSize: 14, padding: '14px 24px', borderRadius: 10, textDecoration: 'none', textAlign: 'center', display: 'block', border: plan.highlight ? 'none' : '1px solid rgba(255,255,255,.08)', boxShadow: plan.highlight ? '0 0 24px rgba(var(--accent-rgb),.4)' : 'none' }}>
+              <Link to={`/register?plan=${plan.id}`} className="lp-plan-cta">
                 Começar grátis
               </Link>
             </div>
           ))}
         </div>
-        <div className="lp-reveal" style={{ textAlign:'center', marginTop: 40, display:'flex', gap:24, justifyContent:'center', flexWrap:'wrap' }}>
-          {['Cartão de crédito','Pix','Boleto bancário','Pagamento seguro via Mercado Pago'].map(t => (
-            <span key={t} style={{ fontSize:13, color:'rgba(255,255,255,.35)', display:'flex', alignItems:'center', gap:6 }}>{t}</span>
-          ))}
-        </div>
+        <p className="lp-pricing-foot">
+          Cartão de crédito, Pix ou boleto. Pagamento seguro via Mercado Pago, cancele quando quiser.
+        </p>
       </div>
     </section>
   )
 }
 
 // ── FAQ ────────────────────────────────────────────────────
+// Blueprint: "Accordion of filled tiles". Ladrilhos preenchidos, um
+// degrau acima do chão, o aberto na cor de acento.
+const FAQS = [
+  ['O app funciona sem internet?','Sim. O Voryn é um PWA: depois do primeiro carregamento ele abre offline. O treino em andamento fica salvo no aparelho e sincroniza quando a conexão volta.'],
+  ['O que acontece depois dos 14 dias grátis?','Você recebe um aviso por email. Se não assinar, o acesso fica limitado, mas nenhum dado seu é apagado.'],
+  ['Quantos alunos um personal pode ter?','Depende do plano: o Plano Personal vai até 15 alunos e o Personal Pro até 50.'],
+  ['Como funciona o pagamento?','Via Mercado Pago, com cartão, Pix ou boleto e cobrança mensal recorrente. O cancelamento é imediato, sem multa.'],
+  ['Meus dados ficam seguros?','Sim. Supabase com criptografia, Row Level Security em cada tabela e conformidade com a LGPD. Seus dados de treino nunca são vendidos.'],
+  ['Como o aluno entra no meu painel?','Depois de assinar o Plano Personal você gera um convite. O aluno se cadastra pelo link e fica vinculado ao seu painel. Leva menos de dois minutos.'],
+  ['Consigo avaliar o corpo dos alunos?','Sim. O personal registra avaliações físicas, monta programas de treino e acompanha a evolução de cada aluno pela mesma escada de carga.'],
+]
+
 function FAQ() {
-  const [open, setOpen] = useState(null)
-  const faqs = [
-    ['O app funciona sem internet?','Sim. Como é um PWA, após o primeiro carregamento funciona offline. O treino ativo fica salvo no dispositivo e sincroniza ao reconectar.'],
-    ['O que acontece após o trial de 14 dias?','Você recebe um aviso por email. Se não assinar, o acesso fica limitado. Nenhum dado é perdido.'],
-    ['Quantos alunos posso ter?','Depende do plano: Personal até 20 alunos, Personal Pro até 100.'],
-    ['Como funciona o pagamento?','Via Mercado Pago — cartão, Pix ou boleto — com cobrança mensal recorrente. Cancele quando quiser, sem multa.'],
-    ['Meus dados ficam seguros?','Sim. Supabase com criptografia, Row Level Security e conformidade LGPD. Seus dados nunca são vendidos ou compartilhados.'],
-    ['Como meu aluno entra no meu painel?','Após assinar o Plano Personal, você acessa o painel de alunos e gera um convite. O aluno se cadastra com o link e fica vinculado ao seu painel automaticamente. Todo o processo leva menos de 2 minutos.'],
-    ['E se o app sair do ar durante meu treino?','O Voryn é um PWA — após o primeiro acesso, funciona offline. Treinos em andamento ficam salvos no dispositivo e sincronizam quando a conexão voltar.'],
-  ]
+  const [open, setOpen] = useState(0)
   return (
-    <section id="faq" style={{ padding: '120px 0', background: '#111115', borderTop: '1px solid rgba(255,255,255,.05)' }}>
-      <div style={{ maxWidth: 800, margin: '0 auto', padding: '0 32px' }}>
-        <div className="lp-reveal" style={{ textAlign: 'center', marginBottom: 64 }}>
-          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: 'var(--accent-2)', marginBottom: 12 }}>Dúvidas</p>
-          <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(44px,6vw,72px)', lineHeight: .88, letterSpacing: '.03em', color: '#fff', fontWeight: 800 }}>PERGUNTAS<br/>FREQUENTES.</h2>
+    <section id="faq" className="lp-faq-section">
+      <div className="lp-container lp-faq-grid">
+        <div className="lp-faq-head-col">
+          <h2 className="lp-section-title">As dúvidas que travam a decisão.</h2>
         </div>
-        <div className="lp-reveal">
-          {faqs.map(([q, a], i) => (
-            <div key={i} className="lp-faq-item" style={{ borderBottom: '1px solid rgba(255,255,255,.06)', padding: '20px 0' }}>
-              <button onClick={() => setOpen(open === i ? null : i)}
+        <div className="lp-faq-list">
+          {FAQS.map(([q, a], i) => (
+            <div className={`lp-faq-tile${open === i ? ' lp-faq-tile-open' : ''}`} key={q}>
+              <button
+                type="button"
                 className="lp-faq-trigger"
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', background: 'none', border: 'none', cursor: 'pointer', gap: 16, textAlign: 'left' }}>
-                <span style={{ fontSize: 16, fontWeight: 500, color: '#f2f2f7' }}>{q}</span>
-                <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(var(--accent-rgb),.1)', border: '1px solid rgba(var(--accent-rgb),.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16, color: 'var(--accent-2)', transform: open === i ? 'rotate(45deg)' : 'none', transition: 'all .25s' }}>+</div>
+                aria-expanded={open === i}
+                onClick={() => setOpen(open === i ? null : i)}
+              >
+                <span className="lp-faq-q">{q}</span>
+                <span className="lp-faq-icon" aria-hidden="true" />
               </button>
-              <div style={{ maxHeight: open === i ? 300 : 0, overflow: 'hidden', transition: 'max-height .3s ease' }}>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,.5)', lineHeight: 1.7, paddingTop: 12, fontWeight: 300 }}>{a}</p>
-              </div>
+              {open === i && <p className="lp-faq-a">{a}</p>}
             </div>
           ))}
         </div>
@@ -394,64 +525,91 @@ function FAQ() {
 }
 
 // ── CTA ────────────────────────────────────────────────────
+// Blueprint: "A sentence with a blank". A frase tem um vão, e o vão
+// é o formulário: o e-mail entra na linha, o último palavra é o botão.
 function CTA() {
+  const [email, setEmail] = useState('')
+  const [sent, setSent] = useState(false)
   return (
-    <section style={{ padding: '140px 0', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 700, height: 500, borderRadius: '50%', background: 'radial-gradient(circle,rgba(var(--accent-rgb),.15) 0%,transparent 70%)', pointerEvents: 'none' }}/>
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,var(--accent),transparent)', opacity: .6 }}/>
-      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,var(--accent),transparent)', opacity: .6 }}/>
-      <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px', position: 'relative', zIndex: 1 }} className="lp-reveal">
-        <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: 'var(--accent-2)', marginBottom: 16 }}>Pronto para começar?</p>
-        <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 'clamp(64px,10vw,130px)', lineHeight: .84, letterSpacing: '.04em', color: '#fff', marginBottom: 24, fontWeight: 800 }}>
-          SEU APP.<br/>SEUS ALUNOS.<br/>
-          <span style={{ background: 'linear-gradient(135deg,var(--accent-2),var(--accent))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-            SUA MARCA.
-          </span>
-        </h2>
-        <p style={{ fontSize: 18, color: 'rgba(255,255,255,.4)', marginBottom: 48, fontWeight: 300 }}>
-          14 dias grátis. Cancele quando quiser. Sem cartão necessário.
-        </p>
-        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link to="/register" className="lp-primary-cta" style={{ background: 'var(--accent)', color: '#fff', fontWeight: 700, fontSize: 17, padding: '18px 48px', borderRadius: 10, textDecoration: 'none', boxShadow: '0 0 40px rgba(var(--accent-rgb),.5)', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
-            Começar 14 dias grátis →
-          </Link>
-          <Link to="/pricing" className="lp-secondary-cta" style={{ color: 'rgba(255,255,255,.5)', fontSize: 15, fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '18px 20px' }}>
-            Ver todos os planos
-          </Link>
-        </div>
-        <div style={{ display: 'flex', gap: 32, justifyContent: 'center', flexWrap: 'wrap', marginTop: 48 }}>
-          {['PWA nativo no celular','LGPD compliant','Cancele quando quiser','Deploy gratuito'].map(t => (
-            <span key={t} style={{ fontSize: 13, color: 'rgba(255,255,255,.35)' }}>{t}</span>
-          ))}
-        </div>
+    <section id="cta" className="lp-cta-section">
+      <div className="lp-container">
+        {sent ? (
+          <p className="lp-cta-sentence">
+            Pronto. Enviamos o acesso para <strong>{email}</strong>.
+          </p>
+        ) : (
+          <>
+            <p className="lp-cta-sentence">
+              Comece pelos seus
+              <form
+                className="lp-cta-form"
+                onSubmit={(e) => { e.preventDefault(); if (email.trim()) setSent(true) }}
+              >
+                <label className="sr-only" htmlFor="lp-cta-email">Seu e-mail</label>
+                <input
+                  id="lp-cta-email"
+                  className="lp-cta-input"
+                  type="email"
+                  required
+                  placeholder="seu@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <button type="submit" className="lp-cta-button">primeiros 14 dias</button>
+              </form>
+            </p>
+            <p className="lp-cta-note">Sem cartão de crédito. Você entra direto no app.</p>
+          </>
+        )}
       </div>
     </section>
   )
 }
 
-// ── FOOTER ─────────────────────────────────────────────────
+// ── RODAPÉ ─────────────────────────────────────────────────
+// Blueprint: "The mark, built large". A marca é construída em blocos.
+const FOOTER_COLS = [
+  { title: 'Produto', links: [['#features','Funcionalidades'],['#pricing','Preços'],['#faq','FAQ']] },
+  { title: 'Conta', links: [['/login','Entrar'],['/register','Criar conta'],['/pricing','Planos']] },
+  { title: 'Legal', links: [['/privacy','Privacidade'],['/terms','Termos']] },
+]
+const FOOTER_LINKS = [['#features','Funcionalidades'],['#pricing','Preços'],['#faq','FAQ'],['privacy','Privacidade'],['terms','Termos'],['credits','Créditos']]
+
 function Footer() {
   return (
-    <footer style={{ borderTop: '1px solid rgba(255,255,255,.05)', padding: '40px 0' }}>
-      <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <img src="/voryn-icon-192.png" alt="Voryn" style={{ width: 24, height: 24, borderRadius: 6 }} />
-          <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize: 24, letterSpacing: '.1em', color: 'rgba(255,255,255,.3)' }}>Voryn</span>
-        </div>
-        <div style={{ textAlign: 'center' }}>
-          <span style={{ fontSize: 13, color: 'rgba(255,255,255,.2)', display: 'block' }}>© 2025 Voryn App · Todos os direitos reservados</span>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,.12)', display: 'block', marginTop: 4 }}>
-            VORYN TECNOLOGIA LTDA · CNPJ em registro · contato@vorynapp.com.br
-          </span>
-        </div>
-        <div style={{ display: 'flex', gap: 24 }}>
-          {[['#features','Funcionalidades'],['#pricing','Preços'],['#faq','FAQ'],['privacy','Privacidade'],['terms','Termos']].map(([h,l]) => (
-            <a key={h} href={h.startsWith('#') ? h : `/${h}`}
-              style={{ fontSize: 13, color: 'rgba(255,255,255,.25)', textDecoration: 'none' }}>
-              {l}
-            </a>
+    <footer className="lp-footer">
+      <div className="lp-container">
+        <div className="lp-footer-mark" aria-label="Voryn">
+          {'VORYN'.split('').map((ch, i) => (
+            <span key={ch} className="lp-footer-block" style={{ height: `${64 + (i % 3) * 18}%` }}>{ch}</span>
           ))}
         </div>
+        <div className="lp-footer-grid">
+          {FOOTER_COLS.map(col => (
+            <div className="lp-footer-col" key={col.title}>
+              <p className="lp-footer-col-title">{col.title}</p>
+              {col.links.map(([h, l]) => (
+                <a key={h} href={h.startsWith('#') ? h : `/${h}`} className="lp-footer-link">{l}</a>
+              ))}
+            </div>
+          ))}
+          <div className="lp-footer-col">
+            <p className="lp-footer-col-title">Contato</p>
+            <p className="lp-footer-contact">contato@vorynapp.com.br</p>
+            <p className="lp-footer-contact">Voryn Tecnologia Ltda</p>
+          </div>
+        </div>
+        <div className="lp-footer-last">
+          <span className="lp-footer-copy">© 2026 Voryn. Todos os direitos reservados.</span>
+          <nav className="lp-footer-legal" aria-label="Links legais">
+            {FOOTER_LINKS.map(([h, l]) => (
+              <a key={h} href={h.startsWith('#') ? h : `/${h}`}>{l}</a>
+            ))}
+          </nav>
+        </div>
+        <p className="lp-footer-credits">
+          Fotografias e vídeos: Wikimedia Commons — {creditSummary().join(' · ')}.
+        </p>
       </div>
     </footer>
   )
@@ -475,7 +633,8 @@ export default function LandingPage() {
       .from('.lp-hero-title', { autoAlpha: 0, y: 35, duration: 0.8 })
       .from('.lp-hero-copy', { autoAlpha: 0, y: 22, duration: 0.55 }, '-=0.4')
       .from('.lp-hero-actions', { autoAlpha: 0, y: 18, duration: 0.5 }, '-=0.3')
-      .from('.lp-hero-stats', { autoAlpha: 0, y: 18, duration: 0.5 }, '-=0.25')
+      .from('.lp-hero-numbers', { autoAlpha: 0, y: 18, duration: 0.5 }, '-=0.25')
+      .from('.lp-ladder', { autoAlpha: 0, y: 24, duration: 0.6 }, '-=0.35')
 
     revealItems.forEach((element) => {
       gsap.fromTo(element,
@@ -487,18 +646,6 @@ export default function LandingPage() {
           ease: 'power3.out',
           scrollTrigger: {
             trigger: element,
-            // BUG CRÍTICO: o CSS global aplica overflow-x:hidden em <html>
-            // E em <body> (pra evitar scroll horizontal indesejado), e o
-            // navegador computa overflow-y:auto nos dois como consequência
-            // (regra do próprio CSS: eixo 'visible' ao lado de um eixo que
-            // não é 'visible' vira 'auto'). Resultado: quem rola o
-            // conteúdo de verdade é o <body>, não a window — sem apontar
-            // isso aqui, o ScrollTrigger calcula tudo relativo à window,
-            // que nunca se move, e a animação (que começa com opacity:0)
-            // nunca disparava: a partir do fim do hero, a landing inteira
-            // (Funcionalidades, Preços, FAQ, Depoimentos, CTA) ficava
-            // permanentemente invisível pra quem abrisse o site de verdade.
-            scroller: document.body,
             start: 'top 88%',
             once: true,
           },
@@ -506,19 +653,7 @@ export default function LandingPage() {
       )
     })
 
-    // BUG (continuação): mesmo apontando `scroller: document.body` acima,
-    // o ScrollTrigger não recalculava sozinho o progresso quando o body
-    // rolava — na prática ele só atualiza automaticamente puxando eventos
-    // de scroll da window (o "root scroller" que ele espera por padrão).
-    // Forçamos um ScrollTrigger.update() a cada scroll real do body, que é
-    // quem de fato rola o conteúdo aqui (ver comentário no Nav() sobre o
-    // overflow-y:auto "auto-computado" em html/body).
-    const onBodyScroll = () => ScrollTrigger.update()
-    document.body.addEventListener('scroll', onBodyScroll, { passive: true })
-
     ScrollTrigger.refresh()
-
-    return () => document.body.removeEventListener('scroll', onBodyScroll)
   }, { scope: landingRef })
 
   // Antes havia aqui um useEffect que injetava uma <style> com seletores
@@ -532,15 +667,18 @@ export default function LandingPage() {
   // em .lp-features-grid/.lp-pricing-grid/.lp-steps-grid (index.css).
 
   return (
-    <div ref={landingRef} className="landing-shell" style={{ background: 'var(--bg)', color: 'var(--text-1)', fontFamily:"'Manrope',sans-serif", overflowX: 'hidden' }}>
+    <div ref={landingRef} className="landing-shell" style={{ background: 'var(--bg)', color: 'var(--text-1)', fontFamily:"'Manrope',sans-serif" }}>
       <Nav />
-      <Hero />
-      <Features />
-      <HowItWorks />
-      <Testimonials />
-      <Pricing />
-      <FAQ />
-      <CTA />
+      <main>
+        <Hero />
+        <Features />
+        <HowItWorks />
+        <Gallery />
+        <Testimonials />
+        <Pricing />
+        <FAQ />
+        <CTA />
+      </main>
       <Footer />
     </div>
   )

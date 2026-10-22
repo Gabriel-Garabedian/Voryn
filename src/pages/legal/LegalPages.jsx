@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 function LegalLayout({ title, children }) {
   return (
-    <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
+    <div className="min-h-dvh" style={{ background: 'var(--bg)' }}>
       <div className="max-w-2xl mx-auto px-6 py-16">
         <Link to="/" className="flex items-center gap-2 text-sm mb-10" style={{ color: 'var(--text-3)' }}>
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -42,7 +42,7 @@ function Li({ children }) {
 export function PrivacyPolicyPage() {
   return (
     <LegalLayout title="Política de Privacidade">
-      <P>A presente Política de Privacidade descreve como o <strong>Voryn Tracker</strong> coleta, usa, armazena e protege os dados pessoais dos usuários, em conformidade com a <strong>Lei Geral de Proteção de Dados (Lei nº 13.709/2018 — LGPD)</strong>.</P>
+      <P>A presente Política de Privacidade descreve como o <strong>Voryn Tracker</strong> coleta, usa, armazena e protege os dados pessoais dos usuários, em conformidade com a <strong>Lei Geral de Proteção de Dados (Lei nº 13.709/2018, a LGPD)</strong>.</P>
 
       <H2>1. Dados Coletados</H2>
       <P>Coletamos os seguintes dados para prestação do serviço:</P>
@@ -67,8 +67,8 @@ export function PrivacyPolicyPage() {
       <P>Seus dados <strong>não são vendidos ou compartilhados</strong> com terceiros para fins comerciais. O compartilhamento ocorre apenas com:</P>
       <ul className="space-y-1 ml-2">
         <Li>Seu personal trainer vinculado (somente dados de treino, mediante sua autorização)</Li>
-        <Li>Supabase — provedor de banco de dados e autenticação</Li>
-        <Li>Mercado Pago — processador de pagamentos</Li>
+        <Li>Supabase, provedor de banco de dados e autenticação</Li>
+        <Li>Mercado Pago, processador de pagamentos</Li>
         <Li>Autoridades públicas, quando exigido por lei</Li>
       </ul>
 
@@ -87,7 +87,7 @@ export function PrivacyPolicyPage() {
       <P>Para exercer seus direitos, entre em contato: <strong>privacidade@vorynapp.com.br</strong></P>
 
       <H2>6. Exclusão de Conta</H2>
-      <P>Você pode solicitar a exclusão completa da sua conta e de todos os dados associados a qualquer momento pelo próprio aplicativo (Perfil → Excluir conta) ou por e-mail. A exclusão é processada em até 30 dias.</P>
+      <P>Você pode solicitar a exclusão completa da sua conta e de todos os dados associados a qualquer momento pelo próprio aplicativo (em Perfil, na opção Excluir conta) ou por e-mail. A exclusão é processada em até 30 dias.</P>
 
       <H2>7. Cookies e Rastreamento</H2>
       <P>O Voryn utiliza apenas cookies essenciais para manter a sessão autenticada. Não utilizamos cookies de rastreamento ou publicidade.</P>
@@ -119,7 +119,7 @@ export function TermsOfUsePage() {
 
       <H2>3. Planos e Pagamentos</H2>
       <ul className="space-y-1 ml-2">
-        <Li>O período de teste gratuito é de 7 dias, sem necessidade de cartão</Li>
+        <Li>O período de teste gratuito é de 14 dias, sem necessidade de cartão</Li>
         <Li>Após o trial, a assinatura é cobrada mensalmente via Mercado Pago</Li>
         <Li>O cancelamento pode ser feito a qualquer momento, sem multa</Li>
         <Li>O acesso permanece ativo até o fim do período pago após cancelamento</Li>

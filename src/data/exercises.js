@@ -6,19 +6,20 @@ import { ADDITIONAL_EXERCISES } from './exerciseCatalog.js'
 //
 //  CAMPO "media" — como preencher com fotos/vídeos reais depois:
 //
-//  Cada exercício tem media:[] (vazio por padrão — nenhuma foto/vídeo
-//  fabricada aqui, só a estrutura pronta pra receber conteúdo real).
-//  Pra adicionar, preencha o array com objetos no formato:
+//  Cada exercício tem media:[] por padrão. Três exercícios já têm
+//  vídeo de demonstração real, servido de public/media (Wikimedia
+//  Commons, com crédito em public/media/credits.json):
 //
 //    media: [
-//      { type: 'image', url: 'https://.../supino-1.jpg' },
-//      { type: 'image', url: 'https://.../supino-2.jpg' },
-//      { type: 'video', url: 'https://.../supino.mp4' },
+//      { type: 'image', url: '/media/supino-1.jpg' },
+//      { type: 'video', url: '/media/levantamento-terra.webm', poster: '/media/levantamento-terra-poster.jpg' },
 //    ]
 //
 //  - type é sempre 'image' ou 'video' (obrigatório — não é inferido pela
 //    extensão do arquivo, porque URLs assinadas de storage geralmente não
 //    têm extensão visível no final).
+//  - `poster` é o quadro de capa do vídeo: sem ele, o navegador
+//    mostra um retângulo preto até o vídeo carregar.
 //  - A ordem no array é a ordem de exibição no carrossel.
 //  - Pode misturar quantas fotos/vídeos quiser por exercício, ou deixar
 //    vazio — sem media, o app mostra o ícone padrão normalmente, sem
@@ -26,6 +27,9 @@ import { ADDITIONAL_EXERCISES } from './exerciseCatalog.js'
 //  - As URLs podem vir de qualquer lugar público (Supabase Storage,
 //    Cloudinary, etc.) — só precisam ser acessíveis publicamente sem
 //    autenticação, já que aparecem tanto pro aluno quanto pro personal.
+//  - Material de terceiros exige crédito: o arquivo em
+//    public/media/credits.json é a fonte, e src/data/mediaCredits.js
+//    expõe os dados pra landing e pro app.
 //
 //  Componente que renderiza isso: src/components/ExerciseMediaCarousel.jsx
 // ──────────────────────────────────────────────────────────
@@ -46,18 +50,24 @@ export const EXERCISE_LIBRARY = [
   // COSTAS
   { id:'e012', name:'Puxada Frontal',             muscle:'Costas',      equipment:'Cabo',         type:'compound'  , media:[] },
   { id:'e013', name:'Puxada Triângulo',           muscle:'Costas',      equipment:'Cabo',         type:'compound'  , media:[] },
-  { id:'e014', name:'Remada Curvada',             muscle:'Costas',      equipment:'Barra',        type:'compound'  , media:[] },
+  { id:'e014', name:'Remada Curvada',             muscle:'Costas',      equipment:'Barra',        type:'compound'  , media:[
+    { type: 'video', url: '/media/bent-over-row-exercise-demonstration-video.webm', poster: '/media/bent-over-row-exercise-demonstration-video-poster.jpg' },
+  ] },
   { id:'e015', name:'Remada com Haltere',         muscle:'Costas',      equipment:'Halteres',     type:'compound'  , media:[] },
   { id:'e016', name:'Remada na Máquina',          muscle:'Costas',      equipment:'Máquina',      type:'compound'  , media:[] },
   { id:'e017', name:'Remada Cavalinho',           muscle:'Costas',      equipment:'Máquina',      type:'compound'  , media:[] },
   { id:'e018', name:'Pulldown no Cabo',           muscle:'Costas',      equipment:'Cabo',         type:'compound'  , media:[] },
   { id:'e019', name:'Barra Fixa',                 muscle:'Costas',      equipment:'Corpo',        type:'compound'  , media:[] },
-  { id:'e020', name:'Levantamento Terra',         muscle:'Costas',      equipment:'Barra',        type:'compound'  , media:[] },
+  { id:'e020', name:'Levantamento Terra',         muscle:'Costas',      equipment:'Barra',        type:'compound'  , media:[
+    { type: 'video', url: '/media/deadlift-exercise-demonstration-video.webm', poster: '/media/deadlift-exercise-demonstration-video-poster.jpg' },
+  ] },
   { id:'e021', name:'Hiperextensão',              muscle:'Costas',      equipment:'Máquina',      type:'isolation' , media:[] },
   { id:'e022', name:'Pullover',                   muscle:'Costas',      equipment:'Halteres',     type:'isolation' , media:[] },
   { id:'e023', name:'Remada Unilateral no Cabo',  muscle:'Costas',      equipment:'Cabo',         type:'compound'  , media:[] },
   // OMBRO
-  { id:'e024', name:'Desenvolvimento c/ Barra',   muscle:'Ombro',       equipment:'Barra',        type:'compound'  , media:[] },
+  { id:'e024', name:'Desenvolvimento c/ Barra',   muscle:'Ombro',       equipment:'Barra',        type:'compound'  , media:[
+    { type: 'video', url: '/media/shoulder-press-exercise-demonstration-video.webm', poster: '/media/shoulder-press-exercise-demonstration-video-poster.jpg' },
+  ] },
   { id:'e025', name:'Desenvolvimento Halteres',   muscle:'Ombro',       equipment:'Halteres',     type:'compound'  , media:[] },
   { id:'e026', name:'Elevação Lateral',           muscle:'Ombro',       equipment:'Halteres',     type:'isolation' , media:[] },
   { id:'e027', name:'Elevação Frontal',           muscle:'Ombro',       equipment:'Halteres',     type:'isolation' , media:[] },

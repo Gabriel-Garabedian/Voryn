@@ -5,13 +5,6 @@ import MuscleTargetImage from '@/components/MuscleTargetImage'
 
 const ACT = 'var(--accent-text)'
 
-const MUSCLE_EMOJI = {
-  'Peito': '🫀', 'Costas': '🏋️', 'Pernas': '🦵', 'Ombro': '💪',
-  'Bíceps': '💪', 'Tríceps': '💪', 'Abdômen': '⚡', 'Glúteo': '🍑',
-  'Cardio': '❤️', 'Funcional': '⚙️', 'Posterior': '🦵',
-  'Panturrilha': '🦵', 'Antebraço': '✊', 'Mobilidade': '🤸',
-}
-
 export default function ExerciseDetail({ exercise, onAdd, onClose, buttonLabel = 'Adicionar ao treino' }) {
   const { setup, steps, caution } = getExerciseInstructions(exercise)
   const videoUrl = getExerciseVideoSearchUrl(exercise.name)
@@ -37,9 +30,12 @@ export default function ExerciseDetail({ exercise, onAdd, onClose, buttonLabel =
 
         {/* Header */}
         <div className="flex items-start gap-3 px-5 pt-3 pb-4 flex-shrink-0" style={{ borderBottom: '1px solid var(--border)' }}>
-          <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl"
-            style={{ background: 'rgba(var(--accent-rgb),.1)', border: '1px solid rgba(var(--accent-rgb),.2)' }}>
-            {MUSCLE_EMOJI[exercise.muscle] || '🏃'}
+          <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
+            style={{ background: 'var(--inverse)' }}>
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="var(--on-inverse)" strokeWidth="1.8"
+              strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M7 4v6M17 4v6M7 10h10M9 10v6l-2 4M15 10v6l2 4"/>
+            </svg>
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-display text-lg uppercase tracking-wide leading-tight" style={{ color: 'var(--text-1)' }}>
@@ -74,7 +70,7 @@ export default function ExerciseDetail({ exercise, onAdd, onClose, buttonLabel =
               compact
             />
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: ACT }}>
+              <p className="text-xs font-semibold" style={{ color: ACT }}>
                 Músculo alvo
               </p>
               <p className="text-sm font-semibold mt-1" style={{ color: 'var(--text-1)' }}>
@@ -111,7 +107,7 @@ export default function ExerciseDetail({ exercise, onAdd, onClose, buttonLabel =
 
           {/* Setup */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: ACT }}>
+            <p className="text-sm font-semibold mb-2" style={{ color: ACT }}>
               Posição inicial
             </p>
             <p className="text-sm leading-relaxed" style={{ color: 'var(--text-2)' }}>{setup}</p>
@@ -119,7 +115,7 @@ export default function ExerciseDetail({ exercise, onAdd, onClose, buttonLabel =
 
           {/* Steps */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: ACT }}>
+            <p className="text-sm font-semibold mb-2" style={{ color: ACT }}>
               Execução
             </p>
             <div className="space-y-2.5">

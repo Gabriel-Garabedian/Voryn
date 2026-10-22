@@ -3,14 +3,14 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { translateError } from '@/utils/helpers'
-import { Button } from '@/components/ui'
+import { Button, Chevron } from '@/components/ui'
 
 function VorynLogo() {
   return (
     <div className="flex items-center justify-center gap-3 mb-2">
       <img src="/voryn-logo-purple.png" alt="Voryn" className="w-12 h-12 rounded-2xl"
-        style={{ boxShadow: '0 0 24px rgba(var(--accent-rgb),.5)', border: '1px solid rgba(var(--accent-rgb),.4)' }} />
-      <span className="font-display text-4xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>Voryn</span>
+        style={{ border: '1px solid var(--line-strong)' }} />
+      <span className="font-display text-4xl tracking-wide" style={{ color: 'var(--text-1)' }}>Voryn</span>
     </div>
   )
 }
@@ -21,26 +21,19 @@ function InviteSuccessScreen({ trainerName, onContinue }) {
   useEffect(() => { setTimeout(() => setShow(true), 80) }, [])
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6"
+    <div className="min-h-dvh flex flex-col items-center justify-center px-6"
       style={{ background: 'var(--bg)' }}>
-      {/* glow */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle,rgba(var(--accent-rgb),.14) 0%,transparent 70%)' }}/>
-
       <div className="w-full max-w-sm relative z-10 text-center"
         style={{
           opacity:    show ? 1 : 0,
           transform:  show ? 'translateY(0) scale(1)' : 'translateY(20px) scale(.96)',
-          transition: 'all .4s cubic-bezier(.34,1.2,.64,1)',
+          transition: 'opacity .4s ease, transform .4s cubic-bezier(.34,1.2,.64,1)',
         }}>
 
-        {/* ícone animado */}
+        {/* ícone */}
         <div className="relative mx-auto mb-6" style={{ width: 96, height: 96 }}>
-          {/* pulso externo */}
-          <div className="absolute inset-0 rounded-full animate-ping"
-            style={{ background: 'rgba(var(--accent-rgb),.15)', animationDuration: '1.5s' }}/>
           <div className="w-24 h-24 rounded-full flex items-center justify-center relative"
-            style={{ background: 'linear-gradient(135deg,rgba(var(--accent-rgb),.25),rgba(var(--accent-rgb),.1))', border: '2px solid rgba(var(--accent-rgb),.4)' }}>
+            style={{ background: 'var(--raised)', border: '1px solid var(--line-strong)' }}>
             <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2" aria-hidden="true">
               <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
               <circle cx="9" cy="7" r="4"/>
@@ -50,7 +43,7 @@ function InviteSuccessScreen({ trainerName, onContinue }) {
           </div>
         </div>
 
-        <h1 className="font-display text-3xl uppercase tracking-wide mb-2"
+        <h1 className="font-display text-3xl tracking-wide mb-2"
           style={{ color: 'var(--text-1)' }}>
           Conexão feita!
         </h1>
@@ -59,20 +52,18 @@ function InviteSuccessScreen({ trainerName, onContinue }) {
         </p>
 
         {/* card do personal */}
-        <div className="f-card p-5 mb-6 text-left"
-          style={{ borderColor: 'rgba(var(--accent-rgb),.4)', background: 'rgba(var(--accent-rgb),.06)' }}>
+        <div className="f-card p-5 mb-6 text-left">
           <div className="flex items-center gap-4">
             {/* avatar com iniciais */}
             <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 font-display text-xl"
-              style={{ background: 'var(--accent)', color: '#fff', boxShadow: '0 0 16px rgba(var(--accent-rgb),.4)' }}>
+              style={{ background: 'var(--raised)', color: 'var(--accent-text)', border: '1px solid var(--line-strong)' }}>
               {trainerName?.charAt(0)?.toUpperCase() || '?'}
             </div>
             <div>
-              <p className="font-display text-xl uppercase tracking-wide" style={{ color: 'var(--accent-text)' }}>
+              <p className="font-display text-xl tracking-wide" style={{ color: 'var(--accent-text)' }}>
                 {trainerName}
               </p>
-              <p className="text-xs font-semibold uppercase tracking-wider mt-0.5"
-                style={{ color: 'var(--text-3)' }}>
+              <p className="text-sm mt-0.5" style={{ color: 'var(--text-3)' }}>
                 Personal Trainer
               </p>
             </div>
@@ -99,12 +90,15 @@ function InviteSuccessScreen({ trainerName, onContinue }) {
         </div>
 
         <Button size="xl" className="w-full" onClick={onContinue}>
-          Começar meu onboarding →
+          Começar meu onboarding
+          <Chevron size={14}/>
         </Button>
 
-        <p className="text-xs mt-4" style={{ color: 'var(--text-3)', opacity: .6 }}>
+        <p className="text-sm mt-4" style={{ color: 'var(--text-3)' }}>
           Você pode acessar o chat com seu personal a qualquer momento em{' '}
-          <span style={{ color: 'var(--accent-2)' }}>Mais → Personal</span>
+          <span className="inline-flex items-center gap-1" style={{ color: 'var(--accent-text)' }}>
+            Mais <Chevron size={12}/> Personal
+          </span>
         </p>
       </div>
     </div>
@@ -128,18 +122,14 @@ function InviteBanner({ trainerInfo, loading: loadingInfo }) {
   }
 
   return (
-    <div className="f-card px-4 py-4 mb-4 animate-slide-up"
-      style={{ borderColor: 'rgba(var(--accent-rgb),.4)', background: 'rgba(var(--accent-rgb),.05)' }}>
+    <div className="f-card px-4 py-4 mb-4 animate-slide-up">
 
       {/* cabeçalho */}
       <div className="flex items-center gap-2 mb-3">
-        <div className="w-5 h-5 rounded-full flex items-center justify-center"
-          style={{ background: 'rgba(var(--accent-rgb),.2)' }}>
-          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2.5" aria-hidden="true">
-            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .27h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/>
-          </svg>
-        </div>
-        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--accent-text)' }}>
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2" aria-hidden="true">
+          <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .27h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/>
+        </svg>
+        <p className="text-sm font-semibold" style={{ color: 'var(--accent-text)' }}>
           Convite de Personal Trainer
         </p>
       </div>
@@ -147,7 +137,7 @@ function InviteBanner({ trainerInfo, loading: loadingInfo }) {
       {/* personal info */}
       <div className="flex items-center gap-3 mb-3">
         <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 font-display text-lg"
-          style={{ background: 'var(--accent)', color: '#fff', boxShadow: '0 0 12px rgba(var(--accent-rgb),.35)' }}>
+          style={{ background: 'var(--raised)', color: 'var(--accent-text)', border: '1px solid var(--line-strong)' }}>
           {trainerInfo?.name?.charAt(0)?.toUpperCase() || '?'}
         </div>
         <div>
@@ -160,8 +150,8 @@ function InviteBanner({ trainerInfo, loading: loadingInfo }) {
 
       {/* mensagem de convite */}
       <div className="rounded-xl px-3 py-2.5"
-        style={{ background: 'rgba(var(--accent-rgb),.08)', border: '1px solid rgba(var(--accent-rgb),.15)' }}>
-        <p className="text-xs leading-relaxed" style={{ color: 'var(--text-2)' }}>
+        style={{ background: 'var(--surface)', border: '1px solid var(--rule)' }}>
+        <p className="text-sm leading-relaxed" style={{ color: 'var(--text-2)' }}>
           <strong style={{ color: 'var(--text-1)' }}>
             {trainerInfo?.name?.split(' ')[0] || 'Seu personal'}
           </strong>{' '}
@@ -181,7 +171,7 @@ function InviteBanner({ trainerInfo, loading: loadingInfo }) {
             <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--success)" strokeWidth="2.5" aria-hidden="true">
               <polyline points="20 6 9 17 4 12"/>
             </svg>
-            <p className="text-xs" style={{ color: 'var(--text-3)' }}>{txt}</p>
+            <p className="text-sm" style={{ color: 'var(--text-3)' }}>{txt}</p>
           </div>
         ))}
       </div>
@@ -306,7 +296,7 @@ export default function RegisterPage() {
             if (String(linkErr.message || '').includes('limite de alunos')) {
               localStorage.removeItem('voryn_pending_trainer')
               setLoading(false)
-              setError(`${trainerInfo?.name || 'Seu personal'} atingiu o limite de alunos do plano atual. Avise-o para fazer upgrade, ou continue usando o Voryn sem vínculo por enquanto — sua conta foi criada normalmente.`)
+              setError(`${trainerInfo?.name || 'Seu personal'} atingiu o limite de alunos do plano atual. Avise-o para fazer upgrade, ou continue usando o Voryn sem vínculo por enquanto. Sua conta foi criada normalmente.`)
               navigate(redirectTo)
               return
             }
@@ -338,15 +328,12 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="auth-shell register-shell min-h-screen flex flex-col items-center justify-center px-6 py-8"
+    <div className="auth-shell register-shell min-h-dvh flex flex-col items-center justify-center px-6 py-8"
       style={{ background: 'var(--bg)' }}>
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[34rem] h-[34rem] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle,rgba(var(--accent-rgb),.13) 0%,transparent 70%)' }}/>
 
       <div className="w-full max-w-4xl relative z-10 animate-slide-up grid md:grid-cols-[.85fr_1fr] gap-6 items-center">
         <div className="hidden md:block px-5">
-          <p className="f-label" style={{ color: 'var(--accent-2)' }}>Performance club</p>
-          <h2 className="font-display uppercase text-7xl leading-[.82] tracking-wide mb-5">Seu treino.<br/><span style={{ color: 'var(--accent-text)' }}>Seu ritmo.</span><br/>Seu resultado.</h2>
+          <h2 className="font-display text-7xl leading-[.82] tracking-wide mb-5">Seu treino.<br/><span style={{ color: 'var(--accent-text)' }}>Seu ritmo.</span><br/>Seu resultado.</h2>
           <p className="max-w-xs text-sm leading-relaxed" style={{ color: 'var(--text-3)' }}>Crie seu perfil e deixe cada sessão contar.</p>
         </div>
         <div>
@@ -359,10 +346,9 @@ export default function RegisterPage() {
           <InviteBanner trainerInfo={trainerInfo} loading={loadingInfo} />
         )}
 
-        <div className="glass-panel p-6 sm:p-8 space-y-4" style={{ borderColor: 'rgba(var(--accent-rgb),.2)' }}>
+        <div className="glass-panel p-6 sm:p-8 space-y-4">
           <div className="mb-2">
-            <p className="f-label" style={{ color: 'var(--accent-2)' }}>Comece sua jornada</p>
-            <h1 className="font-display uppercase text-3xl tracking-wide" style={{ color: 'var(--text-1)' }}>
+            <h1 className="font-display text-3xl tracking-wide" style={{ color: 'var(--text-1)' }}>
               {hasInvite ? 'Criar sua conta gratuita' : 'Criar conta'}
             </h1>
             <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>
@@ -402,11 +388,11 @@ export default function RegisterPage() {
                     <button key={val} type="button"
                       onClick={() => setForm(p => ({ ...p, role: val }))}
                       aria-pressed={form.role === val}
-                      className="glass-card p-3 text-center text-sm font-semibold transition-all active:scale-[.98]"
+                      className="f-card p-3 text-center text-sm font-semibold transition-[transform,border-color,color] active:scale-[.98]"
                       style={{
-                        borderColor: form.role === val ? 'var(--accent)' : 'var(--border)',
-                        background:  form.role === val ? 'rgba(var(--accent-rgb),.08)' : 'var(--card)',
-                        color:       form.role === val ? 'var(--accent-2)' : 'var(--text-3)',
+                        borderColor: form.role === val ? 'var(--line-strong)' : 'var(--border)',
+                        background:  form.role === val ? 'var(--raised)' : 'var(--card)',
+                        color:       form.role === val ? 'var(--text-1)' : 'var(--text-3)',
                       }}>
                       {label}
                     </button>
@@ -419,23 +405,24 @@ export default function RegisterPage() {
             <label className="flex items-start gap-3 cursor-pointer pt-1">
               <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)}
                 style={{ width: 16, height: 16, accentColor: 'var(--accent)', marginTop: 2, flexShrink: 0 }}/>
-              <span className="text-xs leading-relaxed" style={{ color: 'var(--text-3)' }}>
+              <span className="text-sm leading-relaxed" style={{ color: 'var(--text-3)' }}>
                 Li e aceito os{' '}
-                <Link to="/terms" target="_blank" style={{ color: 'var(--accent-2)' }}>Termos de Uso</Link>
+                <Link to="/terms" target="_blank" style={{ color: 'var(--accent-text)' }}>Termos de Uso</Link>
                 {' '}e a{' '}
-                <Link to="/privacy" target="_blank" style={{ color: 'var(--accent-2)' }}>Política de Privacidade</Link>.
+                <Link to="/privacy" target="_blank" style={{ color: 'var(--accent-text)' }}>Política de Privacidade</Link>.
                 Consinto com o tratamento dos meus dados conforme a LGPD.
               </span>
             </label>
 
             <Button size="xl" loading={loading} disabled={!agreed} type="submit" className="mt-2 w-full">
-              {loading ? 'Criando sua conta...' : hasInvite ? `Criar conta e conectar a ${trainerInfo?.name?.split(' ')[0] || 'seu personal'} →` : 'Criar conta gratuita →'}
+              {loading ? 'Criando sua conta...' : hasInvite ? `Criar conta e conectar a ${trainerInfo?.name?.split(' ')[0] || 'seu personal'}` : 'Criar conta gratuita'}
+              {!loading && <Chevron size={14}/>}
             </Button>
           </form>
 
           <p className="text-center text-sm" style={{ color: 'var(--text-3)' }}>
             Já tem conta?{' '}
-            <Link to="/login" style={{ color: 'var(--accent-2)', fontWeight: 600 }}>Entrar</Link>
+            <Link to="/login" style={{ color: 'var(--accent-text)', fontWeight: 600 }}>Entrar</Link>
           </p>
 
         </div>

@@ -106,18 +106,12 @@ export default function OnboardingView() {
     <div className="app-view onboarding-view min-h-screen flex flex-col items-center justify-center px-6 py-10"
       style={{ background: 'var(--bg)' }}>
 
-      {/* Background glow */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle,rgba(var(--accent-rgb),.08) 0%,transparent 70%)' }}/>
-
-      <div className="w-full max-w-sm relative z-10">
+      <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <p className="view-kicker justify-center">Start protocol / 00</p>
-          <img src="/voryn-logo-purple.png" alt="Voryn" className="w-14 h-14 rounded-2xl mx-auto mb-3"
-            style={{ boxShadow: '0 0 28px rgba(var(--accent-rgb),.45)' }} />
+          <img src="/voryn-logo-purple.png" alt="Voryn" className="w-14 h-14 rounded-2xl mx-auto mb-3" />
           <p className="text-sm font-semibold" style={{ color: 'var(--text-3)' }}>
-            Olá, {profile?.name?.split(' ')[0] || 'atleta'}! 👋
+            Olá, {profile?.name?.split(' ')[0] || 'atleta'}!
           </p>
           <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>Vamos configurar tudo em 1 minuto</p>
         </div>
@@ -141,7 +135,6 @@ export default function OnboardingView() {
                     borderColor: goal === g.id ? AC : 'var(--border)',
                     background:  goal === g.id ? 'rgba(var(--accent-rgb),.06)' : 'var(--card)',
                   }}>
-                  <span className="goal-index flex-shrink-0">{String(GOALS.indexOf(g) + 1).padStart(2, '0')}</span>
                   <div>
                     <p className="font-semibold text-sm" style={{ color: 'var(--text-1)' }}>
                       {g.label}
@@ -156,7 +149,7 @@ export default function OnboardingView() {
               ))}
             </div>
             <Button size="xl" className="mt-6" disabled={!goal} onClick={() => setStep(1)}>
-              Continuar →
+              Continuar
             </Button>
           </div>
         )}
@@ -215,7 +208,6 @@ export default function OnboardingView() {
                     background:  selectedDays.includes(i) ? AC : 'var(--card)',
                     color:       selectedDays.includes(i) ? '#fff' : 'var(--text-3)',
                     border:      `1px solid ${selectedDays.includes(i) ? AC : 'var(--border)'}`,
-                    boxShadow:   selectedDays.includes(i) ? '0 0 10px rgba(var(--accent-rgb),.3)' : 'none',
                   }}>
                   {d}
                 </button>
@@ -227,9 +219,9 @@ export default function OnboardingView() {
             </p>
 
             <div className="flex gap-2">
-              <Button variant="ghost" className="px-5" onClick={() => setStep(0)}>← Voltar</Button>
+              <Button variant="ghost" className="px-5" onClick={() => setStep(0)}>Voltar</Button>
               <Button className="flex-1" disabled={selectedDays.length === 0} onClick={() => setStep(2)}>
-                Continuar →
+                Continuar
               </Button>
             </div>
           </div>
@@ -247,27 +239,24 @@ export default function OnboardingView() {
 
             <div className="f-card p-5 mb-4 space-y-4" style={{ borderColor: 'rgba(var(--accent-rgb),.3)' }}>
               <div className="flex items-center gap-3">
-                <span className="section-index">01</span>
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>Objetivo</p>
+                  <p className="text-xs font-semibold" style={{ color: 'var(--text-3)' }}>Objetivo</p>
                   <p className="font-semibold text-sm" style={{ color: 'var(--text-1)' }}>
                     {GOALS.find(g=>g.id===goal)?.label || goal}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="section-index">02</span>
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>Frequência</p>
+                  <p className="text-xs font-semibold" style={{ color: 'var(--text-3)' }}>Frequência</p>
                   <p className="font-semibold text-sm" style={{ color: 'var(--text-1)' }}>
                     {selectedDays.length}x por semana — {selectedDays.map(d => DAYS_SHORT[d]).join(', ')}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="section-index">03</span>
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>Rotina criada</p>
+                  <p className="text-xs font-semibold" style={{ color: 'var(--text-3)' }}>Rotina criada</p>
                   <p className="font-semibold text-sm" style={{ color: 'var(--text-1)' }}>
                     {selectedDays.length} treinos configurados e prontos para editar
                   </p>
@@ -282,7 +271,7 @@ export default function OnboardingView() {
             </div>
 
             <Button size="xl" loading={saving} onClick={finish}>
-              Entrar no Voryn →
+              Entrar no Voryn
             </Button>
 
             <button onClick={() => navigate('/app')} className="w-full text-center text-sm mt-3"

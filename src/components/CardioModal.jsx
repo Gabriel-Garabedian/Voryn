@@ -1,6 +1,20 @@
 import React, { useRef, useState } from 'react'
-import { CARDIO_TYPES, getCardioType } from '@/data/cardio'
+import { CARDIO_TYPES, getCardioType, CARDIO_ICON_PATHS } from '@/data/cardio'
 import { useDialogA11y } from '@/components/ui/useDialogA11y'
+
+// Ícone de modalidade desenhado em SVG a partir de CARDIO_ICON_PATHS.
+// O emoji que estava aqui mudava de desenho entre plataformas e pesava
+// mais que o texto ao lado.
+function CardioIcon({ id, size = 22, color = 'var(--text-1)' }) {
+  const paths = CARDIO_ICON_PATHS[id]
+  if (!paths) return null
+  return (
+    <svg width={size} height={size} fill="none" viewBox="0 0 24 24" stroke={color} strokeWidth="1.5"
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {paths.map((d, i) => <path key={i} d={d}/>)}
+    </svg>
+  )
+}
 
 // ──────────────────────────────────────────────────────────
 //  Voryn — Cardio Pós-Treino
@@ -63,7 +77,12 @@ export default function CardioModal({ onSkip, onSave, saving }) {
 
         {step === 'prompt' && (
           <div className="text-center">
-            <div className="text-5xl mb-3" aria-hidden="true">🏃</div>
+            <div className="mb-4 flex justify-center" aria-hidden="true">
+              <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="1.5"
+                strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12h4l3-8 4 16 3-8h4"/>
+              </svg>
+            </div>
             <h2 id="cardio-modal-title" className="font-display text-2xl uppercase tracking-wide mb-2" style={{ color: 'var(--text-1)' }}>
               Cardio pós-treino?
             </h2>
@@ -89,7 +108,7 @@ export default function CardioModal({ onSkip, onSave, saving }) {
               {CARDIO_TYPES.map(t => (
                 <button key={t.id} onClick={() => pickType(t.id)}
                   className="f-card p-4 text-center transition-transform active:scale-95">
-                  <div className="text-3xl mb-2" aria-hidden="true">{t.icon}</div>
+                  <div className="mb-2 flex justify-center"><CardioIcon id={t.id} size={24}/></div>
                   <div className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>{t.label}</div>
                 </button>
               ))}
@@ -103,7 +122,7 @@ export default function CardioModal({ onSkip, onSave, saving }) {
         {step === 'form' && type && (
           <div>
             <div className="flex items-center gap-2 mb-5">
-              <span className="text-2xl" aria-hidden="true">{type.icon}</span>
+              <CardioIcon id={type.id} size={22} color="var(--accent-text)"/>
               <h2 id="cardio-modal-title" className="font-display text-xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
                 {type.label}
               </h2>

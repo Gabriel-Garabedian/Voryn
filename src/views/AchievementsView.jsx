@@ -43,7 +43,7 @@ function AchievementCard({ achievement, unlocked, isNew }) {
         {achievement.icon}
         {isNew && (
           <span className="absolute -top-1 -right-1 text-xs font-bold px-1.5 py-0.5 rounded-full"
-            style={{ background: 'var(--success-solid)', color: 'var(--on-success)', fontSize: 9 }}>
+            style={{ background: 'var(--success-solid)', color: 'var(--on-success)', fontSize: 12 }}>
             NOVO
           </span>
         )}

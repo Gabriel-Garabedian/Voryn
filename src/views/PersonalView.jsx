@@ -56,7 +56,7 @@ function TrainerOverview({ data, onRemove }) {
         ))}
       </div>
 
-      {/* Antes havia também um botão "✏️ Editar" aqui, que abria um
+      {/* Antes havia também um botão "Editar" aqui, que abria um
           formulário (bio, telefone, Instagram, especialidades) e, ao salvar,
           só atualizava o estado React local — nunca gravava nada no banco
           (a tabela trainers tem essas colunas, mas nenhuma tela em todo o
@@ -181,7 +181,7 @@ function Assessments({ studentId, trainerId }) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color:'var(--text-3)' }}>
+        <p className="text-xs font-semibold" style={{ color:'var(--text-3)' }}>
           {items.length} avaliações
         </p>
         <button onClick={() => setShowAdd(!showAdd)}
@@ -204,7 +204,10 @@ function Assessments({ studentId, trainerId }) {
           </div>
         </div>
       )}
-      {items.length === 0 && !showAdd && <EmptyState icon="DATA" title="Nenhuma avaliação" description="Registre peso e composição corporal."/>}
+      {items.length === 0 && !showAdd && <EmptyState
+        icon={<svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2"/><path d="M12 11a4 4 0 100-8 4 4 0 000 8z"/><path d="M20 8v6M23 11h-6"/></svg>}
+        title="Nenhuma avaliação"
+        description="Registre peso e composição corporal."/>}
       {items.map(a => (
         <div key={a.id} className="f-card p-4">
           <p className="font-display text-base uppercase tracking-wide mb-2" style={{ color:'var(--text-1)' }}>
@@ -243,8 +246,11 @@ function Programs({ studentId }) {
 
   return (
     <div className="space-y-3">
-      <p className="text-xs font-semibold uppercase tracking-widest" style={{ color:'var(--text-3)' }}>{items.length} programas</p>
-      {items.length === 0 && <EmptyState icon="📋" title="Nenhum programa" description="Seu personal ainda não criou programas."/>}
+      <p className="text-xs font-semibold" style={{ color:'var(--text-3)' }}>{items.length} programas</p>
+      {items.length === 0 && <EmptyState
+        icon={<svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>}
+        title="Nenhum programa"
+        description="Seu personal ainda não criou programas."/>}
       {items.map(p => (
         <div key={p.id} className="f-card p-4 flex items-start gap-3">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"

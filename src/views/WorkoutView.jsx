@@ -165,20 +165,19 @@ function NoWorkout({ user, onStart }) {
 
       {todayPlan?.exercises?.length > 0 && (
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--text-3)' }}>
+          <p className="text-sm font-semibold mb-2" style={{ color: 'var(--text-3)' }}>
             Treino de hoje
           </p>
           <button onClick={() => onStart(today)}
-            className="w-full f-card p-4 text-left flex items-center gap-4 transition-all"
-            style={{ borderColor: 'rgba(var(--accent-rgb),.4)', background: 'rgba(var(--accent-rgb),.05)' }}>
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{ background: AC, boxShadow: '0 0 20px rgba(var(--accent-rgb),.4)' }}>
-              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2.5" aria-hidden="true">
+            className="w-full f-card p-4 text-left flex items-center gap-4">
+            <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
+              style={{ background: 'var(--inverse)' }}>
+              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="var(--on-inverse)" strokeWidth="2.5" aria-hidden="true">
                 <polygon points="5 3 19 12 5 21 5 3"/>
               </svg>
             </div>
             <div>
-              <p className="font-display text-lg uppercase tracking-wide" style={{ color: ACT }}>
+              <p className="font-display text-lg uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
                 {todayPlan.name || DAYS_FULL[today]}
               </p>
               <p className="text-sm" style={{ color: 'var(--text-3)' }}>
@@ -191,14 +190,14 @@ function NoWorkout({ user, onStart }) {
 
       {others.length > 0 && (
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--text-3)' }}>
+          <p className="text-sm font-semibold mb-2" style={{ color: 'var(--text-3)' }}>
             Outros treinos
           </p>
           <div className="space-y-2">
             {others.map(([k, v]) => (
               <button key={k} onClick={() => onStart(parseInt(k))}
-                className="w-full f-card p-4 text-left flex items-center gap-4 transition-all">
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                className="w-full f-card p-4 text-left flex items-center gap-4">
+                <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
                   style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
                   <svg width="20" height="20" fill="none" viewBox="0 0 24 24"
                     stroke="var(--muted)" strokeWidth="2" aria-hidden="true">
@@ -594,7 +593,7 @@ export default function WorkoutView() {
             return updated
           })
           setShowExPicker(false)
-          toast.success(`${ex.name} adicionado! 💪`)
+          toast.success(`${ex.name} adicionado!`)
         }}
         onClose={() => setShowExPicker(false)}
         onCustom={name => {
@@ -686,7 +685,7 @@ export default function WorkoutView() {
       {/* Header */}
       <div className="native-header px-4 pt-2 pb-4 glass-panel"
         style={{ borderRadius: '0 0 var(--radius-xl) var(--radius-xl)' }}>
-        <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: ACT }}>
+        <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-3)' }}>
           Treino de hoje
         </p>
         <h2 className="font-display text-2xl uppercase tracking-wide leading-tight mb-3"
@@ -701,7 +700,6 @@ export default function WorkoutView() {
               style={{
                 width: `${totalSets > 0 ? (doneSets / totalSets) * 100 : 0}%`,
                 background: AC,
-                boxShadow: doneSets > 0 ? '0 0 8px rgba(var(--accent-rgb),.5)' : 'none',
               }}/>
           </div>
           <span className="text-xs whitespace-nowrap" style={{ color: 'var(--text-3)' }}>
@@ -724,11 +722,11 @@ export default function WorkoutView() {
           <span className="text-xs" style={{ color: 'var(--text-3)' }}>Descanso:</span>
           {[30, 60, 90, 120, 180].map(s => (
             <button key={s} onClick={() => setRestSecs(s)}
-              className="px-2 py-1 rounded-lg text-xs font-semibold transition-all"
+              className="px-2 py-1 rounded-lg text-xs font-semibold"
               style={{
-                background: restSecs === s ? AC : 'var(--surface)',
-                color: restSecs === s ? '#fff' : 'var(--text-3)',
-                border: `1px solid ${restSecs === s ? AC : 'var(--border)'}`,
+                background: restSecs === s ? 'var(--raised)' : 'var(--surface)',
+                color: restSecs === s ? 'var(--text-1)' : 'var(--text-3)',
+                border: `1px solid ${restSecs === s ? 'var(--line-strong)' : 'var(--border)'}`,
               }}>
               {s >= 60 ? `${s/60}min` : `${s}s`}
             </button>
@@ -824,7 +822,7 @@ export default function WorkoutView() {
                 </button>
                 <span className="muscle-target-chip muscle-target-chip--header">Alvo: {ex.muscle || 'não informado'}</span>
                 <span className="text-xs font-semibold" style={{ color: exDone ? ACT : 'var(--text-3)' }}>
-                  {exDone ? 'Concluído ✓' : `${doneCount}/${ex.sets.length}`}
+                  {exDone ? 'Concluído' : `${doneCount}/${ex.sets.length}`}
                 </span>
                 {!exDone && (
                   <button onClick={() => completeAllSets(ei)} aria-label="Marcar todas as séries como concluídas"
@@ -862,8 +860,8 @@ export default function WorkoutView() {
                 )}
                 {/* Header row */}
                 <div className="workout-set-row workout-set-header grid grid-cols-[28px_1fr_1fr_44px_36px_24px] gap-2 mb-2">
-                  {['S', 'kg', 'Reps', '', '✓', ''].map((h, i) => (
-                    <div key={i} className="text-xs font-semibold uppercase tracking-wider text-center"
+                  {['S', 'kg', 'Reps', '', 'Feito', ''].map((h, i) => (
+                    <div key={i} className="text-xs font-semibold text-center"
                       style={{ color: 'var(--text-3)' }}>{h}</div>
                   ))}
                 </div>
@@ -943,19 +941,19 @@ export default function WorkoutView() {
                       ) : <div/>}
                     </div>
                     {openSetMeta[`${ei}-${si}`] && <div className="workout-set-meta flex flex-wrap items-center justify-end gap-2 pr-8 pt-1">
-                      <label className="text-[10px]" style={{ color: 'var(--text-3)' }}>Tipo
+                      <label className="text-xs" style={{ color: 'var(--text-3)' }}>Tipo
                         <select className="f-input py-1 px-1 text-xs ml-1" aria-label={`Tipo da série ${si + 1}`}
                           value={set.type || 'working'} disabled={set.done}
                           onChange={e => updateSet(ei, si, 'type', e.target.value)}>
                           {SET_TYPES.map(type => <option key={type.value} value={type.value}>{type.label}</option>)}
                         </select>
                       </label>
-                      <label className="text-[10px]" style={{ color: 'var(--text-3)' }}>RPE
+                      <label className="text-xs" style={{ color: 'var(--text-3)' }}>RPE
                         <input className="f-input py-1 px-1 w-12 text-center text-xs ml-1" inputMode="decimal"
                           aria-label={`RPE da série ${si + 1}`} placeholder="—" value={set.rpe || ''} disabled={set.done}
                           onChange={e => updateSet(ei, si, 'rpe', e.target.value)} />
                       </label>
-                      <label className="text-[10px]" style={{ color: 'var(--text-3)' }}>RIR
+                      <label className="text-xs" style={{ color: 'var(--text-3)' }}>RIR
                         <input className="f-input py-1 px-1 w-12 text-center text-xs ml-1" inputMode="numeric"
                           aria-label={`RIR da série ${si + 1}`} placeholder="—" value={set.rir || ''} disabled={set.done}
                           onChange={e => updateSet(ei, si, 'rir', e.target.value)} />
@@ -1043,7 +1041,7 @@ export default function WorkoutView() {
             <div className="flex gap-2">
               <Button className="flex-1 py-3 text-sm" loading={saving}
                 onClick={() => { setConfirm(false); setShowCardio(true) }}>
-                Finalizar ✓
+                Finalizar
               </Button>
               <Button variant="ghost" className="px-5" onClick={() => setConfirm(false)}>
                 Voltar

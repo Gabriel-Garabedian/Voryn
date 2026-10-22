@@ -57,3 +57,7 @@ coverage/
 *.pid
 *.seed
 *.pid.lock
+
+# Diagnósticos locais e cache do PowerShell
+.taste-skill/
+Microsoft/Windows/PowerShell/

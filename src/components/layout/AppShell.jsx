@@ -143,26 +143,24 @@ export function MoreSheet({ open, onClose, navigate, base, currentPath, triggerR
 
   return (
     <div className="fixed inset-0 z-50" onClick={onClose}>
-      <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,.65)', backdropFilter: 'blur(6px)' }}/>
+      <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,.72)' }}/>
       <div role="dialog" aria-modal="true" aria-labelledby="more-options-title" ref={panelRef}
-        className="absolute bottom-0 left-0 right-0 max-w-2xl mx-auto slide-in-bottom glass-panel"
+        className="absolute bottom-0 left-0 right-0 max-w-2xl mx-auto slide-in-bottom f-card"
         style={{ borderRadius: '24px 24px 0 0', borderBottom: 'none', padding: '12px 20px 40px' }}
         onClick={e => e.stopPropagation()}>
         <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: 'var(--border)' }}/>
-        <p id="more-options-title" className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--text-3)' }}>Mais opções</p>
+        <p id="more-options-title" className="text-sm font-semibold mb-4" style={{ color: 'var(--text-3)' }}>Mais opções</p>
         <div className="grid grid-cols-3 gap-3">
           {MORE_EXTRAS.map(e => {
             const active = currentPath === `${base}/${e.path}`
             return (
               <button key={e.path}
                 onClick={() => { navigate(`${base}/${e.path}`); onClose() }}
-                className="f-card p-4 flex flex-col items-center gap-2 transition-all"
+                className="f-card p-4 flex flex-col items-center gap-2"
                 style={{ cursor: 'pointer' }}
-                aria-current={active ? 'page' : undefined}
-                onMouseEnter={ev => ev.currentTarget.style.borderColor='var(--accent)'}
-                onMouseLeave={ev => ev.currentTarget.style.borderColor='var(--border)'}>
+                aria-current={active ? 'page' : undefined}>
                 <span className="f-more-icon" aria-hidden="true"><MoreIcon type={e.icon}/></span>
-                <span className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>{e.label}</span>
+                <span className="text-xs font-semibold" style={{ color: active ? 'var(--text-1)' : 'var(--text-2)' }}>{e.label}</span>
               </button>
             )
           })}
@@ -314,10 +312,10 @@ export default function AppShell() {
       <header className="app-header px-4 pt-4 pb-3 native-header" style={inActiveWorkout ? { display: 'none' } : undefined}>
         <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
           <button onClick={() => navigate(base)} className="brand-hub flex items-center gap-2.5 bg-transparent border-0 p-0 cursor-pointer" aria-label="Ir para início">
-            <img src="/voryn-icon-192.png" alt="Voryn" className="w-9 h-9 rounded-xl" style={{ boxShadow: '0 0 18px rgba(var(--accent-rgb),.3)' }} />
+            <img src="/voryn-icon-192.png" alt="Voryn" className="w-9 h-9 rounded-xl" />
             <div className="text-left">
               <div className="font-display text-xl uppercase tracking-widest leading-none">Voryn</div>
-              <div className="app-header-context text-[10px] uppercase tracking-[.18em] mt-1" style={{ color: 'var(--text-3)' }}>{screenLabel}</div>
+              <div className="app-header-context text-xs mt-1" style={{ color: 'var(--text-3)' }}>{screenLabel}</div>
             </div>
           </button>
           <div className="flex items-center gap-2.5">
@@ -332,9 +330,9 @@ export default function AppShell() {
               <button ref={moreTriggerRef} onClick={() => setMoreOpen(true)} aria-label="Mais opções"
                 className="w-10 h-10 rounded-full flex items-center justify-center border cursor-pointer"
                 style={{
-                  background: onMoreScreen ? 'rgba(var(--accent-rgb),.16)' : 'transparent',
-                  color: onMoreScreen ? 'var(--accent-2)' : 'var(--text-2)',
-                  borderColor: onMoreScreen ? 'rgba(var(--accent-rgb),.35)' : 'var(--border)',
+                  background: onMoreScreen ? 'var(--raised)' : 'transparent',
+                  color: onMoreScreen ? 'var(--text-1)' : 'var(--text-2)',
+                  borderColor: 'var(--border)',
                 }}>
                 <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" aria-hidden="true">
                   <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
@@ -342,10 +340,9 @@ export default function AppShell() {
                 </svg>
               </button>
             )}
-            <button onClick={() => navigate(`${base}/profile`)} className="profile-chip w-10 h-10 rounded-full flex items-center justify-center border cursor-pointer font-display text-lg" style={{ background: 'rgba(var(--accent-rgb),.16)', color: 'var(--accent-2)', borderColor: 'rgba(var(--accent-rgb),.35)' }} aria-label="Abrir perfil">
+            <button onClick={() => navigate(`${base}/profile`)} className="profile-chip w-10 h-10 rounded-full flex items-center justify-center border cursor-pointer font-display text-lg" style={{ color: 'var(--text-1)' }} aria-label="Abrir perfil">
               {displayName.charAt(0).toUpperCase()}
             </button>
-            <span className="w-2 h-2 rounded-full" title="Status online" aria-hidden="true" style={{ background: 'var(--success)', boxShadow: '0 0 10px rgba(61,220,151,.7)' }} />
             {pendingSync > 0 && (
               <span className="app-sync-pill" title={`${pendingSync} treino(s) aguardando sincronização`}>
                 {pendingSync} pendente{pendingSync > 1 ? 's' : ''}
@@ -381,11 +378,11 @@ export default function AppShell() {
 
       {/* Bottom Nav */}
       <nav aria-label="Navegação principal" className="app-nav px-3 pb-3" style={{ background: 'transparent', flexShrink: 0, display: inActiveWorkout ? 'none' : undefined }}>
-        <div className="glass-panel native-dock flex items-center justify-around px-2 pt-2 max-w-2xl mx-auto shadow-2xl" style={{ paddingBottom: 'max(10px, env(safe-area-inset-bottom))', borderColor: 'rgba(255,255,255,.12)' }}>
+        <div className="native-dock f-card flex items-center justify-around px-2 pt-2 max-w-2xl mx-auto" style={{ paddingBottom: 'max(10px, env(safe-area-inset-bottom))' }}>
           {navItems.map(item => {
             const active = isActive(item.path)
-            // Botão central "Treinar": círculo elevado em cor de destaque,
-            // é a ação principal do app.
+            // Botão central "Treinar": a ação principal do app, feita
+            // primária por inversão (pílula clara, tinta quase preta).
             if (item.raised) {
               return (
                 <button key={item.path} onClick={() => handleNav(item.path)}
@@ -395,31 +392,27 @@ export default function AppShell() {
                   aria-current={active ? 'page' : undefined}>
                   <span className="flex items-center justify-center rounded-full"
                     style={{
-                      width: 50, height: 50, marginTop: -22, background: 'var(--accent)', color: '#fff',
+                      width: 50, height: 50, marginTop: -22,
+                      background: 'var(--inverse)', color: 'var(--on-inverse)',
                       border: '4px solid var(--bg)',
-                      boxShadow: active ? '0 0 0 2px rgba(var(--accent-rgb),.5)' : 'none',
                     }}>
                     <NavIcon type={item.icon} active={true}/>
                   </span>
                   <span className="font-display uppercase tracking-wider"
-                    style={{ fontSize: 11, fontWeight: 800, color: active ? 'var(--accent-2)' : 'var(--muted)' }}>{item.label}</span>
+                    style={{ fontSize: 11, fontWeight: 800, color: active ? 'var(--text-1)' : 'var(--muted)' }}>{item.label}</span>
                 </button>
               )
             }
             return (
               <button key={item.path} onClick={() => handleNav(item.path)}
-                className="dock-item flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all relative active:scale-95 min-w-[58px]"
+                className="dock-item flex flex-col items-center gap-1 px-3 py-2 rounded-xl relative active:scale-95 min-w-[58px]"
                 aria-label={item.label}
                 aria-current={active ? 'page' : undefined}
-                style={{ color: active ? 'var(--accent-2)' : 'var(--muted)', border: 'none', background: active ? 'rgba(var(--accent-rgb),.1)' : 'transparent', cursor: 'pointer' }}>
-                {active && (
-                  <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-7 h-1 rounded-full" aria-hidden="true"
-                    style={{ background: 'var(--accent)', boxShadow: '0 0 10px rgba(var(--accent-rgb),.7)' }}/>
-                )}
+                style={{ color: active ? 'var(--text-1)' : 'var(--muted)', border: 'none', background: 'transparent', cursor: 'pointer' }}>
                 <div style={{ transform: active ? 'scale(1.12)' : 'scale(1)', transition: 'transform .15s' }}>
                   <NavIcon type={item.icon} active={active}/>
                 </div>
-                <span className={item.path === 'workout' ? 'font-display uppercase tracking-wider' : ''} style={{ fontSize: item.path === 'workout' ? 12 : 10, fontWeight: active ? 800 : 500 }}>{item.label}</span>
+                <span style={{ fontSize: item.path === 'workout' ? 12 : 11, fontWeight: active ? 800 : 500 }}>{item.label}</span>
               </button>
             )
           })}

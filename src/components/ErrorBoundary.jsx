@@ -31,7 +31,13 @@ export default class ErrorBoundary extends React.Component {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center"
         style={{ background: 'var(--bg, #080808)' }}>
-        <div className="text-5xl mb-5">😕</div>
+        <div className="mb-5 flex justify-center" aria-hidden="true">
+          <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="var(--danger)" strokeWidth="1.5"
+            strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M12 8v5M12 16.5v.5"/>
+          </svg>
+        </div>
         <h1 className="font-display text-2xl uppercase tracking-wide mb-2" style={{ color: 'var(--text-1, #fff)' }}>
           Algo deu errado
         </h1>

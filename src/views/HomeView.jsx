@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext'
 import { workoutLogService, routineService, notificationService } from '@/services'
 import { calcStreak, calcBestStreak, getRecoverySnapshot, getRoutineDates, localDateKey, getSubscription } from '@/utils/helpers'
 import { SkeletonHome } from '@/components/ui/Skeleton'
+import { Chevron } from '@/components/ui'
 import WorkoutLogModal from '@/components/WorkoutLogModal'
 
 const AC  = 'var(--accent)'
@@ -16,13 +17,13 @@ function greeting() {
 
 function StatMini({ label, value, accent, delta }) {
   return (
-    <div className="f-card p-3 text-center">
+    <div className="home-stat">
       <div className="font-display text-2xl leading-none" style={{ color: accent ? ACT : 'var(--text-1)' }}>
         {value ?? '—'}
       </div>
       <div className="text-xs mt-1 font-medium" style={{ color: 'var(--text-3)' }}>{label}</div>
       {delta !== undefined && delta !== null && (
-        <div className={`progress-chip mt-1 mx-auto ${delta > 0 ? 'up' : delta < 0 ? 'down' : 'same'}`}>
+        <div className={`progress-chip mt-1 ${delta > 0 ? 'up' : delta < 0 ? 'down' : 'same'}`}>
           {delta > 0 ? `+${delta}` : delta === 0 ? '=' : delta}
         </div>
       )}
@@ -53,10 +54,7 @@ function NotificationPanel({ userId }) {
   return (
     <section className="f-card p-4" aria-label="Notificações">
       <div className="flex items-center justify-between gap-3 mb-3">
-        <div>
-          <p className="text-xs uppercase tracking-widest" style={{ color: ACT }}>Atualizações</p>
-          <h2 className="font-display text-xl uppercase" style={{ color: 'var(--text-1)' }}>Notificações</h2>
-        </div>
+        <h2 className="text-lg font-semibold" style={{ color: 'var(--text-1)' }}>Notificações</h2>
         {unread.length > 0 && (
           <button type="button" onClick={markAllRead} className="text-xs font-semibold" style={{ color: ACT }}>
             Marcar como lidas
@@ -95,15 +93,9 @@ function QuickActions({ navigate }) {
 
   return (
     <section className="home-quick-actions" aria-labelledby="home-quick-actions-title">
-      <div className="flex items-end justify-between gap-3 mb-2">
-        <div>
-          <p className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>Acesso rápido</p>
-          <h2 id="home-quick-actions-title" className="font-display text-xl uppercase" style={{ color: 'var(--text-1)' }}>
-            Continue sua jornada
-          </h2>
-        </div>
-        <span className="text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>4 atalhos</span>
-      </div>
+      <h2 id="home-quick-actions-title" className="text-lg font-semibold mb-2" style={{ color: 'var(--text-1)' }}>
+        Continue sua jornada
+      </h2>
       <div className="grid grid-cols-2 gap-2">
         {actions.map(action => (
           <button
@@ -119,7 +111,7 @@ function QuickActions({ navigate }) {
             </span>
             <span className="min-w-0">
               <span className="block text-sm font-semibold truncate" style={{ color: 'var(--text-1)' }}>{action.label}</span>
-              <span className="block text-[11px] mt-0.5 truncate" style={{ color: 'var(--text-3)' }}>{action.hint}</span>
+              <span className="block text-xs mt-0.5 truncate" style={{ color: 'var(--text-3)' }}>{action.hint}</span>
             </span>
           </button>
         ))}
@@ -135,13 +127,10 @@ function RecoveryPanel({ logs, navigate }) {
   return (
     <section className="home-recovery f-card p-4" aria-labelledby="home-recovery-title">
       <div className="flex items-start justify-between gap-3 mb-3">
-        <div>
-          <p className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>Treino inteligente</p>
-          <h2 id="home-recovery-title" className="font-display text-xl uppercase" style={{ color: 'var(--text-1)' }}>
-            Prontidão muscular
-          </h2>
-        </div>
-        <span className="text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>últimos 4 dias</span>
+        <h2 id="home-recovery-title" className="text-lg font-semibold" style={{ color: 'var(--text-1)' }}>
+          Prontidão muscular
+        </h2>
+        <span className="text-xs" style={{ color: 'var(--text-3)' }}>últimos 4 dias</span>
       </div>
       <div className="space-y-2">
         {snapshot.slice(0, 3).map(item => {
@@ -160,8 +149,10 @@ function RecoveryPanel({ logs, navigate }) {
         })}
       </div>
       <button type="button" onClick={() => navigate('/app/evolution')}
-        className="text-xs font-semibold mt-3" style={{ color: 'var(--accent-text)' }}>
-        Ver análise completa →
+        className="inline-flex items-center gap-1.5 text-xs font-semibold mt-3 min-h-[44px]"
+        style={{ color: 'var(--accent-text)' }}>
+        Ver análise completa
+        <Chevron size={13}/>
       </button>
     </section>
   )
@@ -188,15 +179,11 @@ function WeeklySummaryBanner({ lastWeek, metrics, streak }) {
   }
 
   return (
-    <div className="home-weekly-summary f-card p-4 animate-slide-up"
-      style={{ borderColor:'rgba(var(--accent-rgb),.3)', background:'rgba(var(--accent-rgb),.05)' }}>
+    <div className="home-weekly-summary f-card p-4 animate-slide-up">
       <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span className="summary-mark">WK</span>
-          <p className="font-semibold text-sm" style={{ color:'var(--text-1)' }}>
-            Resumo da semana passada
-          </p>
-        </div>
+        <p className="font-semibold text-sm" style={{ color:'var(--text-1)' }}>
+          Resumo da semana passada
+        </p>
         <button type="button" aria-label="Fechar resumo semanal" onClick={dismiss} className="icon-btn" style={{ color:'var(--text-3)', marginTop:2 }}>
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -206,25 +193,23 @@ function WeeklySummaryBanner({ lastWeek, metrics, streak }) {
 
       <div className="grid grid-cols-3 gap-2 mb-3">
         {[
-          { label:'Treinos',  value: lastWeek.prevWeek, icon:'01' },
-          { label:'Sequência',value: streak + ' dias',  icon:'02' },
-          ...(volumeK ? [{ label:'Volume', value: volumeK + 't', icon:'03' }] : []),
+          { label:'Treinos',  value: lastWeek.prevWeek },
+          { label:'Sequência',value: streak + ' dias' },
+          ...(volumeK ? [{ label:'Volume', value: volumeK + 't' }] : []),
         ].map(s => (
-          <div key={s.label} className="text-center py-2 rounded-xl"
-            style={{ background:'rgba(var(--accent-rgb),.08)', border:'1px solid rgba(var(--accent-rgb),.12)' }}>
-            <div className="summary-mark text-base mb-0.5">{s.icon}</div>
+          <div key={s.label} className="text-center py-2" style={{ borderRight: '1px solid var(--rule)' }}>
             <div className="font-display text-lg leading-none" style={{ color:'var(--accent-text)' }}>{s.value}</div>
             <div className="text-xs mt-0.5" style={{ color:'var(--text-3)' }}>{s.label}</div>
           </div>
         ))}
       </div>
 
-      <p className="text-xs leading-relaxed" style={{ color:'var(--text-2)' }}>
+      <p className="text-sm leading-relaxed" style={{ color:'var(--text-2)' }}>
         {lastWeek.delta > 0
-          ? `Você treinou ${lastWeek.delta} vez${lastWeek.delta > 1 ? 'es' : ''} a mais que na semana anterior! Continue assim.`
+          ? `Você treinou ${lastWeek.delta} vez${lastWeek.delta > 1 ? 'es' : ''} a mais que na semana anterior.`
           : lastWeek.delta < 0
-          ? `💪 Semana passada foi mais leve. Essa semana você bota pra quebrar!`
-          : `✅ Mesma frequência da semana anterior. Consistência é tudo!`}
+          ? `Semana passada foi mais leve. Essa semana você bota pra quebrar.`
+          : `Mesma frequência da semana anterior. Consistência é tudo.`}
       </p>
     </div>
   )
@@ -338,8 +323,7 @@ export default function HomeView() {
   if (loadError) return (
     <div className="app-view px-4 pt-10 pb-8">
       <div className="f-card p-8 text-center space-y-4">
-        <div className="section-index">OFFLINE / ERROR</div>
-        <h1 className="font-display text-2xl uppercase" style={{ color: 'var(--text-1)' }}>Não foi possível carregar</h1>
+        <h1 className="text-xl font-semibold" style={{ color: 'var(--text-1)' }}>Não foi possível carregar</h1>
         <p className="text-sm" style={{ color: 'var(--text-3)' }}>Verifique sua conexão e tente novamente.</p>
         <button type="button" onClick={() => setReloadKey(key => key + 1)} className="f-btn f-btn-accent mx-auto">Tentar novamente</button>
       </div>
@@ -352,16 +336,12 @@ export default function HomeView() {
 
       {/* Trial banner */}
       {isTrial && (
-        <div className="home-trial-banner f-card px-4 py-3 flex items-center justify-between animate-slide-up"
-          style={{ borderColor: 'rgba(var(--warning-rgb), .3)', background: 'rgba(var(--warning-rgb), .05)' }}>
-          <div className="flex items-center gap-2">
-            <span className="summary-mark">TRIAL</span>
-            <p className="text-sm font-medium" style={{ color: 'var(--warning)' }}>
-              {trialDaysLeft > 0 ? `${trialDaysLeft} dias de trial restantes` : 'Trial expirado'}
-            </p>
-          </div>
+        <div className="home-trial-banner f-card px-4 py-3 flex items-center justify-between animate-slide-up">
+          <p className="text-sm font-medium" style={{ color: 'var(--warning)' }}>
+            {trialDaysLeft > 0 ? `${trialDaysLeft} dias de trial restantes` : 'Trial expirado'}
+          </p>
           <button onClick={() => navigate('/app/subscription')}
-            className="text-xs font-semibold px-3 py-1.5 rounded-lg whitespace-nowrap"
+            className="text-xs font-semibold px-3 py-1.5 rounded-pill whitespace-nowrap"
             style={{ background: 'rgba(var(--warning-rgb), .15)', color: 'var(--warning)', border: '1px solid rgba(var(--warning-rgb), .3)' }}>
             Assinar
           </button>
@@ -386,7 +366,7 @@ export default function HomeView() {
         </div>
         <button onClick={() => navigate('/app/profile')} aria-label="Lembretes de treino"
           className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-          style={{ background: 'rgba(var(--accent-rgb),.14)', border: '1px solid rgba(var(--accent-rgb),.3)', color: ACT }}>
+          style={{ color: 'var(--text-2)', border: '1px solid var(--border)' }}>
           <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>
           </svg>
@@ -398,7 +378,7 @@ export default function HomeView() {
         <div className="flex justify-between">
           {weekDays.map(({ isToday, trained, date, key }) => (
             <div key={key} className="flex flex-col items-center gap-1.5">
-              <span className="text-[10px] uppercase" style={{ color: isToday ? ACT : 'var(--text-3)', fontWeight: isToday ? 700 : 500 }}>
+              <span className="text-xs uppercase" style={{ color: isToday ? ACT : 'var(--text-3)', fontWeight: isToday ? 700 : 500 }}>
                 {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'][date.getDay()]}
               </span>
               <button
@@ -407,17 +387,16 @@ export default function HomeView() {
                 aria-label={trained ? `Ver treino de ${date.getDate()}` : `${date.getDate()} sem treino`}
                 className="w-8 h-8 rounded-full flex items-center justify-center"
                 style={{
-                  background: trained ? AC : isToday ? 'rgba(var(--accent-rgb),.14)' : 'var(--surface)',
+                  // Mesma gramática do calendário mensal: o dia treinado é o
+                  // círculo PREENCHIDO (é dado — o roxo é cor de dado), o dia
+                  // de hoje é só o contorno, e o resto fica neutro. O número
+                  // aparece sempre: o preenchimento já diz o que aconteceu.
+                  background: trained ? AC : 'var(--surface)',
                   border: isToday && !trained ? `1.5px solid ${AC}` : '1px solid transparent',
                   cursor: trained ? 'pointer' : 'default',
                 }}>
-                {trained ? (
-                  <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <polyline points="20 6 9 17 4 12"/>
-                  </svg>
-                ) : (
-                  <span className="font-display text-sm" style={{ color: isToday ? ACT : 'var(--text-3)' }}>{date.getDate()}</span>
-                )}
+                <span className="font-display text-sm"
+                  style={{ color: trained ? '#fff' : isToday ? ACT : 'var(--text-3)' }}>{date.getDate()}</span>
               </button>
             </div>
           ))}
@@ -426,10 +405,9 @@ export default function HomeView() {
 
       {/* Foco de hoje */}
       <div className="home-focus">
-        <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-3)' }}>Foco de hoje</p>
+        <p className="text-sm font-semibold mb-2" style={{ color: 'var(--text-3)' }}>Foco de hoje</p>
         <button onClick={() => navigate('/app/workout')}
-          className="home-primary-action f-card w-full p-4 flex items-center justify-between text-left animate-slide-up"
-          style={{ borderColor: 'rgba(var(--accent-rgb),.35)', background: 'rgba(var(--accent-rgb),.06)' }}>
+          className="home-primary-action f-card w-full p-4 flex items-center justify-between text-left animate-slide-up">
           <div className="min-w-0">
             <span className="home-primary-action__eyebrow">Treino de hoje</span>
             <p className="font-display text-2xl uppercase tracking-wide truncate" style={{ color: 'var(--text-1)' }}>
@@ -441,18 +419,19 @@ export default function HomeView() {
                 : 'Dia de descanso'}
             </p>
           </div>
-          <span className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ml-3"
-            style={{ background: AC, boxShadow: '0 0 16px rgba(var(--accent-rgb),.5)' }}>
-            <svg width="18" height="18" fill="#fff" viewBox="0 0 24 24" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          {/* Glifo solto, sem círculo tintado: o card inteiro é o botão, e
+              um ícone em caixa de cor repetida é o vício de painel gerado. */}
+          <span className="flex items-center justify-center flex-shrink-0 ml-3"
+            style={{ color: 'var(--on-inverse)' }}>
+            <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           </span>
         </button>
       </div>
 
       <section className="home-next home-action-card f-card p-4" aria-label="Próxima ação recomendada">
         <div className="flex items-start gap-3">
-          <div className="home-action-card__mark" aria-hidden="true">→</div>
           <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: ACT }}>
+            <p className="text-sm font-semibold" style={{ color: ACT }}>
               Próxima ação
             </p>
             <p className="text-sm font-semibold mt-1" style={{ color: 'var(--text-1)' }}>
@@ -476,37 +455,37 @@ export default function HomeView() {
       {/* Calendário mensal */}
       <section className="home-calendar f-card p-4 animate-slide-up" aria-label="Calendário mensal de treinos">
         <div className="flex items-center justify-between mb-4">
-          <div>
-            <p className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>Sua consistência</p>
-            <h2 className="font-display text-xl uppercase tracking-wide capitalize" style={{ color: 'var(--text-1)' }}>
-              {monthLabel}
-            </h2>
-          </div>
+          <h2 className="text-lg font-semibold capitalize" style={{ color: 'var(--text-1)' }}>
+            {monthLabel}
+          </h2>
           <div className="flex items-center gap-1">
             <button type="button" onClick={() => moveCalendar(-1)} aria-label="Mês anterior"
-              className="w-9 h-9 rounded-lg flex items-center justify-center"
+              className="w-9 h-9 rounded-lg flex items-center justify-center active:scale-[.97] transition-transform"
               style={{ color: 'var(--text-2)', border: '1px solid var(--border)' }}>
-              <span aria-hidden="true">‹</span>
+              <Chevron direction="left" size={16} />
             </button>
             <button type="button" onClick={() => moveCalendar(1)} aria-label="Próximo mês"
-              className="w-9 h-9 rounded-lg flex items-center justify-center"
+              className="w-9 h-9 rounded-lg flex items-center justify-center active:scale-[.97] transition-transform"
               style={{ color: 'var(--text-2)', border: '1px solid var(--border)' }}>
-              <span aria-hidden="true">›</span>
+              <Chevron direction="right" size={16} />
             </button>
           </div>
         </div>
         <div className="grid grid-cols-7 gap-y-2 text-center">
           {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((day, index) => (
-            <span key={`${day}-${index}`} className="text-[10px] font-semibold uppercase" style={{ color: 'var(--text-3)' }}>{day}</span>
+            <span key={`${day}-${index}`} className="text-xs font-semibold" style={{ color: 'var(--text-3)' }}>{day}</span>
           ))}
           {calendarCells.map((cell, index) => cell ? (
             <button key={cell.key} type="button"
               onClick={cell.trained ? () => setOpenLogDate(cell.key) : undefined}
               aria-label={`${cell.trained ? 'Ver treino de ' : ''}${cell.date.getDate()} de ${monthLabel}`}
-              className="mx-auto w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold transition-colors"
+              className="mx-auto w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold tabular-nums transition-colors"
               style={{
+                // Fundo de dia treinado usa --accent (preenchimento, 5.70:1 com
+                // branco), não --accent-text: aquele é token de TEXTO e como
+                // fundo deixava o número do dia em 3.34:1 — reprovando AA.
                 color: cell.trained ? '#fff' : cell.isToday ? ACT : 'var(--text-2)',
-                background: cell.trained ? ACT : cell.isToday ? 'rgba(var(--accent-rgb),.12)' : 'transparent',
+                background: cell.trained ? AC : 'transparent',
                 border: cell.isToday && !cell.trained ? `1px solid ${AC}` : '1px solid transparent',
                 cursor: cell.trained ? 'pointer' : 'default',
               }}>
@@ -515,10 +494,10 @@ export default function HomeView() {
           ) : <span key={`empty-${index}`} aria-hidden="true" />)}
         </div>
         <div className="flex items-center justify-center gap-4 mt-4 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
-          <span className="flex items-center gap-1.5 text-[10px]" style={{ color: 'var(--text-3)' }}>
+          <span className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-3)' }}>
             <span className="w-2 h-2 rounded-full" aria-hidden="true" style={{ background: AC }} /> Treino concluído
           </span>
-          <span className="flex items-center gap-1.5 text-[10px]" style={{ color: 'var(--text-3)' }}>
+          <span className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-3)' }}>
             <span className="w-2 h-2 rounded-full" aria-hidden="true" style={{ border: `1px solid ${AC}` }} /> Hoje
           </span>
         </div>
@@ -527,18 +506,17 @@ export default function HomeView() {
       <RecoveryPanel logs={recentLogs} navigate={navigate} />
 
       {/* Sequência */}
-      <div className={`home-streak f-card px-4 py-3 flex items-center gap-2.5 animate-slide-up ${isStreakMilestone ? 'streak-milestone' : ''}`}
-        style={{ borderColor: 'rgba(var(--accent-rgb),.3)', background: 'rgba(var(--accent-rgb),.06)' }}>
+      <div className={`home-streak f-card px-4 py-3 flex items-center gap-2.5 animate-slide-up ${isStreakMilestone ? 'streak-milestone' : ''}`}>
         <svg width="18" height="18" fill={ACT} viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 2c1 3-2 4-2 7a3 3 0 006 0c1.5 1.5 2 3.5 2 5a6 6 0 11-12 0c0-4 3-6 3-9 1 0 2.5.5 3 3z"/>
         </svg>
         <p className="text-sm" style={{ color: 'var(--text-2)' }}>
-          <strong style={{ color: ACT }}>{streak} dia{streak === 1 ? '' : 's'}</strong> de sequência — seu recorde é {bestStreak}
+          <strong style={{ color: ACT }}>{streak} dia{streak === 1 ? '' : 's'}</strong> de sequência, seu recorde é {bestStreak}
         </p>
       </div>
 
       {/* 3 métricas */}
-      <div className="home-metrics grid grid-cols-3 gap-2">
+      <div className="home-metrics f-card kpi-row px-4 py-3 grid grid-cols-3">
         <StatMini label="treinos/sem" value={lastWeek?.thisWeek ?? 0} accent/>
         <StatMini label="volume/sem" value={metrics?.weeklyVolume ? `${(metrics.weeklyVolume / 1000).toFixed(1)}t` : '0t'} accent/>
         <StatMini label="vs. sem. passada"

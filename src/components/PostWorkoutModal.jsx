@@ -9,7 +9,7 @@ function StatBox({ label, value, highlight }) {
       <div className="font-display text-3xl leading-none mb-1" style={{ color: highlight ? 'var(--accent-text)' : 'var(--text-1)' }}>
         {value}
       </div>
-      <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-3)' }}>{label}</div>
+      <div className="text-xs" style={{ color: 'var(--text-3)' }}>{label}</div>
     </div>
   )
 }
@@ -35,10 +35,10 @@ export default function PostWorkoutModal({ workout, elapsed, onClose }) {
   const pct        = totalSets > 0 ? Math.round((doneSets/totalSets)*100) : 0
 
   const messages = {
-    100: ['🔥 Treino 100% completo! Você é uma máquina!', 'Incrível! Nenhuma série ficou pra trás.'],
-    75:  ['💪 Ótimo treino! Quase lá!', 'Mais de 75% das séries concluídas. Força!'],
-    50:  ['👊 Bom trabalho! Continue assim.', 'Cada treino conta. Amanhã você vai mais longe.'],
-    0:   ['✅ Treino registrado!', 'Cada vez que você aparece, já ganhou.'],
+    100: ['Treino 100% completo!', 'Você é uma máquina. Nenhuma série ficou pra trás.'],
+    75:  ['Ótimo treino!', 'Mais de 75% das séries concluídas. Quase lá.'],
+    50:  ['Bom trabalho!', 'Cada treino conta. Amanhã você vai mais longe.'],
+    0:   ['Treino registrado!', 'Cada vez que você aparece, já ganhou.'],
   }
   const msg = pct === 100 ? messages[100] : pct >= 75 ? messages[75] : pct >= 50 ? messages[50] : messages[0]
 
@@ -51,7 +51,22 @@ export default function PostWorkoutModal({ workout, elapsed, onClose }) {
 
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="text-5xl mb-3" aria-hidden="true">{pct === 100 ? '🏆' : pct >= 75 ? '💪' : '✅'}</div>
+          <div className="mb-4 flex justify-center" aria-hidden="true">
+            <svg width="44" height="44" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="1.6"
+              strokeLinecap="round" strokeLinejoin="round">
+              {pct === 100 ? (
+                <>
+                  <path d="M8 4h8v5a4 4 0 01-8 0z"/>
+                  <path d="M8 6H5.5a1.5 1.5 0 000 3H7M16 6h2.5a1.5 1.5 0 010 3H17"/>
+                  <path d="M10 13v3M14 13v3M9 20h6"/>
+                </>
+              ) : (
+                <>
+                  <path d="M20 6L9 17l-5-5"/>
+                </>
+              )}
+            </svg>
+          </div>
           <h2 id="post-workout-title" className="font-display text-3xl uppercase tracking-wide mb-1" style={{ color: 'var(--text-1)' }}>
             {msg[0]}
           </h2>
@@ -81,17 +96,17 @@ export default function PostWorkoutModal({ workout, elapsed, onClose }) {
         {workout.cardio && (
           <div className="mb-6 text-center text-xs px-3 py-2 rounded-lg"
             style={{ background: 'rgba(var(--accent-rgb),.08)', color: 'var(--accent-text)', border: '1px solid rgba(var(--accent-rgb),.2)' }}>
-            {summarizeCardio(workout.cardio)} registrado ✓
+            {summarizeCardio(workout.cardio)} registrado
           </div>
         )}
 
         {workout.personalRecords?.length > 0 && (
           <div className="mb-6 p-3 rounded-xl text-center"
             style={{ background: 'rgba(var(--accent-rgb),.1)', border: '1px solid rgba(var(--accent-rgb),.3)' }}>
-            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--accent-text)' }}>Recordes pessoais</p>
+            <p className="text-xs font-semibold" style={{ color: 'var(--accent-text)' }}>Recordes pessoais</p>
             {workout.personalRecords.map(record => (
               <p key={record.exercise} className="text-sm font-semibold mt-1" style={{ color: 'var(--text-1)' }}>
-                🏆 {record.exercise}: {record.weight || '0'} kg × {record.reps || '0'}
+                {record.exercise}: {record.weight || '0'} kg × {record.reps || '0'}
               </p>
             ))}
           </div>
@@ -103,8 +118,19 @@ export default function PostWorkoutModal({ workout, elapsed, onClose }) {
             const exDone = ex.sets.filter(s=>s.done).length
             return (
               <div key={ex.id} className="flex items-center justify-between text-sm px-2">
-                <span style={{ color: exDone === ex.sets.length ? 'var(--text-1)' : 'var(--text-3)' }}>
-                  {exDone === ex.sets.length ? '✓' : '○'} {ex.name}
+                <span className="flex items-center gap-2" style={{ color: exDone === ex.sets.length ? 'var(--text-1)' : 'var(--text-3)' }}>
+                  {exDone === ex.sets.length ? (
+                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="2.5"
+                      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="flex-shrink-0">
+                      <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                  ) : (
+                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" strokeWidth="2"
+                      aria-hidden="true" className="flex-shrink-0">
+                      <circle cx="12" cy="12" r="9"/>
+                    </svg>
+                  )}
+                  {ex.name}
                 </span>
                 <span style={{ color: 'var(--text-3)', fontSize: 12 }}>
                   {exDone}/{ex.sets.length} séries
@@ -116,7 +142,7 @@ export default function PostWorkoutModal({ workout, elapsed, onClose }) {
 
         <button onClick={onClose}
           className="f-btn f-btn-accent w-full py-4 text-base font-display uppercase tracking-widest">
-          Concluir Treino 🎉
+          Concluir Treino
         </button>
       </div>
     </div>

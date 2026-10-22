@@ -40,7 +40,7 @@ export default function FriendAddPage() {
     setConnecting(false)
     if (connErr) {
       setError(connErr.message?.includes('a si mesmo')
-        ? 'Esse é o seu próprio link — manda pra um amigo em vez disso.'
+        ? 'Esse é o seu próprio link. Manda pra um amigo em vez disso.'
         : 'Não foi possível conectar agora. Tente de novo.')
       return
     }
@@ -48,12 +48,17 @@ export default function FriendAddPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6"
+    <div className="min-h-dvh flex flex-col items-center justify-center px-6"
       style={{ background: 'var(--bg)' }}>
       <div className="w-full max-w-sm">
         <div className="text-center mb-6">
-          <div className="text-4xl mb-3">🤝</div>
-          <p className="font-display text-2xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
+          <div className="mb-3 flex justify-center" aria-hidden="true">
+            <svg width="34" height="34" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+            </svg>
+          </div>
+          <p className="font-display text-2xl" style={{ color: 'var(--text-1)' }}>
             Conectar no Voryn
           </p>
         </div>

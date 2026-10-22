@@ -30,10 +30,13 @@ export default function PlateCalculator({ onClose }) {
       <div className="relative w-full max-w-md p-5 rounded-t-3xl sm:rounded-3xl" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-xs uppercase tracking-widest" style={{ color: 'var(--accent-text)' }}>Ferramenta</p>
-            <h2 id="plate-title" className="font-display text-xl uppercase" style={{ color: 'var(--text-1)' }}>Calculadora de anilhas</h2>
+            <h2 id="plate-title" className="font-display text-xl" style={{ color: 'var(--text-1)' }}>Calculadora de anilhas</h2>
           </div>
-          <button onClick={onClose} className="w-11 h-11 rounded-xl" style={{ color: 'var(--text-3)', border: '1px solid var(--border)' }} aria-label="Fechar">×</button>
+          <button onClick={onClose} className="icon-btn" style={{ color: 'var(--text-3)' }} aria-label="Fechar">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <label className="text-xs" style={{ color: 'var(--text-3)' }}>Peso alvo (kg)
@@ -53,7 +56,7 @@ export default function PlateCalculator({ onClose }) {
             <p className="text-sm" style={{ color: 'var(--warning)' }}>Não foi possível montar exatamente. Faltam {result.remaining.toFixed(2)} kg por lado.</p>
           ) : (
             <>
-              <p className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>Cada lado</p>
+              <p className="text-xs font-semibold" style={{ color: 'var(--text-3)' }}>Cada lado</p>
               <p className="mt-1 font-display text-2xl" style={{ color: 'var(--accent-text)' }}>{result.selected.join(' + ')} kg</p>
               <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>Total: {target} kg incluindo a barra</p>
             </>

@@ -31,7 +31,13 @@ export default function EmailConfirmGate({ onSignOut }) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-10 text-center"
       style={{ background: 'var(--bg)' }}>
-      <div className="text-5xl mb-5">📬</div>
+      <div className="mb-5 flex justify-center" aria-hidden="true">
+        <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="1.5"
+          strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 7l9 6 9-6"/>
+          <rect x="3" y="5" width="18" height="14" rx="2"/>
+        </svg>
+      </div>
       <h1 className="font-display text-2xl uppercase tracking-wide mb-2" style={{ color: 'var(--text-1)' }}>
         Confirme seu email
       </h1>
@@ -48,7 +54,7 @@ export default function EmailConfirmGate({ onSignOut }) {
       <div className="w-full max-w-xs space-y-3">
         {sent ? (
           <p className="text-sm font-medium py-3" style={{ color: 'var(--accent-text)' }}>
-            ✓ Email reenviado. Confira sua caixa de entrada.
+            Email reenviado. Confira sua caixa de entrada.
           </p>
         ) : (
           <Button size="xl" className="w-full" onClick={handleResend} disabled={sending}>

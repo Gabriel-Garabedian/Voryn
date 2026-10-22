@@ -102,7 +102,7 @@ export default function IOSInstallBanner() {
                 <path d="M12 16V8M9 11l3-3 3 3"/>
               </svg>
             ),
-            detail: 'Na barra inferior do Safari (ícone de caixa com seta ↑)',
+            detail: 'Na barra inferior do Safari (ícone de compartilhamento, caixa com seta para cima)',
           },
           {
             num: '2',

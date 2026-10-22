@@ -32,9 +32,12 @@ export default function NotificationPrompt({ onDismiss }) {
   if (state === 'granted') return (
     <div className="f-card mx-4 p-4 flex items-center gap-3 animate-slide-up"
       style={{ borderColor:'rgba(var(--success-rgb), .3)', background:'rgba(var(--success-rgb), .06)' }}>
-      <span className="text-2xl">🔔</span>
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="var(--success)" strokeWidth="2"
+        strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="flex-shrink-0">
+        <path d="M20 6L9 17l-5-5"/>
+      </svg>
       <p className="text-sm font-semibold" style={{ color:'var(--success)' }}>
-        Notificações ativadas! Vamos te lembrar de treinar. 💪
+        Notificações ativadas! Vamos te lembrar de treinar.
       </p>
     </div>
   )
@@ -42,7 +45,10 @@ export default function NotificationPrompt({ onDismiss }) {
   if (state === 'denied') return (
     <div className="f-card mx-4 p-4 flex items-center gap-3"
       style={{ borderColor:'rgba(var(--danger-rgb), .2)' }}>
-      <span className="text-xl">😔</span>
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--text-3)" strokeWidth="2"
+        strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="flex-shrink-0">
+        <circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>
+      </svg>
       <p className="text-sm" style={{ color:'var(--text-3)' }}>
         Sem problema. Você pode ativar nas configurações do navegador depois.
       </p>
@@ -75,9 +81,9 @@ export default function NotificationPrompt({ onDismiss }) {
       </div>
       <div className="flex gap-2">
         <button onClick={handleEnable} disabled={state === 'requesting'}
-          className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
+          className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-[0.97]"
           style={{ background:'var(--accent)', opacity: state==='requesting' ? .7 : 1 }}>
-          {state === 'requesting' ? 'Ativando...' : '🔔 Ativar notificações'}
+          {state === 'requesting' ? 'Ativando...' : 'Ativar notificações'}
         </button>
         <button onClick={onDismiss}
           className="px-4 py-2.5 rounded-xl text-sm"

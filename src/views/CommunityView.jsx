@@ -84,7 +84,9 @@ function GroupsTab({ userId, onSelect }) {
       {loading ? (
         <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>Carregando...</p>
       ) : communities.length === 0 ? (
-        <EmptyState icon="GROUP" title="Nenhuma comunidade ainda"
+        <EmptyState
+          icon={<svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 20v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 20v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>}
+          title="Nenhuma comunidade ainda"
           description={isPayingUser
             ? 'Crie um grupo e chame seus amigos de treino, ou entre em um pelo link de convite que alguém te mandar.'
             : 'Entre em um grupo pelo link de convite que alguém te mandar, ou assine um plano para criar o seu.'}/>
@@ -264,7 +266,7 @@ function CommunityDetail({ community, userId, onBack, onLeft }) {
               <p className="text-xs truncate" style={{ color: 'var(--text-2)' }}>{inviteLink}</p>
             </div>
             <Button size="sm" onClick={copyInvite} className="flex-shrink-0">
-              {copied ? '✓ Copiado' : 'Copiar'}
+              {copied ? 'Copiado' : 'Copiar'}
             </Button>
           </div>
 
@@ -385,7 +387,7 @@ function ChatCommunity({ communityId, userId, members }) {
           <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>Carregando...</p>
         ) : msgs.length === 0 ? (
           <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>
-            Nenhuma mensagem ainda. Manda um &quot;oi&quot; pro grupo 👋
+            Nenhuma mensagem ainda. Manda um &quot;oi&quot; pro grupo.
           </p>
         ) : (
           msgs.map(m => {
@@ -485,14 +487,16 @@ function FriendsTab({ userId, onSelect }) {
           <p className="text-xs truncate" style={{ color: 'var(--text-2)' }}>{myLink}</p>
         </div>
         <Button size="sm" onClick={copyMyLink} className="flex-shrink-0" disabled={!profile?.friend_invite_code}>
-          {copied ? '✓ Copiado' : 'Copiar'}
+          {copied ? 'Copiado' : 'Copiar'}
         </Button>
       </div>
 
       {loading ? (
         <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>Carregando...</p>
       ) : friends.length === 0 ? (
-        <EmptyState icon="LINK" title="Nenhuma conexão ainda"
+        <EmptyState
+          icon={<svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="var(--accent-text)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>}
+          title="Nenhuma conexão ainda"
           description="Manda seu link pessoal pra um amigo, ou peça o link dele pra vocês se conectarem."/>
       ) : (
         <div className="space-y-2">
@@ -682,7 +686,7 @@ function ChatFriend({ myId, friendId, friendName }) {
           <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>Carregando...</p>
         ) : msgs.length === 0 ? (
           <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>
-            Nenhuma mensagem ainda. Manda um &quot;oi&quot; pra {friendName?.split(' ')[0] || 'ele'} 👋
+            Nenhuma mensagem ainda. Manda um &quot;oi&quot; pra {friendName?.split(' ')[0] || 'ele'}.
           </p>
         ) : (
           msgs.map(m => {

@@ -5,14 +5,35 @@ import { useToast } from '@/components/ui/Toast'
 import { SkeletonList } from '@/components/ui/Skeleton'
 import { localDateKey } from '@/utils/helpers'
 
+// Cada ângulo tem um traço próprio desenhado em SVG. Antes eram emoji de
+// seta: o desenho mudava entre plataformas e pesava mais que o rótulo ao
+// lado.
+const CATEGORY_GLYPHS = {
+  front: 'M12 20V5M12 5l-5 5M12 5l5 5',
+  side:  'M6 18L18 6M18 6h-7M18 6v7',
+  back:  'M12 4v15M12 19l-5-5M12 19l5-5',
+}
 const CATEGORIES = [
-  { key: 'front', label: 'Frente',    emoji: '⬆️' },
-  { key: 'side',  label: 'Lateral',   emoji: '↗️' },
-  { key: 'back',  label: 'Costas',    emoji: '⬇️' },
+  { key: 'front', label: 'Frente' },
+  { key: 'side',  label: 'Lateral' },
+  { key: 'back',  label: 'Costas' },
   { key: 'custom',label: 'Outro' },
 ]
 const AC  = 'var(--accent)'
 const ACT = 'var(--accent-text)'
+
+// Traço do ângulo. `custom` não tem ângulo definido e devolve null — quem
+// chama decide o que fazer no lugar (aqui, só o rótulo).
+function AngleGlyph({ category, size = 16, color = 'currentColor' }) {
+  const d = CATEGORY_GLYPHS[category]
+  if (!d) return null
+  return (
+    <svg width={size} height={size} fill="none" viewBox="0 0 24 24" stroke={color}
+      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d={d}/>
+    </svg>
+  )
+}
 
 // ── Upload Card ─────────────────────────────────────────────
 function UploadCard({ studentId, onUploaded }) {
@@ -122,7 +143,7 @@ function UploadCard({ studentId, onUploaded }) {
                 background:  form.category === c.key ? 'rgba(var(--accent-rgb),.08)' : 'var(--card)',
                 color:       form.category === c.key ? ACT : 'var(--text-3)',
               }}>
-              <div className="text-base mb-0.5">{c.emoji}</div>
+              <div className="mb-1 flex justify-center"><AngleGlyph category={c.key} size={18}/></div>
               {c.label}
             </button>
           ))}
@@ -248,9 +269,10 @@ function PhotoCard({ photo, onDelete }) {
         )}
       </div>
       {/* Category badge */}
-      <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded-lg text-xs font-bold"
+      <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded-lg text-xs font-bold flex items-center gap-1"
         style={{ background: 'rgba(var(--accent-rgb),.8)', color: '#fff' }}>
-        {cat.emoji} {cat.label}
+        <AngleGlyph category={cat.key} size={12} color="#fff"/>
+        {cat.label}
       </div>
       {/* Delete */}
       {onDelete && (

@@ -146,14 +146,13 @@ export default function GoalsView() {
   return (
     <div className="app-view view-goals px-4 pt-6 pb-8 space-y-6">
       <div>
-        <p className="view-kicker">Targets / 06</p>
         <h1 className="font-display text-3xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>Metas</h1>
         <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>Acompanhe seu progresso semanal</p>
       </div>
 
       {/* Weekly goal ring */}
       <div className="f-card p-6" style={goalMet ? { borderColor: 'rgba(var(--success-rgb), .4)', background: 'rgba(var(--success-rgb), .03)' } : {}}>
-        <p className="text-xs font-semibold uppercase tracking-widest text-center mb-4" style={{ color: 'var(--text-3)' }}>
+        <p className="text-sm font-semibold text-center mb-4" style={{ color: 'var(--text-3)' }}>
           Meta Semanal
         </p>
         <WeeklyGoalRing current={weekCount} goal={weeklyGoal}/>
@@ -167,12 +166,11 @@ export default function GoalsView() {
           <div className="flex justify-center gap-2">
             {DAYS_GOAL_OPTIONS.map(d => (
               <button key={d} onClick={() => saveGoal(d)}
-                className="w-10 h-10 rounded-xl font-display text-lg transition-all"
+                className="w-10 h-10 rounded-lg font-display text-lg"
                 style={{
-                  background: weeklyGoal===d ? 'var(--accent)' : 'var(--surface)',
-                  color:      weeklyGoal===d ? '#fff'          : 'var(--text-3)',
-                  border:     `1px solid ${weeklyGoal===d ? 'var(--accent)' : 'var(--border)'}`,
-                  boxShadow:  weeklyGoal===d ? '0 0 12px rgba(var(--accent-rgb),.3)' : 'none',
+                  background: weeklyGoal===d ? 'var(--raised)' : 'var(--surface)',
+                  color:      weeklyGoal===d ? 'var(--text-1)' : 'var(--text-3)',
+                  border:     `1px solid ${weeklyGoal===d ? 'var(--line-strong)' : 'var(--border)'}`,
                 }}>
                 {d}
               </button>
@@ -296,7 +294,7 @@ export default function GoalsView() {
 
         {showAddBody && (
           <div className="f-card p-4 space-y-3 mb-3 scale-in" style={{ borderColor: 'rgba(var(--accent-rgb),.3)' }}>
-            <p className="font-display text-base uppercase tracking-widest" style={{ color: 'var(--accent-text)' }}>
+            <p className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>
               Novo Registro
             </p>
             <div className="grid grid-cols-3 gap-2">
@@ -337,7 +335,6 @@ export default function GoalsView() {
 
         {bodyLogs.length === 0 && !showAddBody ? (
           <div className="f-card p-6 text-center">
-            <div className="section-index">BODY LOG</div>
             <p className="text-sm" style={{ color: 'var(--text-3)' }}>Nenhum registro ainda.</p>
             <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>Registre seu peso para acompanhar sua evolução.</p>
           </div>
@@ -345,18 +342,18 @@ export default function GoalsView() {
           <div className="space-y-2">
             {bodyLogs.slice(0, 8).map((log, i) => (
               <div key={log.id || i} className="f-card px-4 py-3 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl flex flex-col items-center justify-center flex-shrink-0"
-                  style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-                  <span className="font-display text-sm" style={{ color: 'var(--accent-text)' }}>
+                <div className="w-10 h-10 rounded-lg flex flex-col items-center justify-center flex-shrink-0"
+                  style={{ border: '1px solid var(--border)' }}>
+                  <span className="font-display text-sm" style={{ color: 'var(--text-1)' }}>
                     {log.date?.slice(8)}
                   </span>
-                  <span className="text-xs uppercase" style={{ color: 'var(--text-3)' }}>
+                  <span className="text-xs" style={{ color: 'var(--text-3)' }}>
                     {['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][parseInt(log.date?.slice(5,7))-1]}
                   </span>
                 </div>
                 <div className="flex-1">
                   {log.weight && (
-                    <span className="font-display text-lg" style={{ color: 'var(--accent-text)' }}>{log.weight}kg</span>
+                    <span className="font-display text-lg" style={{ color: 'var(--text-1)' }}>{log.weight}kg</span>
                   )}
                   {log.body_fat && (
                     <span className="text-sm ml-2" style={{ color: 'var(--text-3)' }}>{log.body_fat}% gordura</span>
