@@ -1,0 +1,4 @@
+interface:
+  display_name: "Voryn Validation"
+  short_description: "Escolher verificações relevantes para a mudança"
+  default_prompt: "Use $voryn-validation para executar esta tarefa e relatar as evidências."

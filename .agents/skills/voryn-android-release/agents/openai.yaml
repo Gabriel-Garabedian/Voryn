@@ -1,0 +1,4 @@
+interface:
+  display_name: "Voryn Android Release"
+  short_description: "Preparar e conferir a distribuição do APK"
+  default_prompt: "Use $voryn-android-release para executar esta tarefa e relatar as evidências."

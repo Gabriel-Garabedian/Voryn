@@ -1,7 +1,8 @@
 import React, { useId, useRef } from 'react'
 import clsx from 'clsx'
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useDialogA11y } from '@/components/ui/useDialogA11y'
+import { dialogMotion, motionTiming } from '@/utils/motion'
 
 // ── Button ─────────────────────────────────────────────────
 // A ação primária é feita primária por INVERSÃO (pílula clara com tinta
@@ -78,6 +79,7 @@ export function Modal({ open, onClose, title, children, size = 'md' }) {
   const sizes = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-lg', xl: 'max-w-2xl' }
   const titleId = useId().replace(/:/g, '')
   const dialogRef = useRef(null)
+  const reducedMotion = useReducedMotion()
 
   useDialogA11y(open, onClose, dialogRef)
 
@@ -89,8 +91,8 @@ export function Modal({ open, onClose, title, children, size = 'md' }) {
           style={{ background: 'rgba(0,0,0,.72)' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
+          exit={{ opacity: 0, transition: { duration: reducedMotion ? 0.08 : motionTiming.quick } }}
+          transition={{ duration: reducedMotion ? 0.1 : motionTiming.standard }}
           onClick={e => e.target === e.currentTarget && onClose()}
         >
           <motion.div
@@ -99,10 +101,7 @@ export function Modal({ open, onClose, title, children, size = 'md' }) {
             aria-labelledby={title ? titleId : undefined}
             ref={dialogRef}
             className={clsx('f-card w-full p-6', sizes[size])}
-            initial={{ opacity: 0, y: 16, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.98 }}
-            transition={{ duration: 0.22, ease: 'easeOut' }}
+            {...dialogMotion(reducedMotion)}
           >
             {title && (
               <div className="flex items-center justify-between mb-5 pb-4"

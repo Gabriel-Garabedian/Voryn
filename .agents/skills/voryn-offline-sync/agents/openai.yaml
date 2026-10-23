@@ -1,0 +1,4 @@
+interface:
+  display_name: "Voryn Offline Sync"
+  short_description: "Investigar filas, reconexão e conflitos locais"
+  default_prompt: "Use $voryn-offline-sync para executar esta tarefa e relatar as evidências."

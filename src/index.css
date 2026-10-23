@@ -33,6 +33,12 @@
    ========================================================================== */
 
 :root {
+  /* Motion identity: short travel, no overshoot, faster exits. */
+  --motion-quick: 140ms;
+  --motion-standard: 240ms;
+  --motion-slow: 400ms;
+  --motion-ease-enter: cubic-bezier(.2, 0, 0, 1);
+  --motion-ease-exit: cubic-bezier(.4, 0, 1, 1);
   /* --- Superfícies -------------------------------------------------------
      Chão quase-preto QUENTE (nunca navy, nunca slate) e elevação por
      luminosidade sozinha: o card é um degrau acima do chão e nada mais —
@@ -562,10 +568,10 @@
 @keyframes skeletonPulse { 0%,100% { opacity: 1 } 50% { opacity: .42 } }
 @keyframes unlockPop { 0% { transform: scale(.5); opacity: 0 } 60% { transform: scale(1.12); opacity: 1 } 100% { transform: scale(1); opacity: 1 } }
 @keyframes streakFlash { 0% { transform: scale(1) } 50% { transform: scale(1.18) rotate(3deg) } 100% { transform: scale(1) } }
-.animate-fade-in { animation: fadeIn .25s ease-out; }
-.animate-slide-up { animation: slideUp .3s ease-out; }
-.slide-in-bottom { animation: slideInBot .35s cubic-bezier(.34,1.56,.64,1); }
-.scale-in { animation: scaleIn .22s ease-out; }
+.animate-fade-in { animation: fadeIn var(--motion-standard) var(--motion-ease-enter); }
+.animate-slide-up { animation: slideUp var(--motion-standard) var(--motion-ease-enter); }
+.slide-in-bottom { animation: slideInBot var(--motion-standard) var(--motion-ease-enter); }
+.scale-in { animation: scaleIn var(--motion-standard) var(--motion-ease-enter); }
 .animate-spin { animation: spin 1s linear infinite; }
 .skeleton-pulse { animation: skeletonPulse 1.5s ease-in-out infinite; }
 .achievement-unlock { animation: unlockPop .5s cubic-bezier(.34,1.56,.64,1) forwards; } /* taste-skill-ignore: nome de classe, não copy de marketing */
@@ -620,6 +626,19 @@
   .onboarding-container { min-height: unset !important; overflow-y: auto !important; }
   .onboarding-container .progress-dots { margin-bottom: 12px !important; }
 }
+.voryn-toast {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--motion-quick) var(--motion-ease-exit),
+              transform var(--motion-quick) var(--motion-ease-exit);
+}
+.voryn-toast[data-visible="true"] {
+  opacity: 1;
+  transform: translateY(0);
+  transition-duration: var(--motion-standard);
+  transition-timing-function: var(--motion-ease-enter);
+}
+
 @media (prefers-reduced-motion: reduce) {
   /* Bloco único. Antes havia duas regras prefers-reduced-motion (uma no
      topo, outra perto do fim) e nenhuma cobria as animações de
@@ -632,6 +651,7 @@
     transition-duration: .01ms !important;
   }
   .app-view > * { animation: none !important; }
+  .voryn-toast[data-visible] { transform: none; }
 }
 
 /* Este bloco duplicava as superfícies e as sobrescrevia com gradiente,
@@ -2501,7 +2521,7 @@
 }
 .app-shell .app-view {
   position: relative;
-  animation: viewEnter .4s ease both;
+  animation: viewEnter var(--motion-standard) var(--motion-ease-enter) both;
 }
 @keyframes viewEnter {
   from { opacity: 0; transform: translateY(8px); }
