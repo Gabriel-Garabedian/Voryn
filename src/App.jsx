@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react'
+import React, { Suspense, lazy, useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { MotionConfig } from 'motion/react'
 import { useAuth } from '@/context/AuthContext'
@@ -6,6 +6,7 @@ import LoadingScreen from '@/components/ui/LoadingScreen'
 import AuthRecoveryScreen from '@/components/AuthRecoveryScreen'
 import IOSInstallBanner from '@/components/ui/IOSInstallBanner'
 import { Capacitor } from '@capacitor/core'
+import { localMusicPlayer } from '@/services/localMusic'
 
 const LandingPage   = lazy(() => import('@/pages/LandingPage'))
 const DownloadAndroidPage = lazy(() => import('@/pages/DownloadAndroidPage'))
@@ -41,6 +42,7 @@ function PublicRoute({ children }) {
 
 export default function App() {
   const { user, loading, authError } = useAuth()
+  useEffect(() => { void localMusicPlayer.load(user?.id || null) }, [user?.id])
   if (loading) return <LoadingScreen />
   if (authError) return <AuthRecoveryScreen />
 

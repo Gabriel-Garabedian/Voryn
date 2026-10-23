@@ -87,6 +87,46 @@ Atualizado em 23/10/2026. Registro persistente para retomar o projeto em outra s
 - A continuidade depende de os arquivos estarem acessíveis e serem lidos; este registro não é uma transcrição completa das conversas anteriores.
 - GitHub/Sentry autenticados e validação em aparelho Android não foram conferidos nesta sessão.
 
+## Etapa inicial de foto, conversas e Spotify — 23/10/2026
+
+Registro histórico: a parte Spotify abaixo foi substituída pelo áudio local, conforme a seção seguinte.
+
+- Implementação local autorizada pelo usuário para as três funcionalidades. Guia e ativação em [COMUNIDADE-E-SPOTIFY.md](COMUNIDADE-E-SPOTIFY.md).
+- Perfil permite enviar/trocar/remover foto (JPG/PNG/WebP, até 5 MB), com rollback quando salvar o perfil falha. Avatar reutilizado no cabeçalho, amigos e mensagens. Componentes/serviço novos: Avatar, ProfilePhotoEditor, socialProfiles; integração em ProfileView, AppShell e CommunityView.
+- SocialChat substitui os chats duplicados de amigos/comunidades: nome, foto, data/hora, rascunho preservado na falha, bloqueio de envio concorrente e merge do histórico com Realtime sem duplicação. Consulta de identidade restrita a contatos e comunidades, incluindo autores de mensagens antigas.
+- TrainingMusic em ProfileView e WorkoutView salva faixa/trecho; serviço Spotify usa OAuth PKCE e estado vinculado à conta. Retorno web em /spotify/callback e Android via página HTTPS /spotify/android-callback → voryn://spotify-callback, com SpotifyAuthPlugin registrado no MainActivity e manifesto. Token curto em sessionStorage, sem Client Secret/refresh persistente; reconectar ao expirar. Supabase não tenta consumir o código OAuth dessas rotas.
+- Migração criada pela CLI: supabase/migrations/20261023130746_social_profiles_and_training_music.sql, também refletida em schema.sql: training_music validado, bucket privado avatars e RPC com implementação privilegiada no schema private e entrada pública invoker. delete-user inclui limpeza dos avatares em lotes. .env.example documenta VITE_SPOTIFY_CLIENT_ID; artefatos de banco em output/db-check ignorados.
+- Verificações: 24 testes passaram (18 novos e seis existentes de carregamento de autenticação); lint sem erros; build web passou. Código Android/manifesto compilado por :app:compileDebugJavaWithJavac, sem gerar/distribuir APK novo. Sintaxe TypeScript da Edge Function validada por esbuild; runtime Deno não testado.
+- SQL executado e reaplicado em PostgreSQL isolado/PGlite 0.5.11 com schemas de apoio mínimos. Testados isolamento de perfis, acesso às fotos, autoria antiga, gravação/remoção própria, bloqueio de anon e validação da música. Script reproduzível: scripts/__tests__/socialProfiles.db.mjs; não é validação integrada do Supabase remoto.
+- Fixture no Edge com componentes reais e serviços simulados passou para autoria/foto, falha preservando rascunho, envio sem duplicação e salvar trecho. Capturas 390/768/1440 px nos temas claro/escuro sem overflow. Inspetor final: zero falhas/alertas, com exceção explícita para a cor roxa existente; horários aumentados para 12 px. Evidências em output/playwright/social-*.
+- Pendências reais: CLI Supabase retornou AccessTokenRequiredError; migração e Edge Function NÃO foram aplicadas no projeto remoto. Posteriormente, o usuário criou o aplicativo Spotify e forneceu o Client ID público, configurado em .env.local e .env.production.local (ignorados pelo Git); carregamento confirmado nos modos development e production. Novo build web com esse ID concluído; identificador conferido no bundle gerado. Spotify exige Premium para controle e novos apps em desenvolvimento limitam-se a cinco usuários autorizados; aprovação para ampliar é externa. Validar retornos e contas autorizadas no painel Spotify, teste real de OAuth/reprodução/Storage/chat com duas contas, publicação e novo APK continuam pendentes. iOS nativo não implementado. Não houve commit/push/deploy nesta tarefa.
+
+## Música local no aparelho — implementação atual
+
+- Após conhecer as restrições do Spotify, o usuário aprovou substituir a reprodução integrada por arquivo de áudio do celular. Uso e limites em [MUSICA-LOCAL.md](MUSICA-LOCAL.md); o guia antigo COMUNIDADE-E-SPOTIFY.md agora aponta para o fluxo atual.
+- Novo src/services/localMusic.js armazena Blob/nome/duração/trecho no IndexedDB por conta, sem upload ou dependência do Supabase. Player compartilhado toca no início escolhido, pausa e reinicia; App.jsx limpa a reprodução ao sair/trocar de conta. AuthContext tenta remover o arquivo local ao excluir a conta.
+- TrainingMusic foi adaptado em Perfil/Treino: seletor de áudio até 50 MB, início minutos:segundos validado contra a duração, controles de tocar/pausar/reiniciar/remover e aviso de armazenamento somente neste aparelho. Falha ao salvar preserva a seleção anterior.
+- Removidos serviço/testes/callbacks/plugin nativo OAuth Spotify e Client ID dos ambientes locais. Playlist social preexistente permanece. Cadastro externo do Spotify não foi alterado ou excluído.
+- A migração social ainda não aplicada em produção foi ajustada, juntamente com schema.sql, para remover a coluna Spotify training_music. Música local não precisa de migração; avatares/chat continuam precisando da migração social e publicação da Edge Function. Teste SQL de escopo/permissões novamente passou em PGlite.
+- Verificação real no Edge com WAV de dez segundos e autenticação simulada: persistência após reload, áudio offline com currentTime=1 e paused=false, pausa/reinício, continuidade ao abrir treino e remoção persistente. Seis capturas 390/768/1440 nos dois temas sem overflow. Corrigido aviso indevido de falha ao pausar durante a promise de play; regressão testada. Evidências output/playwright/local-music-*.
+- Verificação final desta adaptação: 28 testes passaram (música, chat, fotos e carregamento da autenticação); lint sem erros; build web concluído.
+- Não houve publicação, novo APK nem teste físico. Reprodução em segundo plano/tela bloqueada, interrupções e codecs específicos de aparelhos continuam sem validação. O arquivo é local por aparelho/conta e pode ser perdido ao limpar dados ou por políticas de armazenamento do sistema.
+
+## APK 1.9 gerado — aguardando publicação
+
+- Usuário pediu gerar novo APK e perguntou sobre o aviso na versão atual. Gerada release assinada 1.9/código 11 como com.voryn.mobile, mantendo o certificado da 1.8. Arquivo: public/downloads/voryn-1.9.apk; 17.920.202 bytes; SHA-256 3d47ec06c11be71e68472daa4a8e8c8ae8b5e6af2d4b99f91afd71bf9285e32b. Metadados em docs/android-candidate.json; docs/android-production.json continua descrevendo a 1.8 publicada.
+- npm run android:release concluiu (build web, validação de ambiente, sync Capacitor, assets sem APK aninhado e assembleRelease). apksigner verificou v2 e certificado SHA-256 086b27a7a44b1819958edc9d4dbda4d25573c843053d2212c997898a12930098, igual ao APK 1.8 conferido. aapt confirmou pacote, versão, rótulo Voryn, Android mínimo 9 e ausência de debuggable.
+- Integridade ZIP, backend/chave pública de produção empacotados, ausência do backend local, presença da música local e ausência do OAuth Spotify verificados no APK. Nove testes de atualização/download passaram nesta etapa. Nenhum aparelho conectado no adb; instalação por cima e áudio físico não testados.
+- APK 1.8 inspecionado contém endpoint e botão de atualização. Endpoint público consultado ainda anuncia 1.8/código 10. A 1.9 só aparecerá no aviso depois de publicar seu APK e atualizar public/android-release.json e a página de download. Aviso é interno, autenticado, ao abrir/retomar app, com intervalo mínimo de cinco minutos e oculto durante treino; não é notificação com app fechado. Apps legados 1.6/preview não são a mesma instalação.
+- Não houve commit/push/deploy nesta etapa. Manifesto e página públicos foram preservados em 1.8; candidato pronto localmente. Fotos/identidade ainda dependem da migração social/Edge Function pendentes no Supabase; música local não depende disso. Não anunciar o conjunto como plenamente operacional em produção antes de resolver essas pendências.
+
+## Deploy 1.9 autorizado
+
+- Usuário pediu publicar a versão para teste. Manifesto e página de download preparados para 1.9/código 11 com o APK já verificado. Instalação por cima da 1.8, preservando pacote/certificado.
+- Corrigida a política de conteúdo do Vercel para permitir media-src self/blob, necessária à música local na web. APK nativo não depende desse cabeçalho HTTP.
+- Migração/Edge Function social continuam pendentes por falta de autenticação Supabase; publicar frontend/APK não aplica SQL. Música local está disponível para teste sem essa dependência.
+- Resultado público e hash serão registrados após conferir o deploy.
+
 ## Como manter
 
 - Ao concluir trabalho relevante, atualizar data, decisões, resultado e pendências.

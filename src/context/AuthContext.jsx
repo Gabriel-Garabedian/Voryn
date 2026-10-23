@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useRef } from 'r
 import { supabase } from '@/lib/supabase'
 import { getSubscription } from '@/utils/helpers'
 import { phoneHealth } from '@/services/phoneHealth'
+import { localMusicStore } from '@/services/localMusic'
 
 const AuthContext = createContext(null)
 
@@ -322,6 +323,8 @@ export function AuthProvider({ children }) {
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) return { error: { message: data?.error || 'Falha ao excluir conta' } }
+
+      await localMusicStore.remove(user.id).catch(() => {})
 
       // A conta já foi excluída no servidor nesse ponto — o que segue é só
       // limpeza local. Isolado em try/catch próprio de propósito: signOut()

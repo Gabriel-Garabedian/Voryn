@@ -10,6 +10,8 @@ import { PLANS } from '@/services/payment'
 import { formatDuration, formatVolume, calcStreak, calcBestStreak } from '@/utils/helpers'
 import { EXERCISE_LIBRARY } from '@/data/exercises'
 import { ACHIEVEMENTS } from '@/views/AchievementsView'
+import ProfilePhotoEditor from '@/components/ProfilePhotoEditor'
+import TrainingMusic from '@/components/TrainingMusic'
 import AndroidDownloadLink from '@/components/AndroidDownloadLink'
 
 // ANTES, esta lista era fixa — só esses 5 exercícios apareciam em Records
@@ -284,12 +286,7 @@ export default function ProfileView() {
          o editor de nome/email continuam aqui, só sem a moldura/segundo
          avatar que existiam antes). */}
       <div className="desktop-profile-identity flex items-center gap-4">
-        <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0"
-          style={{ background: 'rgba(var(--accent-rgb),.15)', border: '1.5px solid rgba(var(--accent-rgb),.35)' }}>
-          <span className="font-display text-2xl" style={{ color: 'var(--accent-text)' }}>
-            {profile?.name?.charAt(0)?.toUpperCase() || 'A'}
-          </span>
-        </div>
+        <ProfilePhotoEditor />
         <div className="flex-1 min-w-0">
           {editName
             ? <div className="flex items-center gap-2">
@@ -489,6 +486,8 @@ export default function ProfileView() {
           )}
         </div>
       </div>
+
+      <TrainingMusic />
 
       {/* ── PRs ── */}
       <div className="desktop-profile-section" style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}>

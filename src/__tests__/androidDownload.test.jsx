@@ -21,8 +21,8 @@ describe('Android web download', () => {
   it('provides a direct versioned APK download and update instructions', () => {
     render(<MemoryRouter><DownloadAndroidPage /></MemoryRouter>)
     const download = screen.getByRole('link', { name: 'Baixar APK para Android' })
-    expect(download).toHaveAttribute('href', '/downloads/voryn-1.8.apk')
-    expect(download).toHaveAttribute('download', 'voryn-1.8.apk')
+    expect(download).toHaveAttribute('href', '/downloads/voryn-1.9.apk')
+    expect(download).toHaveAttribute('download', 'voryn-1.9.apk')
     expect(screen.getByText(/nova instalação/)).toBeInTheDocument()
     expect(screen.getByText(/dados já sincronizados/)).toBeInTheDocument()
     expect(screen.getByText(/ainda estão somente nos apps antigos/)).toBeInTheDocument()

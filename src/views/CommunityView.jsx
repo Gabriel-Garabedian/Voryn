@@ -4,6 +4,8 @@ import { useAuth } from '@/context/AuthContext'
 import { communityService, friendService } from '@/services'
 import { Button, Badge, Modal, EmptyState } from '@/components/ui'
 import { useToast } from '@/components/ui/Toast'
+import SocialChat from '@/components/SocialChat'
+import Avatar from '@/components/Avatar'
 import { formatDateShort } from '@/utils/helpers'
 
 export default function CommunityView() {
@@ -336,100 +338,10 @@ function CommunityDetail({ community, userId, onBack, onLeft }) {
   )
 }
 
-function ChatCommunity({ communityId, userId, members }) {
-  const [msgs,    setMsgs]    = useState([])
-  const [input,   setInput]   = useState('')
-  const [loading, setLoading] = useState(true)
-  const bottomRef = useRef(null)
-
-  // Nome de quem mandou, resolvido pela lista de membros já carregada —
-  // ver comentário em get_community_members (schema.sql) sobre por que
-  // isso vem de uma RPC com campo plano (user_name), não de um join
-  // aninhado.
-  const nameById = {}
-  members.forEach(m => { nameById[m.user_id] = m.user_name || '?' })
-
-  // Mesmo bug já corrigido no chat personal↔aluno (ChatTrainer, mais
-  // acima neste arquivo... na verdade em PersonalDashboardView.jsx): ao
-  // enviar, a mensagem sendo adicionada manualmente E chegando de volta
-  // via Realtime duplicava na tela de quem enviou. addMsg ignora se o id
-  // já existir no estado local.
-  function addMsg(msg) {
-    setMsgs(m => m.some(x => x.id === msg.id) ? m : [...m, msg])
-  }
-
-  useEffect(() => {
-    if (!communityId) return
-    communityService.getMessages(communityId).then(({ data }) => {
-      setMsgs(data || [])
-      setLoading(false)
-    })
-    const sub = communityService.subscribeMessages(communityId, msg => addMsg(msg))
-    return () => sub?.unsubscribe?.()
-  }, [communityId])
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [msgs])
-
-  async function send() {
-    const text = input.trim(); if (!text) return
-    setInput('')
-    const { data, error } = await communityService.sendMessage(communityId, userId, text)
-    if (data) addMsg(data)
-    if (error) console.error('[Voryn] ChatCommunity send error:', error)
-  }
-
-  return (
-    <div className="flex flex-col" style={{ height: 'calc(100vh - 320px)' }}>
-      <div className="flex-1 overflow-y-auto space-y-3 py-2">
-        {loading ? (
-          <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>Carregando...</p>
-        ) : msgs.length === 0 ? (
-          <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>
-            Nenhuma mensagem ainda. Manda um &quot;oi&quot; pro grupo.
-          </p>
-        ) : (
-          msgs.map(m => {
-            const isMe = m.user_id === userId
-            return (
-              <div key={m.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                <div className="max-w-xs">
-                  {!isMe && (
-                    <p className="text-xs mb-0.5 ml-1" style={{ color: 'var(--text-3)' }}>
-                      {nameById[m.user_id] || 'Membro'}
-                    </p>
-                  )}
-                  <div className="px-4 py-2.5 rounded-2xl text-sm"
-                    style={{
-                      background: isMe ? 'var(--accent)' : 'var(--card)',
-                      color: isMe ? '#fff' : 'var(--text-1)',
-                      border: isMe ? 'none' : '1px solid var(--border)',
-                    }}>
-                    {m.content}
-                  </div>
-                </div>
-              </div>
-            )
-          })
-        )}
-        <div ref={bottomRef}/>
-      </div>
-      <div className="flex gap-2 pt-2" style={{ borderTop: '1px solid var(--border)' }}>
-        <input className="f-input flex-1" aria-label="Mensagem para o grupo" placeholder="Mensagem para o grupo..." value={input}
-          onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()}/>
-        <button onClick={send} aria-label="Enviar mensagem" className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{ background: 'var(--accent)' }}>
-          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2" aria-hidden="true">
-            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-  )
+function ChatCommunity({ communityId, members }) {
+  return <SocialChat key={communityId} communityId={communityId} members={members} />
 }
 
-// ── Aba Amigos ──────────────────────────────────────────────
 function FriendsTab({ userId, onSelect }) {
   const { profile } = useAuth()
   const toast = useToast()
@@ -503,10 +415,7 @@ function FriendsTab({ userId, onSelect }) {
           {friends.map(f => (
             <button key={f.friend_id} onClick={() => onSelect(f)}
               className="f-card w-full p-4 flex items-center gap-3 text-left">
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 font-display text-lg"
-                style={{ background: 'rgba(var(--accent-rgb),.1)', color: 'var(--accent-text)' }}>
-                {f.friend_name?.charAt(0).toUpperCase() || '?'}
-              </div>
+              <Avatar name={f.friend_name} path={f.avatar_url} size={44} />
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-sm truncate" style={{ color: 'var(--text-1)' }}>{f.friend_name}</p>
                 <p className="text-xs" style={{ color: f.workouts_7d > 0 ? 'var(--accent-text)' : 'var(--text-3)' }}>
@@ -553,10 +462,7 @@ function FriendDetail({ friend, onBack }) {
       </button>
 
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 font-display text-2xl"
-          style={{ background: 'rgba(var(--accent-rgb),.1)', color: 'var(--accent-text)' }}>
-          {friend.friend_name?.charAt(0).toUpperCase() || '?'}
-        </div>
+        <Avatar name={friend.friend_name} path={friend.avatar_url} size={56} />
         <div>
           <p className="font-display text-xl uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>{friend.friend_name}</p>
           <p className="text-xs" style={{ color: 'var(--text-3)' }}>
@@ -644,79 +550,6 @@ function FriendDetail({ friend, onBack }) {
   )
 }
 
-function ChatFriend({ myId, friendId, friendName }) {
-  const [msgs,    setMsgs]    = useState([])
-  const [input,   setInput]   = useState('')
-  const [loading, setLoading] = useState(true)
-  const bottomRef = useRef(null)
-
-  // Mesmo dedup já corrigido no chat personal↔aluno e no de grupo — evita
-  // mensagem duplicada quando o retorno do envio e o Realtime chegam
-  // quase juntos.
-  function addMsg(msg) {
-    setMsgs(m => m.some(x => x.id === msg.id) ? m : [...m, msg])
-  }
-
-  useEffect(() => {
-    if (!myId || !friendId) return
-    friendService.getMessages(myId, friendId).then(({ data }) => {
-      setMsgs(data || [])
-      setLoading(false)
-    })
-    const sub = friendService.subscribeMessages(myId, friendId, msg => addMsg(msg))
-    return () => sub?.unsubscribe?.()
-  }, [myId, friendId])
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [msgs])
-
-  async function send() {
-    const text = input.trim(); if (!text) return
-    setInput('')
-    const { data, error } = await friendService.sendMessage(myId, friendId, text)
-    if (data) addMsg(data)
-    if (error) console.error('[Voryn] ChatFriend send error:', error)
-  }
-
-  return (
-    <div className="flex flex-col" style={{ height: 'calc(100vh - 340px)' }}>
-      <div className="flex-1 overflow-y-auto space-y-3 py-2">
-        {loading ? (
-          <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>Carregando...</p>
-        ) : msgs.length === 0 ? (
-          <p className="text-sm text-center py-8" style={{ color: 'var(--text-3)' }}>
-            Nenhuma mensagem ainda. Manda um &quot;oi&quot; pra {friendName?.split(' ')[0] || 'ele'}.
-          </p>
-        ) : (
-          msgs.map(m => {
-            const isMe = m.sender_id === myId
-            return (
-              <div key={m.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                <div className="max-w-xs px-4 py-2.5 rounded-2xl text-sm"
-                  style={{
-                    background: isMe ? 'var(--accent)' : 'var(--card)',
-                    color: isMe ? '#fff' : 'var(--text-1)',
-                    border: isMe ? 'none' : '1px solid var(--border)',
-                  }}>
-                  {m.content}
-                </div>
-              </div>
-            )
-          })
-        )}
-        <div ref={bottomRef}/>
-      </div>
-      <div className="flex gap-2 pt-2" style={{ borderTop: '1px solid var(--border)' }}>
-        <input className="f-input flex-1" aria-label={`Mensagem para ${friendName?.split(' ')[0] || 'seu contato'}`} placeholder={`Mensagem para ${friendName?.split(' ')[0] || 'ele'}...`} value={input}
-          onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()}/>
-        <button onClick={send} aria-label="Enviar mensagem" className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{ background: 'var(--accent)' }}>
-          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2" aria-hidden="true">
-            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-  )
+function ChatFriend({ friendId, friendName }) {
+  return <SocialChat key={friendId} friendId={friendId} friendName={friendName} />
 }

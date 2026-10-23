@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { supabase } from '@/lib/supabase'
 import LoadingScreen from '@/components/ui/LoadingScreen'
+import Avatar from '@/components/Avatar'
 const HomeView = lazy(() => import('@/views/HomeView'))
 const HealthView = lazy(() => import('@/views/HealthView'))
 const HealthMetricView = lazy(() => import('@/views/HealthMetricView'))
@@ -350,7 +351,7 @@ export default function AppShell() {
               </button>
             )}
             <button onClick={() => navigate(`${base}/profile`)} className="profile-chip w-10 h-10 rounded-full flex items-center justify-center border cursor-pointer font-display text-lg" style={{ color: 'var(--text-1)' }} aria-label="Abrir perfil">
-              {displayName.charAt(0).toUpperCase()}
+              <Avatar name={profile?.name || displayName} path={profile?.avatar_url} size={38} />
             </button>
             {pendingSync > 0 && (
               <span className="app-sync-pill" title={`${pendingSync} treino(s) aguardando sincronização`}>

@@ -1,0 +1,33 @@
+{
+  "apkPath": "/downloads/voryn-1.9.apk",
+  "applicationId": "com.voryn.mobile",
+  "label": "Voryn",
+  "versionCode": 11,
+  "versionName": "1.9",
+  "bytes": 17920202,
+  "sha256": "3d47ec06c11be71e68472daa4a8e8c8ae8b5e6af2d4b99f91afd71bf9285e32b",
+  "certificateSha256": "086b27a7a44b1819958edc9d4dbda4d25573c843053d2212c997898a12930098",
+  "buildVariant": "release",
+  "debuggable": false,
+  "verification": {
+    "nativeBuild": "passed",
+    "signatureV2": "verified",
+    "sameCertificateAs18": true,
+    "zipIntegrity": true,
+    "noNestedApk": true,
+    "productionBackendEmbedded": true,
+    "publicKeyEmbedded": true,
+    "localBackendAbsent": true,
+    "localMusicIncluded": true,
+    "spotifyOAuthAbsent": true,
+    "updateAndDownloadTests": 9
+  },
+  "deviceTested": false,
+  "published": false,
+  "publicManifestVersion": "1.8",
+  "pending": [
+    "Aplicar migração social e publicar delete-user para fotos/identidade completas",
+    "Validar instalação por cima da 1.8 em aparelho",
+    "Atualizar manifesto/página e publicar APK para ativar aviso"
+  ]
+}

@@ -62,4 +62,5 @@ coverage/
 .taste-skill/
 .playwright-cli/
 output/playwright/
+output/db-check/
 Microsoft/Windows/PowerShell/

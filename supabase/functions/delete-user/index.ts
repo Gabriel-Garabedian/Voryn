@@ -103,21 +103,22 @@ serve(async (req) => {
   // usuário. Convenção de path: progress-photos/{userId}/{timestamp}.{ext}
   // (ver progressPhotoService.upload), então listamos a "pasta" do userId
   // diretamente — não depende da tabela progress_photos estar íntegra.
-  const { data: userFiles, error: listErr } = await db.storage
-    .from('progress-photos').list(targetUserId)
-  if (listErr) {
-    console.error('[delete-user] Falha ao listar arquivos do storage:', listErr)
-    // Não bloqueia a exclusão por isso — segue tentando remover o que
-    // conseguir encontrar, e se a listagem falhou não há nada a remover.
-  } else if (userFiles?.length) {
-    const paths = userFiles.map(f => `${targetUserId}/${f.name}`)
-    const { error: removeErr } = await db.storage.from('progress-photos').remove(paths)
-    if (removeErr) {
-      console.error('[delete-user] Falha ao remover arquivos do storage:', removeErr)
-      // Idem: não bloqueia a exclusão da conta por isso. Um admin pode
-      // limpar manualmente depois se sobrar algo; o risco residual é
-      // muito menor do que nunca limpar nada, que era o comportamento
-      // anterior.
+  // Fotos de perfil usam a mesma convenção de pasta e também são dados pessoais.
+  // Remover em lotes evita deixar arquivos acima do limite padrão da listagem.
+  for (const bucket of ['progress-photos', 'avatars']) {
+    while (true) {
+      const { data: userFiles, error: listErr } = await db.storage.from(bucket).list(targetUserId, { limit: 100 })
+      if (listErr) {
+        console.error('[delete-user] Falha ao listar arquivos do storage:', bucket, listErr)
+        break
+      }
+      if (!userFiles?.length) break
+      const paths = userFiles.map(f => `${targetUserId}/${f.name}`)
+      const { error: removeErr } = await db.storage.from(bucket).remove(paths)
+      if (removeErr) {
+        console.error('[delete-user] Falha ao remover arquivos do storage:', bucket, removeErr)
+        break
+      }
     }
   }
 
