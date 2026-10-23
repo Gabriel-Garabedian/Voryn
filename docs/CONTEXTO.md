@@ -1,6 +1,6 @@
 # Continuidade do Voryn
 
-Atualizado em 22/10/2026. Registro persistente para retomar o projeto em outra sessão.
+Atualizado em 23/10/2026. Registro persistente para retomar o projeto em outra sessão.
 
 ## Preferências do usuário
 
@@ -53,6 +53,19 @@ Atualizado em 22/10/2026. Registro persistente para retomar o projeto em outra s
 - Este envio contém código e documentação; o download público permanece em 1.6/código 7. A próxima compilação está preparada em 1.7/código 8. Um APK novo ainda precisa ser gerado e verificado em ambiente Android antes de atualizar o manifesto público.
 
 ## Pendências e limites
+
+### Voryn 1.8 de produção, aguardando publicação
+
+- Usuário confirmou que não consegue recuperar a chave da versão 1.6 no computador do curso e autorizou tornar uma nova instalação o Voryn principal.
+- Configurada a nova identidade `com.voryn.mobile` (namespace nativo continua `com.voryn.app`), versão 1.8/código 10. Nome Voryn; separada tanto da 1.6 quanto da antiga preview `com.voryn.app.preview`.
+- Chave RSA de produção criada em `C:/Users/Antonio Pedro/.android/voryn-production/voryn-production.p12`; configuração privada `signing.json` na mesma pasta, ACL restrita ao usuário. Não imprimir nem versionar a configuração. A chave é nova, intencionalmente destinada à nova identidade autorizada.
+- Novo comando `npm run android:release` usa `scripts/build-android-release.ps1`, exige a configuração privada, roda validação do backend/sync e `assembleRelease`; restaura variáveis privadas ao concluir. Gradle recusa release sem variáveis de assinatura.
+- O usuário liberou espaço em disco. `npm run android:release` concluiu com sucesso; o build web e o Gradle release passaram. O arquivo final é `public/downloads/voryn-1.8.apk`, pacote `com.voryn.mobile`, código 10, versão 1.8, 17.914.718 bytes, SHA-256 `fc58d82827171a313cf23a03d91230073fbeaf1e8f6572bd70a80de72c0eb709`; assinatura v2 e certificado SHA-256 `086b27a7a44b1819958edc9d4dbda4d25573c843053d2212c997898a12930098`. `debuggable=false`.
+- Confirmadas integridade ZIP, URL/chave pública corretas dentro do APK, ausência do endpoint local e de APK aninhado. Supabase Auth settings respondeu 200, CORS `https://localhost`, email ativo. Seis testes focados de página de download e atualização passaram; build web final passou.
+- Página e manifesto apontam para 1.8 e explicam instalação paralela: a mesma conta recupera dados sincronizados; registros locais pendentes precisam ser sincronizados no app antigo antes de removê-lo. O plugin de atualização agora confere `applicationId`, evitando avisar o Voryn Teste sobre a instalação principal.
+- Próximo passo: revisar diff, restaurar somente arquivos Gradle gerados pelo Capacitor, commit/push autorizado, aguardar deploy e conferir SHA-256 e manifesto no domínio público. Depois entregar o link direto.
+- Preservar os apps antigos e seus dados locais. A nova instalação requer login e permissões; só dados já sincronizados aparecem pela conta. Não anunciar atualização por cima do Voryn 1.6 ou da preview antiga.
+- A instalação e o login com conta real no aparelho físico ainda não foram testados nesta 1.8. O usuário confirmou o login na preview 1.7.1; não inferir isso como teste físico da versão de produção.
 
 ### Correção do login na preview
 

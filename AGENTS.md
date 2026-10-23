@@ -22,6 +22,7 @@ Run from the repository root and choose checks relevant to the change.
 | Web build | `npm run build` |
 | Native sync | `npm run android:sync` |
 | Debug APK | `npm run android:apk` |
+| Signed production APK | `npm run android:release` |
 
 ## Domain boundaries
 

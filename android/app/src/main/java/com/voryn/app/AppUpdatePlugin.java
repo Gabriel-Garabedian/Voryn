@@ -17,6 +17,7 @@ public class AppUpdatePlugin extends Plugin {
             JSObject result = new JSObject();
             result.put("versionCode", info.getLongVersionCode());
             result.put("versionName", info.versionName);
+            result.put("applicationId", getContext().getPackageName());
             call.resolve(result);
         } catch (Exception error) {
             call.reject("Não foi possível consultar a versão instalada.", error);

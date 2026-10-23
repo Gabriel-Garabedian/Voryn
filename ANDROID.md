@@ -4,6 +4,16 @@ O projeto Android usa Capacitor 8, Java 21 e SDK Android 36. A interface existen
 
 ## Configurar e gerar APK
 
+### Produção: Voryn 1.8
+
+O usuário confirmou a migração para uma nova instalação principal porque a chave da versão 1.6 ficou indisponível no computador do curso. O identificador de produção passa a ser `com.voryn.mobile`, com nome **Voryn**; o namespace Java/Kotlin continua `com.voryn.app`. Isso permite manter instalados o Voryn 1.6 e o Voryn Teste durante a transição, sem desinstalar ou apagar seus dados locais. A versão 1.8 usa código 10 e a chave permanente descrita abaixo.
+
+O script `npm run android:release` exige uma chave dedicada e executa `assembleRelease`, sem assinatura de debug. A chave e a configuração privada foram criadas em `~/.android/voryn-production/`, fora do repositório, com acesso restrito ao usuário Windows. A configuração é `signing.json`; a localização alternativa pode ser informada por `VORYN_SIGNING_CONFIG`. O script carrega os dados somente no processo do build e restaura o ambiente ao terminar. Nunca versionar os arquivos dessa pasta. Guarde uma cópia completa em armazenamento privado externo; perder essa chave impede futuras atualizações dessa nova instalação.
+
+O APK assinado fica em `android/app/build/outputs/apk/release/app-release.apk`. Conferir identificador, versão, assinatura e conteúdo antes de atualizar o manifesto e a página pública. Guarde uma cópia da chave fora deste computador. Distribua a nova instalação ao lado dos apps antigos até confirmar que os dados locais pendentes foram sincronizados.
+
+Na migração, entrar com a mesma conta recupera os dados já sincronizados. Registros locais pendentes dos apps antigos precisam ser sincronizados neles; não existe cópia automática entre identificadores Android.
+
 ### APK de teste das animações (1.7.1-preview)
 
 O arquivo `public/downloads/voryn-1.7.1-preview.apk` é uma compilação debug identificada como **Voryn Teste**, pacote `com.voryn.app.preview`, código 9. Instala separadamente do Voryn 1.6 e atualiza por cima do Voryn Teste anterior (código 8), pois mantém seu identificador e certificado. Entre com sua conta e conceda as permissões necessárias nessa instalação. Registros locais pendentes do aplicativo original não são copiados para o app de teste.

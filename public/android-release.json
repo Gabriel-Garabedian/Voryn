@@ -1,5 +1,6 @@
 {
-  "versionCode": 7,
-  "versionName": "1.6",
-  "apkPath": "/downloads/voryn-1.6.apk"
+  "versionCode": 10,
+  "versionName": "1.8",
+  "applicationId": "com.voryn.mobile",
+  "apkPath": "/downloads/voryn-1.8.apk"
 }

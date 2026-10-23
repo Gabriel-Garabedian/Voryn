@@ -1,0 +1,25 @@
+{
+  "apkPath": "/downloads/voryn-1.8.apk",
+  "applicationId": "com.voryn.mobile",
+  "label": "Voryn",
+  "versionCode": 10,
+  "versionName": "1.8",
+  "bytes": 17914718,
+  "sha256": "fc58d82827171a313cf23a03d91230073fbeaf1e8f6572bd70a80de72c0eb709",
+  "certificateSha256": "086b27a7a44b1819958edc9d4dbda4d25573c843053d2212c997898a12930098",
+  "buildVariant": "release",
+  "debuggable": false,
+  "verification": {
+    "nativeBuild": "passed",
+    "signatureV2": "verified",
+    "zipIntegrity": true,
+    "productionBackendEmbedded": true,
+    "localBackendAbsent": true,
+    "authSettingsStatus": 200,
+    "nativeOriginCors": "https://localhost",
+    "emailLoginEnabled": true
+  },
+  "deviceTested": false,
+  "realAccountLoginTested": false,
+  "installableAlongsideLegacyAndPreview": true
+}

@@ -5,11 +5,11 @@ android {
     namespace = "com.voryn.app"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.voryn.app"
+        applicationId "com.voryn.mobile"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 9
-        versionName "1.7.1"
+        versionCode 10
+        versionName "1.8"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -17,10 +17,30 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        production {
+            if (System.getenv('VORYN_RELEASE_STORE_FILE')) {
+                storeFile file(System.getenv('VORYN_RELEASE_STORE_FILE'))
+                storePassword System.getenv('VORYN_RELEASE_STORE_PASSWORD')
+                keyAlias System.getenv('VORYN_RELEASE_KEY_ALIAS')
+                keyPassword System.getenv('VORYN_RELEASE_KEY_PASSWORD')
+            }
+        }
+    }
     buildTypes {
         release {
+            signingConfig signingConfigs.production
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+tasks.matching { it.name == 'preReleaseBuild' }.configureEach {
+    doFirst {
+        def required = ['VORYN_RELEASE_STORE_FILE', 'VORYN_RELEASE_STORE_PASSWORD', 'VORYN_RELEASE_KEY_ALIAS', 'VORYN_RELEASE_KEY_PASSWORD']
+        if (required.any { !System.getenv(it) }) {
+            throw new GradleException('Production signing is required. Run npm run android:release with the private signing configuration.')
         }
     }
 }

@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">Voryn Teste</string>
     <string name="title_activity_main">Voryn Teste</string>
-    <string name="package_name">com.voryn.app.preview</string>
-    <string name="custom_url_scheme">com.voryn.app.preview</string>
+    <string name="package_name">com.voryn.mobile.preview</string>
+    <string name="custom_url_scheme">com.voryn.mobile.preview</string>
 </resources>
