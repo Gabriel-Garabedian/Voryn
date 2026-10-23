@@ -20,14 +20,20 @@
     "localBackendAbsent": true,
     "localMusicIncluded": true,
     "spotifyOAuthAbsent": true,
-    "updateAndDownloadTests": 9
+    "updateAndDownloadTests": 9,
+    "publicDownloadHashMatched": true,
+    "publicManifestCode": 11,
+    "publicManifestCors": "*",
+    "publicManifestCache": "no-store"
   },
   "deviceTested": false,
-  "published": false,
-  "publicManifestVersion": "1.8",
+  "published": true,
+  "publicManifestVersion": "1.9",
   "pending": [
     "Aplicar migração social e publicar delete-user para fotos/identidade completas",
-    "Validar instalação por cima da 1.8 em aparelho",
-    "Atualizar manifesto/página e publicar APK para ativar aviso"
-  ]
+    "Validar instalação por cima da 1.8 em aparelho"
+  ],
+  "publicationStatus": "Deploy verificado no domínio de produção",
+  "deploymentCommit": "7fc6740",
+  "publicDownload": "https://voryn-liard.vercel.app/downloads/voryn-1.9.apk"
 }

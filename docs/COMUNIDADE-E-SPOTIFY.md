@@ -14,4 +14,4 @@ Aplicar `supabase/migrations/20261023130746_social_profiles_and_training_music.s
 
 A CLI informou `AccessTokenRequiredError`; não houve alteração remota. SQL e permissões foram testados em PostgreSQL isolado via PGlite, com tabelas mínimas de apoio. Isso não substitui validar upload real, URLs assinadas e conversa entre duas contas no Supabase.
 
-Nenhuma nova versão foi publicada ou distribuída em APK nesta tarefa. Os registros em CONTEXTO.md distinguem a etapa inicial Spotify, posteriormente substituída, do comportamento atual.
+O APK 1.9 foi posteriormente publicado para teste; fotos/identidade permanecem com ativação do backend pendente. Os registros em CONTEXTO.md distinguem a etapa inicial Spotify, posteriormente substituída, do comportamento atual.

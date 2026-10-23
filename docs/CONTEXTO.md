@@ -125,7 +125,8 @@ Registro histórico: a parte Spotify abaixo foi substituída pelo áudio local, 
 - Usuário pediu publicar a versão para teste. Manifesto e página de download preparados para 1.9/código 11 com o APK já verificado. Instalação por cima da 1.8, preservando pacote/certificado.
 - Corrigida a política de conteúdo do Vercel para permitir media-src self/blob, necessária à música local na web. APK nativo não depende desse cabeçalho HTTP.
 - Migração/Edge Function social continuam pendentes por falta de autenticação Supabase; publicar frontend/APK não aplica SQL. Música local está disponível para teste sem essa dependência.
-- Resultado público e hash serão registrados após conferir o deploy.
+- Commit 7fc6740 enviado a main e deploy confirmado: manifesto 1.9/código 11/pacote com.voryn.mobile com cache no-store e CORS *. Download público respondeu 200, 17.920.202 bytes e SHA-256 3d47ec06c11be71e68472daa4a8e8c8ae8b5e6af2d4b99f91afd71bf9285e32b, igual ao APK local. Página de download oferece 1.9; CSP de áudio publicada e conferida. Evidência local: output/playwright/deploy-1.9.json. Metadados de produção/candidato atualizados.
+- Link para teste: https://voryn-liard.vercel.app/downloads/voryn-1.9.apk. Na instalação 1.8, o aviso será elegível ao abrir/retomar a área autenticada com internet (intervalo mínimo de cinco minutos; oculto no treino). Não testado em aparelho físico. Fotos e identidade ainda dependem do backend pendente.
 
 ## Como manter
 
