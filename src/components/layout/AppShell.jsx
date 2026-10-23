@@ -23,6 +23,7 @@ import PaywallGate           from '@/components/PaywallGate'
 import EmailConfirmGate      from '@/components/EmailConfirmGate'
 import NotificationPrompt    from '@/components/ui/NotificationPrompt'
 import TrialEndingBanner     from '@/components/ui/TrialEndingBanner'
+import AppUpdateBanner       from '@/components/ui/AppUpdateBanner'
 import { pushService }       from '@/services/pushNotifications'
 import { activeWorkoutService, offlineSyncService, syncPendingWorkouts } from '@/services'
 
@@ -364,6 +365,7 @@ export default function AppShell() {
       <div className="app-content flex-1 overflow-y-auto overflow-x-hidden">
         <main id="main-content" tabIndex={-1} className="app-content__inner max-w-2xl mx-auto">
           <TrialEndingBanner hidden={onSubscriptionPage} />
+          <AppUpdateBanner hidden={inActiveWorkout} />
           <Suspense fallback={<div className="flex-1"><LoadingScreen /></div>}>
             <Routes>
             <Route path="health" element={<HealthView key={user?.id} />} />

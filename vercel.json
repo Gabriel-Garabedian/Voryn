@@ -4,6 +4,13 @@
   ],
   "headers": [
     {
+      "source": "/android-release.json",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
       "source": "/downloads/(.*).apk",
       "headers": [
         { "key": "Content-Type", "value": "application/vnd.android.package-archive" },
