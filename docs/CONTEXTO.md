@@ -54,6 +54,13 @@ Atualizado em 22/10/2026. Registro persistente para retomar o projeto em outra s
 
 ## Pendências e limites
 
+- Posteriormente ao primeiro push, o usuário pediu geração do APK. O ambiente Android foi preparado e `npm run android:apk` gerou a versão 1.7/código 8 com sucesso.
+- SDK local: `C:/Users/Antonio Pedro/.codex/skill-tools/android-sdk`; JDK 21: `C:/Program Files/Java/jdk-21.0.11`. Definir `JAVA_HOME`, `ANDROID_HOME` e `ANDROID_SDK_ROOT` no processo antes de compilar. Não foi instalado Android Studio.
+- A chave original do APK 1.6 não foi localizada. Seu certificado SHA-256 é `a155ea8915b785abcdec2c44185a9a5be20127f0f94cdb9f8f1dba05cb01e5c5`; o debug local usa outro certificado. Não distribuir o novo `com.voryn.app` como atualização compatível.
+- Gerada e validada a variante separada **Voryn Teste**, pacote `com.voryn.app.preview`, versão 1.7-preview/código 8. Artefato `public/downloads/voryn-1.7-preview.apk`; metadados em `android-preview.json`; reprodução em `../ANDROID.md`.
+- Verificados build nativo, assinatura, identificador/versão/rótulo, integridade do ZIP, CSS de movimento empacotado e ausência de APKs aninhados. Não houve instalação em aparelho.
+- Download estável e manifesto continuam em 1.6 para não anunciar uma atualização incompatível. A variante de teste instala separadamente, requer login próprio e não migra dados locais pendentes.
+
 - A melhoria aplicada abrange movimento compartilhado e página inicial; não é um redesign completo das telas autenticadas.
 - A continuidade depende de os arquivos estarem acessíveis e serem lidos; este registro não é uma transcrição completa das conversas anteriores.
 - GitHub/Sentry autenticados e validação em aparelho Android não foram conferidos nesta sessão.

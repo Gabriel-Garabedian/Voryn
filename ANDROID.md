@@ -4,6 +4,24 @@ O projeto Android usa Capacitor 8, Java 21 e SDK Android 36. A interface existen
 
 ## Configurar e gerar APK
 
+### APK de teste das animações (1.7-preview)
+
+O arquivo `public/downloads/voryn-1.7-preview.apk` é uma compilação debug identificada como **Voryn Teste**, pacote `com.voryn.app.preview`, código 8. Instala separadamente do Voryn 1.6; entre com sua conta e conceda as permissões necessárias nessa instalação. Registros locais pendentes do aplicativo original não são copiados para o app de teste.
+
+A chave original da versão 1.6 não estava disponível nesta máquina. O certificado local difere do APK publicado; por isso o arquivo de teste usa outro identificador e não substitui a versão instalada. O manifesto de atualização e a página principal de download continuam em 1.6. Para atualizar o app original por cima, é necessária a chave original.
+
+Para reproduzir o teste no Windows, com Java 21 e Android SDK configurados:
+
+```powershell
+npm run android:sync
+Push-Location android
+try { ./gradlew.bat assembleDebug -I ../scripts/android-preview.init.gradle } finally { Pop-Location }
+```
+
+O resultado fica em `android/app/build/outputs/apk/debug/app-debug.apk`. O init script muda somente o build solicitado; a configuração normal permanece `com.voryn.app`. Preserve a chave de debug local para futuras atualizações da instalação de teste; ela não é versionada no repositório.
+
+Metadados, SHA-256 e verificações: `docs/android-preview.json`. Build nativo, assinatura v2, versão, identificador e conteúdo do ZIP foram conferidos. Instalação e comportamento em celular físico ainda dependem do teste do usuário.
+
 1. Instale Node.js 22+, Java 21 e Android Studio 2025.2.1 ou superior com SDK 36.
 2. Execute `npm ci`.
 3. Crie `.env` a partir de `.env.example` e preencha a URL e a chave pública do Supabase. Nunca use a chave service-role no aplicativo.

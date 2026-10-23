@@ -1,0 +1,18 @@
+{
+  "apkPath": "/downloads/voryn-1.7-preview.apk",
+  "applicationId": "com.voryn.app.preview",
+  "label": "Voryn Teste",
+  "versionCode": 8,
+  "versionName": "1.7-preview",
+  "bytes": 20721664,
+  "sha256": "119e121a267a18089e1fc2d77af847def7215040594bdae6a18f3b831434445a",
+  "certificateSha256": "fbadd3e9da60440f071dc88ef4116a3e6c534d47c44eab58b61957dbe482eb3f",
+  "verification": [
+    "assembleDebug succeeded",
+    "apksigner verified v2 signature",
+    "aapt package/version/label checked",
+    "ZIP integrity and bundled motion CSS checked",
+    "No nested APK"
+  ],
+  "deviceTested": false
+}

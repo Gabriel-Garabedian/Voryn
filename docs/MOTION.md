@@ -37,3 +37,5 @@ Movimentos curtos e controlados, sem quique nos controles. A animação confirma
 - O console de desenvolvimento também registra avisos preexistentes de React Router/HTML e bloqueio do WebSocket de HMR na página interceptada de teste. A fixture é local ao navegador e não adiciona uma rota ao aplicativo.
 - Evidências locais em `output/playwright/`: capturas antes/depois e roteiro de interação dos componentes reais em uma página isolada, sem conta ou escrita no backend.
 - Não comprova APK ou funcionamento em aparelho Android, nem fluxos autenticados completos.
+
+Após essa validação web, o usuário solicitou o APK: builds nativos padrão e preview passaram. A variante `public/downloads/voryn-1.7-preview.apk` contém as mudanças e teve assinatura, metadados e integridade conferidos. Instala separadamente como **Voryn Teste** devido à indisponibilidade da chave original do APK 1.6. Detalhes em `ANDROID.md` na raiz e `docs/android-preview.json`. Comportamento no aparelho continua sem validação local.
