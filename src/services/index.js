@@ -1,3 +1,4 @@
+import { saveExport } from './fileExport'
 import { supabase } from '@/lib/supabase'
 import { PLANS } from '@/services/payment'
 import { parseWeight, localDateKey, calcStreak, calcBestStreak, localDateStart } from '@/utils/helpers'
@@ -385,12 +386,7 @@ export const dataExportService = {
       metrics,
     }
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `voryn-dados-${localDateKey()}.json`
-    link.click()
-    URL.revokeObjectURL(url)
+    await saveExport(blob, `voryn-dados-${localDateKey()}.json`)
   },
 }
 

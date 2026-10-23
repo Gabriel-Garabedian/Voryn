@@ -142,6 +142,7 @@ export default function ProfileView() {
   const navigate = useNavigate()
   const toast = useToast()
 
+  const [exporting, setExporting] = useState(false)
   const [prs,         setPRs]         = useState({})
   const [logs,        setLogs]        = useState([])
   const [editingPR,   setEditingPR]   = useState(null)
@@ -644,18 +645,18 @@ export default function ProfileView() {
         <div className="space-y-2">
           {[
             { label: 'Dados completos (JSON)', fn: async () => {
-              const t = toast.loading('Preparando seus dados...')
+
               await dataExportService.downloadJson(user.id, profile)
-              toast.dismiss(t); toast.success('Dados exportados!')
+
             }},
             { label: 'Ficha de Treino (PDF)', fn: async () => {
-              const t = toast.loading('Gerando PDF...')
+
               const { data } = await routineService.getAll(user.id)
               await exportRoutinePDF({ studentName: profile?.name, routines: data || {} })
-              toast.dismiss(t); toast.success('PDF gerado!')
+
             }},
             { label: 'Meu Progresso (PDF)', fn: async () => {
-              const t = toast.loading('Gerando relatório...')
+
               const { data: logs }    = await workoutLogService.getAll(user.id)
               const { data: prs }     = await prService.getAll(user.id)
               // BUG: o relatório de progresso não recebia `metrics`, então a
@@ -665,10 +666,23 @@ export default function ProfileView() {
               // nunca era passado.
               const metrics = await workoutLogService.getMetrics(user.id)
               await exportProgressPDF({ studentName: profile?.name, metrics, workoutLogs: logs, prs: prs || {} })
-              toast.dismiss(t); toast.success('PDF gerado!')
+
             }},
           ].map(btn => (
-            <button key={btn.label} onClick={btn.fn}
+            <button key={btn.label} disabled={exporting} onClick={async () => {
+              if (exporting) return
+              setExporting(true)
+              const tid = toast.loading('Preparando arquivo...')
+              try {
+                await btn.fn()
+                toast.success('Arquivo exportado!')
+              } catch (error) {
+                if (error.code !== 'CANCELLED') toast.error(error.message || 'Não foi possível exportar. Tente novamente.')
+              } finally {
+                toast.dismiss(tid)
+                setExporting(false)
+              }
+            }}
               className="w-full f-card px-4 py-3 flex items-center gap-3 text-left"
               style={{ color: 'var(--text-1)' }}>
               <span className="text-sm font-medium">{btn.label}</span>
