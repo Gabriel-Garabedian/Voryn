@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/downloads/voryn-1.7-preview.apk",
+      "destination": "/downloads/voryn-1.7.1-preview.apk",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ],

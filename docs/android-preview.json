@@ -1,18 +1,26 @@
 {
-  "apkPath": "/downloads/voryn-1.7-preview.apk",
+  "apkPath": "/downloads/voryn-1.7.1-preview.apk",
   "applicationId": "com.voryn.app.preview",
   "label": "Voryn Teste",
-  "versionCode": 8,
-  "versionName": "1.7-preview",
-  "bytes": 20721664,
-  "sha256": "119e121a267a18089e1fc2d77af847def7215040594bdae6a18f3b831434445a",
+  "versionCode": 9,
+  "versionName": "1.7.1-preview",
+  "bytes": 20721776,
+  "sha256": "b8c670d2c4a40689a7526766f5404761a118fe52ea056fb44b059e0a70e9b485",
   "certificateSha256": "fbadd3e9da60440f071dc88ef4116a3e6c534d47c44eab58b61957dbe482eb3f",
-  "verification": [
-    "assembleDebug succeeded",
-    "apksigner verified v2 signature",
-    "aapt package/version/label checked",
-    "ZIP integrity and bundled motion CSS checked",
-    "No nested APK"
-  ],
-  "deviceTested": false
+  "verification": {
+    "zipIntegrity": true,
+    "productionUrlEmbedded": true,
+    "publicKeyEmbedded": true,
+    "brokenLocalEndpointAbsent": true,
+    "noNestedApk": true,
+    "nativeBuild": "passed",
+    "signatureV2": "verified",
+    "matchesPreviousPreviewCertificate": true,
+    "authSettingsStatus": 200,
+    "nativeOriginCors": "https://localhost",
+    "emailLoginEnabled": true,
+    "emptyAuthRequestStatus": 400
+  },
+  "deviceTested": false,
+  "realAccountLoginTested": false
 }

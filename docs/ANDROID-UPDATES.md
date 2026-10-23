@@ -6,7 +6,7 @@ Uma versão publicada mais recente mostra um aviso com “Baixar atualização�
 
 ## Publicar uma nova versão
 
-1. Incremente `versionCode` e ajuste `versionName` em `android/app/build.gradle` (o próximo build já está preparado como código 8, versão 1.7).
+1. Incremente `versionCode` e ajuste `versionName` em `android/app/build.gradle` (o próximo build está preparado como código 9, versão 1.7.1).
 2. Gere o APK com `npm run android:apk`, usando a mesma chave de assinatura da versão instalada. Teste instalação por cima, exportação e aviso em aparelho físico.
 3. Copie o APK para um novo nome em `public/downloads/`, sem sobrescrever uma versão antiga.
 4. Só então ajuste `public/android-release.json` com o código, nome e caminho desse APK e atualize a página `src/pages/DownloadAndroidPage.jsx` para oferecer o mesmo arquivo.

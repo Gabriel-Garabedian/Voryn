@@ -4,9 +4,11 @@ O projeto Android usa Capacitor 8, Java 21 e SDK Android 36. A interface existen
 
 ## Configurar e gerar APK
 
-### APK de teste das animações (1.7-preview)
+### APK de teste das animações (1.7.1-preview)
 
-O arquivo `public/downloads/voryn-1.7-preview.apk` é uma compilação debug identificada como **Voryn Teste**, pacote `com.voryn.app.preview`, código 8. Instala separadamente do Voryn 1.6; entre com sua conta e conceda as permissões necessárias nessa instalação. Registros locais pendentes do aplicativo original não são copiados para o app de teste.
+O arquivo `public/downloads/voryn-1.7.1-preview.apk` é uma compilação debug identificada como **Voryn Teste**, pacote `com.voryn.app.preview`, código 9. Instala separadamente do Voryn 1.6 e atualiza por cima do Voryn Teste anterior (código 8), pois mantém seu identificador e certificado. Entre com sua conta e conceda as permissões necessárias nessa instalação. Registros locais pendentes do aplicativo original não são copiados para o app de teste.
+
+A primeira preview saiu incorretamente com o servidor `http://127.0.0.1:54321` de `.env.local`, causando erro de conexão no login. A 1.7.1-preview contém a URL e a chave pública do projeto real; o endpoint de autenticação e o CORS para `https://localhost` foram verificados. O link web antigo redireciona para o APK corrigido.
 
 A chave original da versão 1.6 não estava disponível nesta máquina. O certificado local difere do APK publicado; por isso o arquivo de teste usa outro identificador e não substitui a versão instalada. O manifesto de atualização e a página principal de download continuam em 1.6. Para atualizar o app original por cima, é necessária a chave original.
 
@@ -20,17 +22,20 @@ try { ./gradlew.bat assembleDebug -I ../scripts/android-preview.init.gradle } fi
 
 O resultado fica em `android/app/build/outputs/apk/debug/app-debug.apk`. O init script muda somente o build solicitado; a configuração normal permanece `com.voryn.app`. Preserve a chave de debug local para futuras atualizações da instalação de teste; ela não é versionada no repositório.
 
-Metadados, SHA-256 e verificações: `docs/android-preview.json`. Build nativo, assinatura v2, versão, identificador e conteúdo do ZIP foram conferidos. Instalação e comportamento em celular físico ainda dependem do teste do usuário.
+Metadados, SHA-256 e verificações: `docs/android-preview.json`. Build nativo, assinatura v2, versão, identificador e conteúdo do ZIP foram conferidos. Verificou-se também a configuração realmente empacotada e a resposta da API de autenticação à chave pública. Instalação e login com conta real em celular físico ainda dependem do teste do usuário.
+
+### Ambiente de compilação
 
 1. Instale Node.js 22+, Java 21 e Android Studio 2025.2.1 ou superior com SDK 36.
 2. Execute `npm ci`.
 3. Crie `.env` a partir de `.env.example` e preencha a URL e a chave pública do Supabase. Nunca use a chave service-role no aplicativo.
+   O Vite também carrega `.env.local` em produção. Se esse arquivo aponta para um servidor de desenvolvimento, configure os valores reais em `.env.production.local` (ignorado pelo Git), que tem prioridade. O script Android valida o ambiente antes do build e rejeita URLs locais, placeholders e chaves não públicas. Verificação: `node scripts/validate-native-env.mjs`; testes da proteção: `node --test scripts/__tests__/native-config.test.mjs`.
 4. No SQL Editor do projeto Supabase existente, copie de `supabase/schema.sql` apenas o bloco **SAÚDE — HEALTH CONNECT (ANDROID)**, até **FIM SAÚDE — HEALTH CONNECT**, e execute. Ele pode ser reaplicado sem apagar registros. Para um projeto novo, esse bloco já faz parte do schema completo. O arquivo `supabase/migrations/20261022_health_connect.sql` contém o mesmo SQL como alternativa; não é necessário executar os dois.
    Para a versão 1.4, execute também o bloco **REGISTROS MANUAIS DE SAÚDE**, até **FIM REGISTROS MANUAIS DE SAÚDE**, no final do mesmo `schema.sql`. A alternativa equivalente é `supabase/migrations/20261022_health_manual_entries.sql`.
 5. Execute `npm run android:sync` e `npm run android:open`.
 6. No Android Studio, gere um APK debug ou, no Windows, execute `npm run android:apk` com o SDK configurado em `ANDROID_HOME` ou `android/local.properties`.
 
-O APK debug estará em `android/app/build/outputs/apk/debug/app-debug.apk`. É uma versão de teste, não uma distribuição assinada de produção. A compilação sem `.env` usa o placeholder existente do projeto e não permite autenticação real.
+O APK debug estará em `android/app/build/outputs/apk/debug/app-debug.apk`. É uma versão de teste, não uma distribuição assinada de produção. A geração pelo script Android é bloqueada se a configuração efetiva não contém um backend HTTPS público e uma chave pública Supabase.
 
 ### Versão 1.6: abertura do aplicativo
 
