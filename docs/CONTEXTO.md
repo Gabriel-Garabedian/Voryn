@@ -54,7 +54,7 @@ Atualizado em 23/10/2026. Registro persistente para retomar o projeto em outra s
 
 ## Pendências e limites
 
-### Voryn 1.8 de produção, aguardando publicação
+### Voryn 1.8 de produção publicado
 
 - Usuário confirmou que não consegue recuperar a chave da versão 1.6 no computador do curso e autorizou tornar uma nova instalação o Voryn principal.
 - Configurada a nova identidade `com.voryn.mobile` (namespace nativo continua `com.voryn.app`), versão 1.8/código 10. Nome Voryn; separada tanto da 1.6 quanto da antiga preview `com.voryn.app.preview`.
@@ -63,9 +63,9 @@ Atualizado em 23/10/2026. Registro persistente para retomar o projeto em outra s
 - O usuário liberou espaço em disco. `npm run android:release` concluiu com sucesso; o build web e o Gradle release passaram. O arquivo final é `public/downloads/voryn-1.8.apk`, pacote `com.voryn.mobile`, código 10, versão 1.8, 17.914.718 bytes, SHA-256 `fc58d82827171a313cf23a03d91230073fbeaf1e8f6572bd70a80de72c0eb709`; assinatura v2 e certificado SHA-256 `086b27a7a44b1819958edc9d4dbda4d25573c843053d2212c997898a12930098`. `debuggable=false`.
 - Confirmadas integridade ZIP, URL/chave pública corretas dentro do APK, ausência do endpoint local e de APK aninhado. Supabase Auth settings respondeu 200, CORS `https://localhost`, email ativo. Seis testes focados de página de download e atualização passaram; build web final passou.
 - Página e manifesto apontam para 1.8 e explicam instalação paralela: a mesma conta recupera dados sincronizados; registros locais pendentes precisam ser sincronizados no app antigo antes de removê-lo. O plugin de atualização agora confere `applicationId`, evitando avisar o Voryn Teste sobre a instalação principal.
-- Próximo passo: revisar diff, restaurar somente arquivos Gradle gerados pelo Capacitor, commit/push autorizado, aguardar deploy e conferir SHA-256 e manifesto no domínio público. Depois entregar o link direto.
+- Commit `1bcd66c` enviado para `main`. Deploy Vercel conferido: manifesto público anuncia código 10/versão 1.8/pacote `com.voryn.mobile`; APK baixado do domínio tem 17.914.718 bytes e o mesmo SHA-256 do artefato local. Página web publicada contém o link e a explicação da nova instalação.
 - Preservar os apps antigos e seus dados locais. A nova instalação requer login e permissões; só dados já sincronizados aparecem pela conta. Não anunciar atualização por cima do Voryn 1.6 ou da preview antiga.
-- A instalação e o login com conta real no aparelho físico ainda não foram testados nesta 1.8. O usuário confirmou o login na preview 1.7.1; não inferir isso como teste físico da versão de produção.
+- Pendências: usuário testar instalação/login no aparelho; guardar uma cópia privada da pasta da chave em outro local seguro. A instalação e o login com conta real no aparelho físico ainda não foram testados nesta 1.8. O usuário confirmou o login na preview 1.7.1; não inferir isso como teste físico da versão de produção.
 
 ### Correção do login na preview
 
