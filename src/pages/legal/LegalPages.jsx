@@ -69,6 +69,11 @@ export function PrivacyPolicyPage() {
       <P>Registros manuais são guardados neste aparelho e sincronizados com sua conta quando houver internet e uma sessão válida. Metas e a biblioteca pessoal de alimentos ficam neste aparelho. Ao ativar passos pelo celular, o Voryn usa o sensor também em segundo plano, com notificação contínua, e guarda os totais localmente, inclusive sem internet. Você pode pausar na tela Passos ou na notificação; sair da conta pausa a contagem.</P>
       <P>Se você autorizar acesso aos dados de uso do Android, o Voryn utiliza apenas os horários de tela ligada e desligada para sugerir intervalos de sono. Não guarda os nomes dos aplicativos usados. Esses horários são estimativas e só viram registros após sua confirmação. Esse recurso não mede fases do sono. A autorização pode ser revogada nas configurações do Android.</P>
       <P>O celular não mede sozinho alimentação, água ou peso. Esses registros dependem de lançamentos manuais, outros aplicativos ou dispositivos.</P>
+      <H2>Atividades ao ar livre e localização</H2>
+      <P>Ao iniciar voluntariamente uma corrida, caminhada ou pedal no aplicativo Android, o Voryn solicita localização precisa para registrar posições GPS, horários, distância, tempo ativo e o trajeto. A gravação utiliza um serviço Android com notificação e pode continuar com a tela bloqueada. Pausar, finalizar ou sair da conta interrompe a coleta; não há rastreamento contínuo fora das atividades iniciadas por você.</P>
+      <P>Os percursos e resumos ficam no armazenamento privado deste aparelho, separados por conta, sem envio ao Supabase, ao Strava ou ao personal trainer. Você pode excluir cada atividade na tela Ao ar livre. A exclusão da conta também solicita a limpeza dos percursos neste aparelho; outros aparelhos precisam ser limpos separadamente. Desinstalar o aplicativo ou limpar seus dados apaga esse histórico local. Não há cópia de segurança dos percursos nesta versão.</P>
+      <P>Ao visualizar um trajeto, o mapa utiliza imagens de ruas do OpenStreetMap. Seu endereço IP e a região do mapa solicitada são enviados ao provedor de mapas; o Voryn não envia o arquivo do trajeto ou sua identificação de conta a esse serviço. A gravação GPS funciona sem internet; carregar as imagens do mapa exige conexão. A distância e o ritmo são estimativas dependentes da qualidade do sinal GPS.</P>
+
       <H2>3. Compartilhamento de Dados</H2>
       <P>Seus dados <strong>não são vendidos ou compartilhados</strong> com terceiros para fins comerciais. O compartilhamento ocorre apenas com:</P>
       <ul className="space-y-1 ml-2">
@@ -79,7 +84,7 @@ export function PrivacyPolicyPage() {
       </ul>
 
       <H2>4. Armazenamento e Segurança</H2>
-      <P>Todos os dados são armazenados em servidores seguros da Supabase com criptografia em trânsito (TLS) e em repouso. Utilizamos Row Level Security (RLS) para garantir que cada usuário acesse apenas seus próprios dados.</P>
+      <P>Os dados sincronizados da conta são armazenados em servidores da Supabase com criptografia em trânsito (TLS) e em repouso. Utilizamos Row Level Security (RLS) para garantir que cada usuário acesse apenas seus próprios dados. Dados mantidos apenas neste aparelho, incluindo os percursos GPS, seguem o armazenamento local descrito acima.</P>
 
       <H2>5. Seus Direitos (LGPD)</H2>
       <P>Você tem direito a:</P>

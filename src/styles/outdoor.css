@@ -1,0 +1,29 @@
+.outdoor-view { color: var(--text-1); max-width: 960px; margin-inline: auto; }
+.outdoor-eyebrow { color: var(--accent-text); font-size: 12px; font-weight: 700; letter-spacing: .16em; margin-bottom: 8px; }
+.outdoor-muted { color: var(--text-3); font-size: 14px; line-height: 1.6; }
+.outdoor-error { color: var(--text-1); background: var(--bg); border-left: 3px solid var(--accent-text); padding: 12px; border-radius: 8px; font-size: 14px; }
+.outdoor-sports > div { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
+.outdoor-sports label { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; border: 1px solid var(--border); border-radius: 14px; color: var(--text-2); font-size: 14px; cursor: pointer; }
+.outdoor-sports label.is-selected { border-color: var(--accent-text); background: rgba(var(--accent-rgb),.1); color: var(--text-1); }
+.outdoor-sports input { accent-color: var(--accent-text); width: 14px; height: 14px; }
+.outdoor-sports label:focus-within { outline: 2px solid var(--accent-text); outline-offset: 3px; }
+.outdoor-status { color: var(--accent-text); font-size: 13px; font-weight: 600; }
+.outdoor-map-wrap { position: relative; border-radius: 14px; overflow: hidden; isolation: isolate; }
+.outdoor-map,.outdoor-map-placeholder { height: 320px; width: 100%; background: var(--bg); }
+.outdoor-map-placeholder { display: grid; place-items: center; border-radius: 14px; }
+.outdoor-map-note { position: absolute; bottom: 28px; left: 12px; right: 12px; background: var(--bg); color: var(--text-1); border: 1px solid var(--border); border-radius: 8px; padding: 10px; z-index: 500; font-size: 13px; pointer-events: none; }
+.outdoor-map .leaflet-control-zoom a { min-width: 44px; min-height: 44px; line-height: 44px; }
+.outdoor-metrics { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; padding-block: 20px; }
+.outdoor-metrics dt { color: var(--text-3); font-size: 12px; margin-bottom: 4px; }
+.outdoor-metrics dd { font-size: clamp(16px,4vw,28px); font-weight: 600; font-variant-numeric: tabular-nums; }
+.outdoor-metrics small { color: var(--text-3); font-size: 12px; font-weight: 400; }
+.outdoor-controls { display: flex; gap: 12px; flex-wrap: wrap; }
+.outdoor-controls > button { min-height: 48px; flex: 1; }
+.outdoor-start-placeholder { display: flex; align-items: center; flex-direction: column; justify-content: center; gap: 16px; min-height: 190px; color: var(--text-3); text-align: center; padding: 20px; }
+.outdoor-start-placeholder svg { color: var(--accent-text); }
+.outdoor-history-item { width: 100%; display: flex; justify-content: space-between; gap: 16px; text-align: left; padding: 16px; min-height: 76px; cursor: pointer; }
+.outdoor-history-item > span:last-child { text-align: right; }
+.outdoor-history-item strong,.outdoor-history-item small { display: block; }
+.outdoor-history-item small { color: var(--text-3); font-size: 12px; margin-top: 4px; }
+.outdoor-history-item:disabled { opacity: .6; cursor: default; }
+@media (max-width: 380px) { .outdoor-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); } .outdoor-sports label { font-size: 12px; } }
