@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { routineService, workoutLogService, activeWorkoutService } from '@/services'
-import { Button } from '@/components/ui'
+import { Button, Modal } from '@/components/ui'
 import PostWorkoutModal from '@/components/PostWorkoutModal'
 import CardioModal from '@/components/CardioModal'
 import ExercisePicker from '@/components/ExercisePicker'
@@ -244,6 +244,7 @@ export default function WorkoutView() {
   const [showCardio,   setShowCardio]   = useState(false)
   const [saving,       setSaving]       = useState(false)
   const [showExPicker,  setShowExPicker]  = useState(false)
+  const [removeExerciseIndex, setRemoveExerciseIndex] = useState(null)
   const [showPlateCalculator, setShowPlateCalculator] = useState(false)
   const [detailExercise, setDetailExercise] = useState(null) // instruções durante o treino
   const [openNotes,     setOpenNotes]     = useState({}) // { [exerciseIndex]: boolean } — bloco de anotação expandido ou não
@@ -263,6 +264,7 @@ export default function WorkoutView() {
   })
   const toast = useToast()
   const timerRef = useRef(null)
+  const addExerciseRef = useRef(null)
 
   useEffect(() => {
     if (workout?.startTime) setElapsed(Math.floor((Date.now() - workout.startTime) / 1000))
@@ -464,6 +466,28 @@ export default function WorkoutView() {
     setWorkout(updated)
   }
 
+  function removeExercise() {
+    const ei = removeExerciseIndex
+    if (!workout.exercises[ei]) return
+    const exercises = workout.exercises.filter((_, index) => index !== ei)
+    const updated = { ...workout, exercises }
+    if (!exercises.length) updated.restEndsAt = null
+    if (!activeWorkoutService.save(updated)) {
+      toast.error('Não foi possível salvar a remoção. O exercício foi mantido; confira o armazenamento do aparelho e tente novamente.')
+      return
+    }
+    setWorkout(updated)
+    setExpandedEx(Math.min(ei, exercises.length - 1))
+    // Os controles usam índices; não devem passar para outro exercício após a remoção.
+    setOpenNotes({})
+    setOpenSetMeta({})
+    if (!exercises.length) setRestEndsAt(null)
+    setConfirm(false)
+    setRemoveExerciseIndex(null)
+    addExerciseRef.current?.focus()
+    toast.success('Exercício removido deste treino.')
+  }
+
   // Anotação livre por exercício (ex: "peguei mais leve, ombro incomodando"
   // ou "consegui aumentar a carga, próxima semana subir mais"). Fica salva
   // dentro do próprio objeto do exercício no exercises[], então é
@@ -491,7 +515,7 @@ export default function WorkoutView() {
   }, [workout])
 
   async function finishWorkout(cardio) {
-    if (!workout) return
+    if (!workout?.exercises.length) return
     setSaving(true)
     const duration = Math.floor((Date.now() - workout.startTime) / 1000)
     const now = new Date()
@@ -647,6 +671,16 @@ export default function WorkoutView() {
 
   return (
     <div className={`app-view workout-view ${restEndsAt ? 'pb-40' : 'pb-8'}`}>
+      <Modal open={removeExerciseIndex !== null} onClose={() => setRemoveExerciseIndex(null)} title="Remover exercício?" size="sm">
+        <p className="text-sm mb-3" style={{ color: 'var(--text-1)' }}>
+          Remover <strong>{workout.exercises[removeExerciseIndex]?.name}</strong> deste treino? As séries e anotações desse exercício também serão removidas.
+        </p>
+        <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>Sua ficha de rotina não será alterada.</p>
+        <div className="flex flex-wrap gap-3">
+          <Button variant="ghost" onClick={() => setRemoveExerciseIndex(null)}>Cancelar</Button>
+          <Button variant="danger" onClick={removeExercise}>Remover do treino</Button>
+        </div>
+      </Modal>
       {showPlateCalculator && <PlateCalculator onClose={() => setShowPlateCalculator(false)} />}
       {detailExercise && (
         <ExerciseDetail
@@ -744,6 +778,11 @@ export default function WorkoutView() {
 
       {/* Exercises */}
       <div className="workout-exercises px-4 pt-4 space-y-4">
+        {!workout.exercises.length && (
+          <p role="status" className="f-card p-4 text-sm" style={{ color: 'var(--text-3)' }}>
+            Nenhum exercício neste treino. Adicione um exercício para continuar.
+          </p>
+        )}
         {workout.exercises.map((ex, ei) => {
           const exDone = ex.sets.every(s => s.done)
           const doneCount = ex.sets.filter(s => s.done).length
@@ -1002,6 +1041,15 @@ export default function WorkoutView() {
                     adicionar anotação
                   </button>
                 )}
+                <button type="button" onClick={() => setRemoveExerciseIndex(ei)}
+                  aria-label={`Remover ${ex.name} do treino`}
+                  className="w-full min-h-11 mt-3 rounded-lg text-sm flex items-center justify-center gap-2"
+                  style={{ color: 'var(--danger)' }}>
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                    <path d="M3 6h18M19 6l-1 14H6L5 6m4 0V3h6v3M10 10v6M14 10v6" />
+                  </svg>
+                  Remover do treino
+                </button>
               </div>
             </div>
             </React.Fragment>
@@ -1011,7 +1059,7 @@ export default function WorkoutView() {
 
       {/* Add exercise mid-workout */}
       <div className="px-4 mt-4">
-        <button onClick={() => setShowExPicker(true)}
+        <button ref={addExerciseRef} onClick={() => setShowExPicker(true)}
           className="desktop-workout-action w-full py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition-all"
           style={{ border: '1px dashed rgba(var(--accent-rgb),.3)', color: 'rgba(var(--accent-rgb),.5)' }}
           onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(var(--accent-rgb),.6)'; e.currentTarget.style.color='var(--accent-text)' }}
@@ -1058,7 +1106,7 @@ export default function WorkoutView() {
             </button>
           </div>
         ) : (
-          <Button size="xl" onClick={() => setConfirm(true)}>
+          <Button size="xl" disabled={!workout.exercises.length} onClick={() => setConfirm(true)}>
             <svg width="18" height="18" fill="none" viewBox="0 0 24 24"
               stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
               <polyline points="20 6 9 17 4 12"/>
