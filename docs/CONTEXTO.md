@@ -136,6 +136,15 @@ Registro histórico: a parte Spotify abaixo foi substituída pelo áudio local, 
 - Verificações desta integração: `npm ci --no-audit --no-fund`, lint sem erros, 151 testes Vitest, quatro testes de configuração nativa, build web e sync Capacitor passaram. `gradlew.bat testDebugUnitTest assembleDebug` passou após o sync, com quatro testes JVM sem falhas. `git diff --check` e ausência de arquivos em conflito conferidos.
 - O PR continua em rascunho. GPS, bateria, precisão e rastreamento com tela bloqueada não foram testados no aparelho físico. A revisão funcional pendente está em `CONTINUAR-NO-CODEX-CLOUD.md`; esta integração não substitui essa revisão. Não houve merge na `main`, publicação de APK nem alteração do banco remoto.
 
+## Remover exercício do treino em andamento — 05/11/2026
+
+- Branch `codex/remove-workout-exercise`, baseada na `main` em `341b695` após o merge do PR #14. A mudança fica separada do histórico de atividades ao ar livre.
+- `WorkoutView.jsx` oferece **Remover do treino** no exercício expandido, com confirmação no modal existente, aviso sobre remoção das séries/anotações e preservação da ficha de rotina. Os outros exercícios mantêm seus dados; índices dos controles são reiniciados e o foco vai para Adicionar exercício.
+- A remoção persiste no treino ativo e reflete no progresso e no histórico ao finalizar. É possível remover o último exercício para escolher outro; treino vazio não pode ser finalizado e seu descanso é encerrado.
+- `activeWorkoutService.save` em `src/services/index.js` retorna sucesso/falha, sem alterar os argumentos existentes. Se a remoção não puder ser persistida, o exercício permanece e o app informa a falha.
+- Oito testes novos em `src/__tests__/WorkoutView.test.jsx` falharam antes da implementação e passaram depois; suíte completa com 159 testes, lint e build web passaram. Fixture com componentes reais e autenticação simulada no Edge passou em 390 px/escuro e 1440 px/claro para confirmação, cancelamento, persistência após reload, foco, área de toque e ausência de overflow horizontal/erros JS.
+- Não houve mudança no banco ou na ficha salva, publicação nem geração de novo APK nesta tarefa. Uso no aparelho físico continua sem validação desta alteração.
+
 ## Como manter
 
 - Ao concluir trabalho relevante, atualizar data, decisões, resultado e pendências.

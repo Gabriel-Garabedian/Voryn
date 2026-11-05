@@ -323,7 +323,7 @@ export const routineService = {
 // ── ACTIVE WORKOUT (localStorage for speed) ────────────────
 export const activeWorkoutService = {
   get:   () => { try { return JSON.parse(localStorage.getItem('voryn_active') || 'null') } catch { return null } },
-  save:  (w) => { try { localStorage.setItem('voryn_active', JSON.stringify(w)) } catch {} },
+  save:  (w) => { try { localStorage.setItem('voryn_active', JSON.stringify(w)); return true } catch { return false } },
   clear: () => { try { localStorage.removeItem('voryn_active') } catch {} },
 }
 
