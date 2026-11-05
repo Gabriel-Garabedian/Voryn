@@ -10,6 +10,8 @@ import { PLANS } from '@/services/payment'
 import { formatDuration, formatVolume, calcStreak, calcBestStreak } from '@/utils/helpers'
 import { EXERCISE_LIBRARY } from '@/data/exercises'
 import { ACHIEVEMENTS } from '@/views/AchievementsView'
+import ProfilePhotoEditor from '@/components/ProfilePhotoEditor'
+import TrainingMusic from '@/components/TrainingMusic'
 import AndroidDownloadLink from '@/components/AndroidDownloadLink'
 
 // ANTES, esta lista era fixa — só esses 5 exercícios apareciam em Records
@@ -142,6 +144,7 @@ export default function ProfileView() {
   const navigate = useNavigate()
   const toast = useToast()
 
+  const [exporting, setExporting] = useState(false)
   const [prs,         setPRs]         = useState({})
   const [logs,        setLogs]        = useState([])
   const [editingPR,   setEditingPR]   = useState(null)
@@ -283,12 +286,7 @@ export default function ProfileView() {
          o editor de nome/email continuam aqui, só sem a moldura/segundo
          avatar que existiam antes). */}
       <div className="desktop-profile-identity flex items-center gap-4">
-        <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0"
-          style={{ background: 'rgba(var(--accent-rgb),.15)', border: '1.5px solid rgba(var(--accent-rgb),.35)' }}>
-          <span className="font-display text-2xl" style={{ color: 'var(--accent-text)' }}>
-            {profile?.name?.charAt(0)?.toUpperCase() || 'A'}
-          </span>
-        </div>
+        <ProfilePhotoEditor />
         <div className="flex-1 min-w-0">
           {editName
             ? <div className="flex items-center gap-2">
@@ -489,6 +487,8 @@ export default function ProfileView() {
         </div>
       </div>
 
+      <TrainingMusic />
+
       {/* ── PRs ── */}
       <div className="desktop-profile-section" style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
         <div className="flex items-center justify-between mb-2">
@@ -644,18 +644,18 @@ export default function ProfileView() {
         <div className="space-y-2">
           {[
             { label: 'Dados completos (JSON)', fn: async () => {
-              const t = toast.loading('Preparando seus dados...')
+
               await dataExportService.downloadJson(user.id, profile)
-              toast.dismiss(t); toast.success('Dados exportados!')
+
             }},
             { label: 'Ficha de Treino (PDF)', fn: async () => {
-              const t = toast.loading('Gerando PDF...')
+
               const { data } = await routineService.getAll(user.id)
               await exportRoutinePDF({ studentName: profile?.name, routines: data || {} })
-              toast.dismiss(t); toast.success('PDF gerado!')
+
             }},
             { label: 'Meu Progresso (PDF)', fn: async () => {
-              const t = toast.loading('Gerando relatório...')
+
               const { data: logs }    = await workoutLogService.getAll(user.id)
               const { data: prs }     = await prService.getAll(user.id)
               // BUG: o relatório de progresso não recebia `metrics`, então a
@@ -665,10 +665,23 @@ export default function ProfileView() {
               // nunca era passado.
               const metrics = await workoutLogService.getMetrics(user.id)
               await exportProgressPDF({ studentName: profile?.name, metrics, workoutLogs: logs, prs: prs || {} })
-              toast.dismiss(t); toast.success('PDF gerado!')
+
             }},
           ].map(btn => (
-            <button key={btn.label} onClick={btn.fn}
+            <button key={btn.label} disabled={exporting} onClick={async () => {
+              if (exporting) return
+              setExporting(true)
+              const tid = toast.loading('Preparando arquivo...')
+              try {
+                await btn.fn()
+                toast.success('Arquivo exportado!')
+              } catch (error) {
+                if (error.code !== 'CANCELLED') toast.error(error.message || 'Não foi possível exportar. Tente novamente.')
+              } finally {
+                toast.dismiss(tid)
+                setExporting(false)
+              }
+            }}
               className="w-full f-card px-4 py-3 flex items-center gap-3 text-left"
               style={{ color: 'var(--text-1)' }}>
               <span className="text-sm font-medium">{btn.label}</span>

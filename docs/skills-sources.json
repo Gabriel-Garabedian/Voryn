@@ -1,0 +1,197 @@
+{
+  "date": "2026-10-22",
+  "external_skills": [
+    {
+      "name": "playwright",
+      "repo": "openai/skills",
+      "ref": "49f948faa9258a0c61caceaf225e179651397431",
+      "path": "skills/.curated/playwright"
+    },
+    {
+      "name": "security-best-practices",
+      "repo": "openai/skills",
+      "ref": "49f948faa9258a0c61caceaf225e179651397431",
+      "path": "skills/.curated/security-best-practices"
+    },
+    {
+      "name": "security-threat-model",
+      "repo": "openai/skills",
+      "ref": "49f948faa9258a0c61caceaf225e179651397431",
+      "path": "skills/.curated/security-threat-model"
+    },
+    {
+      "name": "sentry",
+      "repo": "openai/skills",
+      "ref": "49f948faa9258a0c61caceaf225e179651397431",
+      "path": "skills/.curated/sentry"
+    },
+    {
+      "name": "pdf",
+      "repo": "openai/skills",
+      "ref": "49f948faa9258a0c61caceaf225e179651397431",
+      "path": "skills/.curated/pdf"
+    },
+    {
+      "name": "gh-fix-ci",
+      "repo": "openai/skills",
+      "ref": "49f948faa9258a0c61caceaf225e179651397431",
+      "path": "skills/.curated/gh-fix-ci"
+    },
+    {
+      "name": "gh-address-comments",
+      "repo": "openai/skills",
+      "ref": "49f948faa9258a0c61caceaf225e179651397431",
+      "path": "skills/.curated/gh-address-comments"
+    },
+    {
+      "name": "supabase",
+      "repo": "supabase/agent-skills",
+      "ref": "c9be0e931b7930f7d02126d04774d904c381e7d7",
+      "path": "skills/supabase",
+      "license_source": "https://raw.githubusercontent.com/supabase/agent-skills/c9be0e931b7930f7d02126d04774d904c381e7d7/LICENSE"
+    },
+    {
+      "name": "supabase-postgres-best-practices",
+      "repo": "supabase/agent-skills",
+      "ref": "c9be0e931b7930f7d02126d04774d904c381e7d7",
+      "path": "skills/supabase-postgres-best-practices",
+      "license_source": "https://raw.githubusercontent.com/supabase/agent-skills/c9be0e931b7930f7d02126d04774d904c381e7d7/LICENSE"
+    },
+    {
+      "name": "capacitor-app-development",
+      "repo": "capawesome-team/skills",
+      "ref": "364ba4dda4d847995c69cfea0bb362f34a11bdf9",
+      "path": "skills/capacitor-app-development",
+      "license_source": "https://raw.githubusercontent.com/capawesome-team/skills/364ba4dda4d847995c69cfea0bb362f34a11bdf9/LICENSE"
+    },
+    {
+      "name": "capacitor-react",
+      "repo": "capawesome-team/skills",
+      "ref": "364ba4dda4d847995c69cfea0bb362f34a11bdf9",
+      "path": "skills/capacitor-react",
+      "license_source": "https://raw.githubusercontent.com/capawesome-team/skills/364ba4dda4d847995c69cfea0bb362f34a11bdf9/LICENSE"
+    },
+    {
+      "name": "capacitor-plugin-generator",
+      "repo": "ionic-team/skills",
+      "ref": "1329ecd80621c4aeca37858f4af7071d1ecfeac2",
+      "path": "skills/capacitor-plugin-generator"
+    },
+    {
+      "name": "vercel-react-best-practices",
+      "repo": "vercel-labs/agent-skills",
+      "ref": "063bee94c3f4df8453406c830b0a7df0f2860278",
+      "path": "skills/react-best-practices"
+    },
+    {
+      "name": "web-design-guidelines",
+      "repo": "vercel-labs/agent-skills",
+      "ref": "063bee94c3f4df8453406c830b0a7df0f2860278",
+      "path": "skills/web-design-guidelines"
+    },
+    {
+      "name": "vercel-composition-patterns",
+      "repo": "vercel-labs/agent-skills",
+      "ref": "063bee94c3f4df8453406c830b0a7df0f2860278",
+      "path": "skills/composition-patterns"
+    },
+    {
+      "name": "systematic-debugging",
+      "repo": "obra/superpowers",
+      "ref": "2ce8aa15d05bd57213e6f746f953aafb7ded7a8b",
+      "path": "skills/systematic-debugging",
+      "license_source": "https://raw.githubusercontent.com/obra/superpowers/2ce8aa15d05bd57213e6f746f953aafb7ded7a8b/LICENSE"
+    },
+    {
+      "name": "code-review",
+      "repo": "getsentry/skills",
+      "ref": "f57ada2d0b640406ea7e25b11d636c530e77c58b",
+      "path": "skills/code-review",
+      "license_source": "https://raw.githubusercontent.com/getsentry/skills/f57ada2d0b640406ea7e25b11d636c530e77c58b/LICENSE"
+    },
+    {
+      "name": "skill-scanner",
+      "repo": "getsentry/skills",
+      "ref": "f57ada2d0b640406ea7e25b11d636c530e77c58b",
+      "path": "skills/skill-scanner",
+      "license_source": "https://raw.githubusercontent.com/getsentry/skills/f57ada2d0b640406ea7e25b11d636c530e77c58b/LICENSE"
+    },
+    {
+      "name": "agents-md",
+      "repo": "getsentry/skills",
+      "ref": "f57ada2d0b640406ea7e25b11d636c530e77c58b",
+      "path": "skills/agents-md",
+      "license_source": "https://raw.githubusercontent.com/getsentry/skills/f57ada2d0b640406ea7e25b11d636c530e77c58b/LICENSE"
+    },
+    {
+      "name": "gsap-core",
+      "repo": "greensock/gsap-skills",
+      "ref": "aed9cfd3277740755f6bfc1155c7aa645403b760",
+      "path": "skills/gsap-core",
+      "local_adaptation": null
+    },
+    {
+      "name": "gsap-react",
+      "repo": "greensock/gsap-skills",
+      "ref": "aed9cfd3277740755f6bfc1155c7aa645403b760",
+      "path": "skills/gsap-react",
+      "local_adaptation": null
+    },
+    {
+      "name": "gsap-performance",
+      "repo": "greensock/gsap-skills",
+      "ref": "aed9cfd3277740755f6bfc1155c7aa645403b760",
+      "path": "skills/gsap-performance",
+      "local_adaptation": null
+    },
+    {
+      "name": "gsap-timeline",
+      "repo": "greensock/gsap-skills",
+      "ref": "aed9cfd3277740755f6bfc1155c7aa645403b760",
+      "path": "skills/gsap-timeline",
+      "local_adaptation": null
+    },
+    {
+      "name": "gsap-scrolltrigger",
+      "repo": "greensock/gsap-skills",
+      "ref": "aed9cfd3277740755f6bfc1155c7aa645403b760",
+      "path": "skills/gsap-scrolltrigger",
+      "local_adaptation": null
+    },
+    {
+      "name": "motion-design",
+      "repo": "LottieFiles/motion-design-skill",
+      "ref": "f9a8a041b85185ee4881b3471d3415e939aac772",
+      "path": "skills/motion-design",
+      "local_adaptation": "Functional UI and reduced-motion take precedence over mandatory ambient layers."
+    }
+  ],
+  "local_adaptations": [
+    "directory react-best-practices -> vercel-react-best-practices",
+    "directory composition-patterns -> vercel-composition-patterns",
+    "capacitor-app-development/SKILL.md: compatibility moved into metadata for local validator",
+    "capacitor-react/SKILL.md: compatibility moved into metadata for local validator",
+    "capacitor-app-development/references/app-configuration.md",
+    "capacitor-app-development/references/app-configuration.md",
+    "gh-address-comments/agents/openai.yaml",
+    "agents-md/SKILL.md",
+    "agents-md/SKILL.md",
+    "systematic-debugging/SKILL.md",
+    "systematic-debugging/SKILL.md",
+    "playwright/SKILL.md: Windows entrypoint",
+    "playwright/scripts/playwright_cli.ps1: added pinned Windows wrapper",
+    "pdf/SKILL.md: prepared Windows Python and rendering fallback"
+  ],
+  "project_skills": [
+    "voryn-android-release",
+    "voryn-offline-sync",
+    "voryn-access-and-billing",
+    "voryn-health-android",
+    "voryn-pdf-export",
+    "voryn-validation"
+  ],
+  "global_authored_skills": [
+    "codex-evidence-check"
+  ],
+  "review": "Frontmatter/YAML, Python syntax, static scan and manual triage. Scanner self-findings are detection patterns and documented attack examples, not executed payloads. No complete security certification."
+}

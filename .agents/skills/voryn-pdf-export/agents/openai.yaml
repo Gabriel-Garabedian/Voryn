@@ -1,0 +1,4 @@
+interface:
+  display_name: "Voryn PDF Export"
+  short_description: "Gerar e validar fichas e arquivos exportados"
+  default_prompt: "Use $voryn-pdf-export para executar esta tarefa e relatar as evidências."

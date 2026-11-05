@@ -1,0 +1,4 @@
+interface:
+  display_name: "Voryn Access and Billing"
+  short_description: "Conferir permissões, assinaturas e pagamentos"
+  default_prompt: "Use $voryn-access-and-billing para executar esta tarefa e relatar as evidências."

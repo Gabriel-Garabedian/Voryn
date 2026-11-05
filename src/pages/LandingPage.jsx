@@ -619,40 +619,40 @@ export default function LandingPage() {
   const landingRef = useRef(null)
 
   useGSAP(() => {
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const revealItems = gsap.utils.toArray('.lp-reveal')
+    const media = gsap.matchMedia()
+    media.add({
+      always: 'all',
+      mobile: '(max-width: 760px)',
+      reduced: '(prefers-reduced-motion: reduce)',
+    }, ({ conditions }) => {
+      // matchMedia reverts tweens AND triggers when preferences change.
+      // The unanimated DOM is always the complete, readable page.
+      if (conditions.reduced) return
+      const distance = conditions.mobile ? 8 : 14
+      const intro = gsap.timeline({ defaults: { ease: 'power3.out', clearProps: 'transform' } })
+      intro
+        .from('.lp-hero-title', { y: distance, duration: 0.4 }, 0)
+        .from('.lp-hero-copy, .lp-hero-actions', { y: distance, duration: 0.32, stagger: 0.05 }, 0.08)
+        .from('.lp-hero .lp-ladder-bar', {
+          scaleY: 0.82, transformOrigin: 'center bottom', duration: 0.5,
+          stagger: 0.06, clearProps: 'transform,transformOrigin',
+        }, 0.08)
 
-    if (reduceMotion) {
-      gsap.set(revealItems, { clearProps: 'all', opacity: 1, y: 0 })
-      return
-    }
-
-    const intro = gsap.timeline({ defaults: { ease: 'power3.out' } })
-    intro
-      .from('.lp-hero-title', { autoAlpha: 0, y: 35, duration: 0.8 })
-      .from('.lp-hero-copy', { autoAlpha: 0, y: 22, duration: 0.55 }, '-=0.4')
-      .from('.lp-hero-actions', { autoAlpha: 0, y: 18, duration: 0.5 }, '-=0.3')
-      .from('.lp-hero-numbers', { autoAlpha: 0, y: 18, duration: 0.5 }, '-=0.25')
-      .from('.lp-ladder', { autoAlpha: 0, y: 24, duration: 0.6 }, '-=0.35')
-
-    revealItems.forEach((element) => {
-      gsap.fromTo(element,
-        { autoAlpha: 0, y: 28 },
-        {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.7,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: element,
-            start: 'top 88%',
-            once: true,
+      // Above-the-fold content never waits for a reveal or scroll event.
+      const revealItems = gsap.utils.toArray('.lp-reveal')
+        .filter(element => element.getBoundingClientRect().top >= window.innerHeight)
+      revealItems.forEach((element) => {
+        gsap.fromTo(element,
+          { autoAlpha: 0, y: distance },
+          {
+            autoAlpha: 1, y: 0, duration: conditions.mobile ? 0.36 : 0.48,
+            ease: 'power3.out', clearProps: 'opacity,visibility,transform',
+            scrollTrigger: { trigger: element, start: 'top 92%', once: true },
           },
-        },
-      )
-    })
-
-    ScrollTrigger.refresh()
+        )
+      })
+    }, landingRef)
+    return () => media.revert()
   }, { scope: landingRef })
 
   // Antes havia aqui um useEffect que injetava uma <style> com seletores

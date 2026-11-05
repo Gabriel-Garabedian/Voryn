@@ -60,4 +60,7 @@ coverage/
 
 # Diagnósticos locais e cache do PowerShell
 .taste-skill/
+.playwright-cli/
+output/playwright/
+output/db-check/
 Microsoft/Windows/PowerShell/

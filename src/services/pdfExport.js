@@ -1,41 +1,11 @@
-// ──────────────────────────────────────────────────────────
-//  Voryn — PDF Export Service
-//  Usa jsPDF + autoTable (carregados via CDN dinamicamente)
-//  Sem dependência no bundle principal
-// ──────────────────────────────────────────────────────────
-
-const CDN_JSPDF    = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
-const CDN_AUTOTBL  = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js'
-
+import { saveExport } from './fileExport'
+let pdfLibrary
 async function loadJsPDF() {
-  if (window.jspdf?.jsPDF) return window.jspdf.jsPDF
-
-  // Mesmo risco documentado em PersonalInviteGuide.jsx (QRCanvas): scripts
-  // de terceiro via CDN sem Subresource Integrity. Aqui o risco é mais
-  // sério — estas libs têm acesso direto aos dados do aluno (peso, nome,
-  // fotos) no momento da exportação em PDF. Não adicionamos `integrity`
-  // fixo pelo mesmo motivo: hashes do cdnjs têm relatos documentados de
-  // estarem incorretos para certas versões, e isso bloquearia a função
-  // inteira. crossOrigin + referrerPolicy reduzem a superfície de ataque
-  // (isolam erros de CORS, evitam leak de referrer) sem esse risco de
-  // regressão. Mitigação mais completa seria hospedar cópia própria.
-  await new Promise((res, rej) => {
-    if (document.getElementById('jspdf-script')) { res(); return }
-    const s = document.createElement('script')
-    s.id = 'jspdf-script'; s.src = CDN_JSPDF
-    s.crossOrigin = 'anonymous'; s.referrerPolicy = 'no-referrer'
-    s.onload = res; s.onerror = rej
-    document.head.appendChild(s)
-  })
-  await new Promise((res, rej) => {
-    if (document.getElementById('autotable-script')) { res(); return }
-    const s = document.createElement('script')
-    s.id = 'autotable-script'; s.src = CDN_AUTOTBL
-    s.crossOrigin = 'anonymous'; s.referrerPolicy = 'no-referrer'
-    s.onload = res; s.onerror = rej
-    document.head.appendChild(s)
-  })
-  return window.jspdf.jsPDF
+  pdfLibrary ||= Promise.all([import('jspdf'), import('jspdf-autotable')]).then(([{ jsPDF }, { applyPlugin }]) => {
+    applyPlugin(jsPDF)
+    return jsPDF
+  }).catch(error => { pdfLibrary = null; throw error })
+  return pdfLibrary
 }
 
 // ── Helpers ──────────────────────────────────────────────────
@@ -182,7 +152,7 @@ export async function exportRoutinePDF({ studentName, routines, trainerName }) {
     footer(doc, i, total)
   }
 
-  doc.save(`voryn-ficha-${(studentName || 'aluno').replace(/\s/g,'-').toLowerCase()}.pdf`)
+  await saveExport(doc.output('blob'), `voryn-ficha-${(studentName || 'aluno').replace(/\s/g,'-').toLowerCase()}.pdf`)
 }
 
 // ── PDF 2: Avaliação Física ──────────────────────────────────
@@ -272,7 +242,7 @@ export async function exportAssessmentPDF({ studentName, assessments, trainerNam
 
   const total = doc.internal.getNumberOfPages()
   for (let i = 1; i <= total; i++) { doc.setPage(i); footer(doc, i, total) }
-  doc.save(`voryn-avaliacao-${(studentName || 'aluno').replace(/\s/g,'-').toLowerCase()}.pdf`)
+  await saveExport(doc.output('blob'), `voryn-avaliacao-${(studentName || 'aluno').replace(/\s/g,'-').toLowerCase()}.pdf`)
 }
 
 // ── PDF 3: Relatório de Progresso ───────────────────────────
@@ -363,5 +333,5 @@ export async function exportProgressPDF({ studentName, metrics, workoutLogs, prs
 
   const total = doc.internal.getNumberOfPages()
   for (let i = 1; i <= total; i++) { doc.setPage(i); footer(doc, i, total) }
-  doc.save(`voryn-progresso-${(studentName || 'aluno').replace(/\s/g,'-').toLowerCase()}.pdf`)
+  await saveExport(doc.output('blob'), `voryn-progresso-${(studentName || 'aluno').replace(/\s/g,'-').toLowerCase()}.pdf`)
 }

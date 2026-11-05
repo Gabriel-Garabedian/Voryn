@@ -1,3 +1,5 @@
+import { socialProfiles } from './socialProfiles'
+import { saveExport } from './fileExport'
 import { supabase } from '@/lib/supabase'
 import { PLANS } from '@/services/payment'
 import { parseWeight, localDateKey, calcStreak, calcBestStreak, localDateStart } from '@/utils/helpers'
@@ -385,12 +387,7 @@ export const dataExportService = {
       metrics,
     }
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `voryn-dados-${localDateKey()}.json`
-    link.click()
-    URL.revokeObjectURL(url)
+    await saveExport(blob, `voryn-dados-${localDateKey()}.json`)
   },
 }
 
@@ -1166,7 +1163,10 @@ export const friendService = {
     try {
       const { data, error } = await supabase.rpc('get_my_friends')
       if (error) throw error
-      return { data: data || [], error: null }
+      let photos = []
+      try { photos = await socialProfiles.get((data || []).map(friend => friend.friend_id)) } catch { /* Compatibilidade antes da migração. */ }
+      const photoById = new Map(photos.map(person => [person.id, person.avatar_url]))
+      return { data: (data || []).map(friend => ({ ...friend, avatar_url: photoById.get(friend.friend_id) })), error: null }
     } catch (err) {
       console.error('[Voryn] friendService.getMyFriends falhou:', err)
       return { data: [], error: err }

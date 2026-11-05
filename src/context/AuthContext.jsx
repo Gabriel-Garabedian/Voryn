@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase'
 import { getSubscription } from '@/utils/helpers'
 import { phoneHealth } from '@/services/phoneHealth'
 import { outdoorActivity } from '@/services/outdoorActivity'
+import { localMusicStore } from '@/services/localMusic'
 
 const AuthContext = createContext(null)
 
@@ -329,6 +330,7 @@ export function AuthProvider({ children }) {
         try { await outdoorActivity.deleteAll(user.id) }
         catch (error) { console.error('[Voryn] Não foi possível limpar os trajetos locais. Limpe os dados do aplicativo neste aparelho.', error) }
       }
+      await localMusicStore.remove(user.id).catch(() => {})
 
       // A conta já foi excluída no servidor nesse ponto — o que segue é só
       // limpeza local. Isolado em try/catch próprio de propósito: signOut()

@@ -13,6 +13,7 @@ import { useToast } from '@/components/ui/Toast'
 import { localDateKey } from '@/utils/helpers'
 import { captureError } from '@/lib/sentry'
 import MuscleTargetImage from '@/components/MuscleTargetImage'
+import TrainingMusic from '@/components/TrainingMusic'
 import PlateCalculator from '@/components/PlateCalculator'
 
 const DAYS_FULL = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
@@ -681,6 +682,8 @@ export default function WorkoutView() {
           </svg>
         </button>
       </div>
+
+      <div className="px-4 py-2"><TrainingMusic compact /></div>
 
       {/* Header */}
       <div className="native-header px-4 pt-2 pb-4 glass-panel"

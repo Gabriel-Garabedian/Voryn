@@ -56,6 +56,8 @@ function ToastItem({ toast, onRemove }) {
 
   return (
     <div
+      className="voryn-toast"
+      data-visible={visible}
       role={toast.type === 'error' ? 'alert' : 'status'}
       aria-live={toast.type === 'error' ? 'assertive' : 'polite'}
       style={{
@@ -66,9 +68,6 @@ function ToastItem({ toast, onRemove }) {
         padding: '12px 16px',
         minWidth: 240, maxWidth: 340,
         backdropFilter: 'blur(12px)',
-        transform: visible ? 'translateY(0) scale(1)' : 'translateY(12px) scale(.95)',
-        opacity: visible ? 1 : 0,
-        transition: 'all .28s cubic-bezier(.34,1.56,.64,1)',
         boxShadow: '0 8px 32px rgba(0,0,0,.35)',
       }}
     >

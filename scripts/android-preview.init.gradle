@@ -1,0 +1,9 @@
+// Test APK installed beside Voryn; production app identity and signing stay unchanged.
+gradle.beforeProject { project ->
+    project.plugins.withId('com.android.application') {
+        def android = project.extensions.getByName('android')
+        android.buildTypes.debug.applicationIdSuffix = '.preview'
+        android.buildTypes.debug.versionNameSuffix = '-preview'
+        android.sourceSets.debug.res.srcDir(new File(project.rootDir, '../scripts/android-preview-res'))
+    }
+}

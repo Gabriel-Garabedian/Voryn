@@ -1,0 +1,4 @@
+interface:
+  display_name: "Voryn Android Health"
+  short_description: "Investigar sensores e dados de saúde no Android"
+  default_prompt: "Use $voryn-health-android para executar esta tarefa e relatar as evidências."

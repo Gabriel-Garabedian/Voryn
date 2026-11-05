@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { supabase } from '@/lib/supabase'
 import LoadingScreen from '@/components/ui/LoadingScreen'
+import Avatar from '@/components/Avatar'
 const HomeView = lazy(() => import('@/views/HomeView'))
 const HealthView = lazy(() => import('@/views/HealthView'))
 const OutdoorView = lazy(() => import('@/views/OutdoorView'))
@@ -24,6 +25,7 @@ import PaywallGate           from '@/components/PaywallGate'
 import EmailConfirmGate      from '@/components/EmailConfirmGate'
 import NotificationPrompt    from '@/components/ui/NotificationPrompt'
 import TrialEndingBanner     from '@/components/ui/TrialEndingBanner'
+import AppUpdateBanner       from '@/components/ui/AppUpdateBanner'
 import { pushService }       from '@/services/pushNotifications'
 import { activeWorkoutService, offlineSyncService, syncPendingWorkouts } from '@/services'
 
@@ -353,7 +355,7 @@ export default function AppShell() {
               </button>
             )}
             <button onClick={() => navigate(`${base}/profile`)} className="profile-chip w-10 h-10 rounded-full flex items-center justify-center border cursor-pointer font-display text-lg" style={{ color: 'var(--text-1)' }} aria-label="Abrir perfil">
-              {displayName.charAt(0).toUpperCase()}
+              <Avatar name={profile?.name || displayName} path={profile?.avatar_url} size={38} />
             </button>
             {pendingSync > 0 && (
               <span className="app-sync-pill" title={`${pendingSync} treino(s) aguardando sincronização`}>
@@ -368,6 +370,7 @@ export default function AppShell() {
       <div className="app-content flex-1 overflow-y-auto overflow-x-hidden">
         <main id="main-content" tabIndex={-1} className="app-content__inner max-w-2xl mx-auto">
           <TrialEndingBanner hidden={onSubscriptionPage} />
+          <AppUpdateBanner hidden={inActiveWorkout} />
           <Suspense fallback={<div className="flex-1"><LoadingScreen /></div>}>
             <Routes>
             <Route path="outdoor" element={<OutdoorView key={user?.id} />} />
