@@ -4,6 +4,14 @@ O projeto Android usa Capacitor 8, Java 21 e SDK Android 36. A interface existen
 
 ## Configurar e gerar APK
 
+### APK de teste da remoção de exercícios — 1.9-preview
+
+`public/downloads/voryn-1.9-preview.apk` contém a opção **Remover do treino**, com confirmação, persistência local e preservação da ficha. É um APK debug identificado como **Voryn Teste**, pacote `com.voryn.mobile.preview`, versão 1.9-preview/código 11, com cerca de 21 MB.
+
+Instala separadamente do Voryn 1.9 (`com.voryn.mobile`), do legado 1.6 e das previews antigas (`com.voryn.app.preview`). Entre com a mesma conta para recuperar dados sincronizados; os dados locais das outras instalações não são copiados. Preserve os aplicativos existentes e seus registros pendentes. A chave de produção da versão 1.9 não está neste computador; este APK de teste não é uma atualização por cima dela.
+
+Para reproduzir, execute `npm run android:sync` e, em `android`, `./gradlew.bat assembleDebug -I ../scripts/android-preview.init.gradle`. Assinatura v2, pacote/versão/rótulo, integridade ZIP, arquivos web atuais, backend público, ausência de APKs aninhados e presença da remoção de exercícios foram conferidos. Metadados em `docs/android-candidate.json`. Instalação e uso no aparelho físico ainda não foram testados. A página e o manifesto públicos continuam anunciando a produção 1.9.
+
 ### Produção: Voryn 1.8
 
 O usuário confirmou a migração para uma nova instalação principal porque a chave da versão 1.6 ficou indisponível no computador do curso. O identificador de produção passa a ser `com.voryn.mobile`, com nome **Voryn**; o namespace Java/Kotlin continua `com.voryn.app`. Isso permite manter instalados o Voryn 1.6 e o Voryn Teste durante a transição, sem desinstalar ou apagar seus dados locais. A versão 1.8 usa código 10 e a chave permanente descrita abaixo.
