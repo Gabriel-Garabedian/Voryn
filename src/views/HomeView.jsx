@@ -79,6 +79,7 @@ function NotificationPanel({ userId }) {
 
 function QuickActions({ navigate }) {
   const actions = [
+    { path: '/app/outdoor', label: 'Ao ar livre', hint: 'Corrida, caminhada e pedal', icon: 'outdoor' },
     { path: '/app/routine', label: 'Rotina', hint: 'Editar ficha', icon: 'calendar' },
     { path: '/app/history', label: 'Histórico', hint: 'Ver treinos', icon: 'history' },
     { path: '/app/evolution', label: 'Evolução', hint: 'Acompanhar dados', icon: 'chart' },
@@ -86,6 +87,7 @@ function QuickActions({ navigate }) {
   ]
 
   const icons = {
+    outdoor: <><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6ZM9 3v15M15 6v15"/></>,
     calendar: <><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h3"/></>,
     history: <><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v5h5M12 7v5l3 2"/></>,
     chart: <><path d="M4 19V5M4 19h16"/><path d="m7 15 3-4 3 2 5-7"/></>,

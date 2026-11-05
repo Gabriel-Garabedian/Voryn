@@ -211,6 +211,10 @@ export default function HistoryView() {
         Histórico
       </h1>
       <p className="text-sm mb-4" style={{ color: 'var(--text-3)' }}>{logs.length} treinos registrados</p>
+      <button className="f-card w-full text-left p-4 mb-4" onClick={() => navigate('/app/outdoor')}>
+        <span className="font-semibold" style={{ color: 'var(--text-1)' }}>Percursos ao ar livre</span>
+        <span className="block text-sm mt-1" style={{ color: 'var(--text-3)' }}>Ver corridas, caminhadas e pedaladas salvas neste aparelho</span>
+      </button>
 
       {isLimited && (
         <button onClick={() => navigate('/app/subscription')}

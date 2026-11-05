@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useRef } from 'r
 import { supabase } from '@/lib/supabase'
 import { getSubscription } from '@/utils/helpers'
 import { phoneHealth } from '@/services/phoneHealth'
+import { outdoorActivity } from '@/services/outdoorActivity'
 import { localMusicStore } from '@/services/localMusic'
 
 const AuthContext = createContext(null)
@@ -102,6 +103,7 @@ export function AuthProvider({ children }) {
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (_event === 'SIGNED_OUT' && phoneHealth.available()) void phoneHealth.stop().catch(() => {})
+      if (_event === 'SIGNED_OUT' && outdoorActivity.available()) void outdoorActivity.stop().catch(error => console.error('[Voryn] Falha ao pausar GPS:', error))
       receivedAuthEvent = true
       // O callback do Auth só atualiza estado. Chamadas ao SDK aqui podem
       // disputar o lock de sessão e impedir o término do próprio login.
@@ -324,6 +326,10 @@ export function AuthProvider({ children }) {
       const data = await res.json().catch(() => ({}))
       if (!res.ok) return { error: { message: data?.error || 'Falha ao excluir conta' } }
 
+      if (outdoorActivity.available()) {
+        try { await outdoorActivity.deleteAll(user.id) }
+        catch (error) { console.error('[Voryn] Não foi possível limpar os trajetos locais. Limpe os dados do aplicativo neste aparelho.', error) }
+      }
       await localMusicStore.remove(user.id).catch(() => {})
 
       // A conta já foi excluída no servidor nesse ponto — o que segue é só
@@ -342,6 +348,7 @@ export function AuthProvider({ children }) {
     }
   }
   async function signOut() {
+    if (outdoorActivity.available()) await outdoorActivity.stop()
     await withAuthTimeout(supabase.auth.signOut(), 'Não foi possível sair agora. Tente novamente.')
     activeUserId.current = null
     accountVersion.current += 1
