@@ -27,15 +27,26 @@
     "localBackendAbsent": true,
     "removeWorkoutExerciseIncluded": true,
     "productionAuthSettingsHttpStatus": 200,
-    "nativeCorsAllowed": true
+    "nativeCorsAllowed": true,
+    "updateAndDownloadTests": 15,
+    "publicDownloadHashMatched": true,
+    "publicManifestCode": 14,
+    "publicManifestCors": "*",
+    "publicManifestCache": "no-store",
+    "publicDownloadPageVersionVerified": true
   },
   "deviceTested": false,
-  "published": false,
+  "published": true,
   "installationMode": "update-existing-production",
   "pending": [
     "Validar instalação por cima do Voryn principal, login e remoção de exercício no aparelho físico.",
     "Os ajustes locais de GPS/offline da worktree outdoor continuam separados; a correção offline anterior está incompleta.",
-    "Publicação autorizada; manifesto e página preparados para 1.11. Verificação do deploy ainda pendente.",
     "As dependências de migração do backend para fotos/identidade social já documentadas não foram verificadas nesta sessão."
-  ]
+  ],
+  "publicationStatus": "Deploy verificado no domínio de produção",
+  "deploymentCommit": "8e17e5c75f465829b3f96e3d81cb6a539a3e20d1",
+  "deploymentId": "dpl_Fn9dKC4LFUFnooCo4WBpSkcsLXTw",
+  "publicManifestVersion": "1.11",
+  "publicDownload": "https://voryn-liard.vercel.app/downloads/voryn-1.11.apk",
+  "publicationVerifiedAt": "2026-11-07T20:51:49.721396+00:00"
 }
